@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* 
+* Fix for Tailwind CSS v4 - Unknown at rule @plugin, @custom-variant, @theme, @utility, @variant, @apply, @source, @reference in global.css
+* TLDR: add plugin Tailwind CSS Intellisense to your IDE
+* https://stackoverflow.com/questions/79513015/tailwind-css-v4-unknown-at-rule-plugin-custom-variant-theme-utility-v?lq=1&utm_source=chatgpt.com
+*/
+
 /* @custom-variant dark (&:is(.dark *)); */
 @custom-variant dark (&:is(.dark &));
 
@@ -121,42 +127,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-
-
-
-
-
-I'll check your PostCSS setup to see if Tailwind v4's processor is enabled, since that error usually happens when the Tailwind PostCSS plugin isn't configured. Then I'll propose the minimal fix.
-
-[2 tools called]
-
-I'll fix the dark variant syntax in `src/app/globals.css` so Tailwind recognizes it, then recheck.
-
-[1 tool called]
-
-I updated the dark variant selector to use the correct Tailwind v4 syntax so the processor can handle @custom-variant. I'll quickly check for any linter/style errors in the edited file.
-
-[2 tools called]
-
-I confirmed Tailwind v4 is set up correctly; this “Unknown at rule” is from your editor/linter, not the Tailwind build.
-
-Do one of these quick fixes:
-- VS Code (recommended): create `.vscode/settings.json`:
-```json
-{
-  "css.lint.unknownAtRules": "ignore"
-}
-```
-- Stylelint (if you use it): add to your config:
-```json
-{
-  "rules": {
-    "at-rule-no-unknown": [true, { "ignoreAtRules": ["tailwind", "apply", "layer", "theme", "custom-variant"] }]
-  }
-}
-```
-
-Note: Your PostCSS is already correct with `["@tailwindcss/postcss"]`. If the dev server was running, restart it after changes.
-
-I also corrected the dark variant selector in `src/app/globals.css` to `@custom-variant dark (&:is(.dark &));` so it matches Tailwind v4’s expected syntax.
