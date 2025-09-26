@@ -3,7 +3,7 @@
 
 /* 
 * Fix for Tailwind CSS v4 - Unknown at rule @plugin, @custom-variant, @theme, @utility, @variant, @apply, @source, @reference in global.css
-* TLDR: add plugin Tailwind CSS Intellisense to your IDE
+* TLDR: add plugin Tailwind CSS Intellisense + files.associations in settings.json to your IDE
 * https://stackoverflow.com/questions/79513015/tailwind-css-v4-unknown-at-rule-plugin-custom-variant-theme-utility-v?lq=1&utm_source=chatgpt.com
 */
 
