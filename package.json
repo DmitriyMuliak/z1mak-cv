@@ -12,7 +12,7 @@
     "lint-fix": "eslint . --ext .js,.jsx,.ts,.tsx,.mjs --fix",
     "format-check": "prettier --check .",
     "format-fix": "prettier --write .",
-    "fix": "npm run lint-fix && npm run format-fix"
+    "fix-code": "npm run lint-fix && npm run format-fix"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -24,6 +24,7 @@
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
+    "@eslint/compat": "^1.4.0",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
