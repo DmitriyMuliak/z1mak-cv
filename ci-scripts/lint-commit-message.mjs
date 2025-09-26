@@ -27,7 +27,7 @@ const JIRA_TAG = 'JIRA_TAG';
 const logFailedBuild = (errorMessage) => {
   console.log(BGred, "Aborting commit: the commit message doesn't comply with conventional commits standard.", reset);
   console.log(green, "\n Examples: \n", Example1, "\n", Example2, "\n", Example3, "\n", Example4, "\n", Example5, reset);
-  console.log('Examples of commit type: fix|feat|wip|none|chore|change|update|refactor|doc|add|test|style');
+  console.log('Examples of commit type: fix|feat|wip|none|chore|change|update|refactor|doc|infra|add|test|style');
   errorMessage && console.log('Errors:');
   errorMessage && console.log(errorMessage);
 }
