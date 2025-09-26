@@ -7,7 +7,7 @@ const buildEslintCommand = (filenames) => {
 }
 
 const lintStagedConfig = {
-  '*.{js,jsx,ts,tsx,mjs,json}': [buildEslintCommand],
+  '*.{js,jsx,ts,tsx,mjs}': [buildEslintCommand],
 };
 
 export default lintStagedConfig;
