@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "pages": {
+      "about": {
+        "title": "Про мене",
+        "description": "Дізнайтеся більше про нашу компанію"
+      },
+      "skills": {
+        "title": "Навички",
+        "description": "Дізнайтеся більше про наші навички"
+      },
+      "contact": {
+        "title": "Контакти",
+        "description": "Зв'яжіться з нами"
+      },
+      "cvChecker": {
+        "title": "Перевірка CV",
+        "description": "Дізнайтеся більше про нашу компанію"
+      }
+    }
+  },
+  "header": {
+    "menu": {
+      "aboutTitle": "Про мене",
+      "skillsTitle": "Навички",
+      "contactTitle": "Контакт",
+      "cvCheckerTitle": "Перевірка CV"
+    }
+  }
+}

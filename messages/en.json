@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "pages": {
+      "about": {
+        "title": "About us",
+        "description": "Learn more about our company"
+      },
+      "skills": {
+        "title": "Our Skills",
+        "description": "Learn more about our skills"
+      },
+      "contact": {
+        "title": "Contact Us",
+        "description": "Get in touch with us"
+      },
+      "cvChecker": {
+        "title": "CV Checker",
+        "description": "Check your CV"
+      }
+    }
+  },
+  "header": {
+    "menu": {
+      "aboutTitle": "About Me",
+      "skillsTitle": "Skills",
+      "contactTitle": "Contact",
+      "cvCheckerTitle": "CV Checker"
+    }
+  }
+}

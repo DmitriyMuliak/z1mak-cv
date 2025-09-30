@@ -21,11 +21,22 @@ const eslintConfig = defineConfig([
   {
     rules: {
       'no-unused-vars': 'off', // Note: you must disable the base rule as it can report incorrect errors
-      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          'args': 'all',
+          'argsIgnorePattern': '^_',
+          'caughtErrors': 'all',
+          'caughtErrorsIgnorePattern': '^_',
+          'destructuredArrayIgnorePattern': '^_',
+          'varsIgnorePattern': '^_',
+          'ignoreRestSiblings': true
+        }
+      ],
       'no-unused-expressions': 'off', // Note: you must disable the base rule as it can report incorrect errors
-      '@typescript-eslint/no-unused-expressions': 'off'
+      '@typescript-eslint/no-unused-expressions': 'off',
+          
     },
-
   },
 
 ]);
