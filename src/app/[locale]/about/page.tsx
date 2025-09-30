@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { ClientUseLangExample } from '@/components/ClientUseLangExample';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import ToggleTheme from '@/components/ToggleTheme';
 
 type PageProps = { params: { locale: string } }
 
@@ -12,6 +13,7 @@ export default async function AboutPage(props: PageProps) {
     <h1>{t('aboutTitle')}</h1>
     <ClientUseLangExample />
     <LanguageSwitcher />
+    <ToggleTheme />
   </div>;
 };
 

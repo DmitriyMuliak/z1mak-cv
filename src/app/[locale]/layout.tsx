@@ -3,8 +3,8 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import {setRequestLocale} from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import {routing} from '@/i18n/routing';
-// import LanguageSwitcher from '@/components/LanguageSwitcher';
-
+import { ThemeProvider } from '@/components/ThemeProvider';
+import '../globals.css';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -36,10 +36,12 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   return (
-    <html lang={locale}>
-      <body className="bg-gradient-to-r from-purple-500 to-pink-500 min-h-screen text-white">
+    <html lang={locale} suppressHydrationWarning>
+      <body>
         <NextIntlClientProvider>
-          {children}
+          <ThemeProvider attribute='class' defaultTheme='light'>
+            {children}
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>
@@ -66,7 +68,7 @@ export default async function LocaleLayout({
 //   children: React.ReactNode;
 // }>) {
 //   return (
-//     <html lang="en">
+//     <html lang='en'>
 //       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
 //     </html>
 //   );
