@@ -20,7 +20,7 @@ const Example3 = 'refactor;Commit message';
 const Example4 = 'Commit message --skipMessageCheck';
 const Example5 = 'Commit message --skipmessagecheck';
 
-const commitTypeRegExp = /fix|feat|wip|none|chore|change|update|refactor|feature|doc|infra|add|test|style/;
+const commitTypeRegExp = /^(fix|feat|wip|none|chore|change|update|refactor|feature|doc|infra|add|test|style)$/;
 const JIRA_TAG = 'JIRA_TAG';
 
 
@@ -181,6 +181,7 @@ const main = () => {
     isThreeArgs,
     isFirstArgIsTaskType,
   });
+
   fs.writeFileSync(commitFilePath, formattedMessage, { encoding: 'utf-8' });
   logSuccessBuild();
   console.log(magenta, `New message title: ${formattedMessage}`);
