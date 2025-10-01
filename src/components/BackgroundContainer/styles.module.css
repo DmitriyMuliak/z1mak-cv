@@ -1,0 +1,33 @@
+/* .container {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
+
+.item {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
+
+.item.active {
+  background: radial-gradient(circle, #2a7b9b 0%, #57c785 50%, #eddd53 100%);
+  opacity: 1;
+}
+
+.item-0.active {
+  background: radial-gradient(circle, #2a7b9b 0%, #57c785 50%, #eddd53 100%);
+}
+
+.item-1.active {
+  background: radial-gradient(circle, #57c785 0%, #eddd53 50%, #ed7753 100%);
+}
+
+.item-2.active {
+  background: radial-gradient(circle, rgba(253, 29, 111, 0.61) 0%, #fd731d 50%, #fcb045 100%);
+}
+
+.item-3.active {
+  background: radial-gradient(circle, rgba(25, 141, 87, 0.61) 0%, #7847c7 50%, #38aa68 100%);
+} */

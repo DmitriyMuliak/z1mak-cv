@@ -7,7 +7,7 @@ export default function ThemeToggle() {
   const { theme, setTheme } = useTheme()
 
 
-  const isDark = theme === 'dark'
+  const isDark = theme === 'dark';
 
   return (
     <button

@@ -1,10 +1,24 @@
+import '../globals.css';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import {setRequestLocale} from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import {routing} from '@/i18n/routing';
 import { ThemeProvider } from '@/components/ThemeProvider';
-import '../globals.css';
+import {Header} from "@/components/Header";
+import { BackgroundContainer } from '@/components/BackgroundContainer';
+import styles from './styles.module.css';
+import { Geist, Geist_Mono } from 'next/font/google';
+
+const geistSans = Geist({
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+});
+
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+});
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -37,39 +51,19 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <NextIntlClientProvider>
           <ThemeProvider attribute='class' defaultTheme='light'>
-            {children}
+            <div className={styles.mainContainer}>
+              <div className={styles.mainContent}>
+                <Header />
+                {children}
+              </div>
+            </div>
           </ThemeProvider>
+          <BackgroundContainer />
         </NextIntlClientProvider>
       </body>
-    </html>
+    </html> 
   );
 }
-
-
-// import { Geist, Geist_Mono } from 'next/font/google';
-// import './globals.css';
-
-// const geistSans = Geist({
-//   variable: '--font-geist-sans',
-//   subsets: ['latin'],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: '--font-geist-mono',
-//   subsets: ['latin'],
-// });
-
-// export default function RootLayout({
-//   children,
-// }: Readonly<{
-//   children: React.ReactNode;
-// }>) {
-//   return (
-//     <html lang='en'>
-//       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
-//     </html>
-//   );
-// }
