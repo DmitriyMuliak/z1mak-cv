@@ -1,195 +1,202 @@
 import fs from 'node:fs';
 import path from 'node:path';
-// const argv = require('node:process');
 
-const BGred = "\x1b[41m";
-const reset = "\x1b[0m";
-const green = "\x1b[32m";
-const yellow = "\x1b[38;5;191m";
-const magenta = "\x1b[35m";
+const main = () => {
+  try {
+    const rootDir = process.cwd();
+    const commitFilePath = path.join(rootDir, '.git', 'COMMIT_EDITMSG');
+    const commitMessageRaw = readCommitFile(commitFilePath);
+
+    const parsed = parseCommitMessage(commitMessageRaw);
+    const state = determineState(parsed);
+    const validation = getValidationState(state);
+
+    if (SKIP_FLAG_RE.test(commitMessageRaw)) {
+      logger.passWithSkip(validation.isValid ? '' : validation.message);
+      process.exitCode = 0;
+      return;
+    }
+
+    if (!validation.isValid) {
+      logger.fail(validation.message);
+      process.exit(1);
+    }
+
+    const newMessage = formatCommitMessage(state);
+
+    writeCommitFile(commitFilePath, newMessage);
+    logger.pass();
+    logger.info(`New message title: ${newMessage}`);
+  } catch (err) {
+    logger.fail(err.message);
+    process.exit(1);
+  }
+};
+
+const COLORS = {
+  BG_RED: '\x1b[41m',
+  RESET: '\x1b[0m',
+  GREEN: '\x1b[32m',
+  YELLOW: '\x1b[38;5;191m',
+  MAGENTA: '\x1b[35m',
+};
 
 // You can write all brackets by own but for what ?
 // You only need type fix type 'fix' or 'refactor' .ect and Jira ticket number
 // const Example  = "1. [FIX]: Some text";
 // const Example1 = "2. (PROJ-123,PROJ-432,PROJ-1344):[FIX]: Some text";
 // const Example2 = "3. (PROJ-123):[FIX]: Some text";
+const EXAMPLES = [
+  '123;fix;Commit message',
+  '123,222,333;test;Commit message',
+  'refactor;Commit message',
+  'Commit message --skipMessageCheck',
+  'Commit message --skipmessagecheck',
+];
 
-const Example1 = '123;fix;Commit message';
-const Example2 = '123,222,333;test;Commit message';
-const Example3 = 'refactor;Commit message';
-const Example4 = 'Commit message --skipMessageCheck';
-const Example5 = 'Commit message --skipmessagecheck';
+const COMMIT_TYPES = [
+  'fix','feat','wip','none','chore','change','update','refactor',
+  'feature','doc','infra','add','test','style'
+];
 
-const commitTypeRegExp = /^(fix|feat|wip|none|chore|change|update|refactor|feature|doc|infra|add|test|style)$/;
+const COMMIT_TYPE_RE = new RegExp(`^(${COMMIT_TYPES.join('|')})$`);
 const JIRA_TAG = 'JIRA_TAG';
+const SKIP_FLAG_RE = /--skipmessagecheck|--skipMessageCheck/;
 
-
-const logFailedBuild = (errorMessage) => {
-  console.log(BGred, "Aborting commit: the commit message doesn't comply with conventional commits standard.", reset);
-  console.log(green, "\n Examples: \n", Example1, "\n", Example2, "\n", Example3, "\n", Example4, "\n", Example5, reset);
-  console.log('Examples of commit type: fix|feat|wip|none|chore|change|update|refactor|feature|doc|infra|add|test|style');
-  errorMessage && console.log('Errors:');
-  errorMessage && console.log(errorMessage);
-}
-
-const logSuccessBuild = () => {
-  console.log(magenta, "Your commit message is valid. 🚀🚀🚀 ", reset);
-}
-
-const logSuccessBuildWithoutMessageConventional = (valid = true, message = '') => {
-  if (valid) {
-    return logSuccessBuild();
-  }
-
-  console.log(yellow, `Your commit message is not valid but it Passed because you are skipped message linting, please fix it ASAP.`, reset);
-  message && console.log('Commit message linting error:');
-  message && console.log(message);
-}
-
-const isMessageWithSkipOption = value => value.search(/--skipmessagecheck|--skipMessageCheck/) !== -1;
-
-const checkTaskNumber = value => {
-  const taskIds = value.trim().split(',').filter(item => !!item);
-
-  if (!taskIds.length) {
-    return {
-      isValid: false,
-      message: `You didn't pass task id`,
+const logger = {
+  fail(errors) {
+    console.log(COLORS.BG_RED, 'Aborting commit: the commit message does not comply with conventional commits standard.', COLORS.RESET);
+    console.log(COLORS.GREEN, `\nExamples:\n${EXAMPLES.join('\n')}`, COLORS.RESET);
+    console.log('Accepted commit types:', COMMIT_TYPES.join('|'));
+    if (errors) {
+      console.log('Errors:');
+      console.log(errors);
     }
+  },
+  pass() {
+    console.log(COLORS.MAGENTA, 'Your commit message is valid. 🚀🚀🚀', COLORS.RESET);
+  },
+  passWithSkip(message) {
+    if (!message) return this.pass();
+    console.log(COLORS.YELLOW, 'Your commit message is not valid but passed because message linting was skipped. Fix ASAP.', COLORS.RESET);
+    console.log('Commit message linting error:');
+    console.log(message);
+  },
+  info(msg) {
+    console.log(COLORS.MAGENTA, msg, COLORS.RESET);
   }
+};
 
-  let isValidNumbers = true;
-  taskIds.forEach(item => isNaN(Number(item)) && (isValidNumbers = false));
-
-  return {
-    isValid: isValidNumbers,
-    message: 'Task references are not valid numbers.',
-  }
-}
-
-const checkTaskType = value => {
-  const formattedValue = value.trim();
-
-  if (formattedValue.search(commitTypeRegExp) === -1) {
-    return {
-      isValid: false,
-      message: `You should pass commit type as second argument. ${'\n'}Accepted type values: ${String(commitTypeRegExp)}`,
+const validators = {
+  taskNumbers(value) {
+    const ids = value.trim().split(',').map(s => s.trim()).filter(Boolean);
+    if (ids.length === 0) {
+      return { isValid: false, message: "You didn't pass task id" };
     }
-  }
-
-  return {
-    isValid: true,
-    message: '',
-  }
-}
-
-const validate = (tasks = []) => {
-
-  if (tasks.every(data => data.isValid === true)) {
+    const allNumeric = ids.every(id => !Number.isNaN(Number(id)));
     return {
-      isValid: true,
-      message: ''
-    }
+      isValid: allNumeric,
+      message: allNumeric ? '' : 'Task references are not valid numbers.'
+    };
+  },
+
+  commitType(value) {
+    const formatted = value.trim();
+    const ok = COMMIT_TYPE_RE.test(formatted);
+    return {
+      isValid: ok,
+      message: ok ? '' : `You should pass commit type as second argument. Accepted type values: ${COMMIT_TYPES.join(',')}`
+    };
   }
+};
 
-  let message = '';
-  tasks.filter(data => data.isValid === false).forEach((data, index) => message += `${index + 1}. ${data.message}` + '\n');
+const validateAll = results => {
+  const failed = results.filter(r => !r.isValid);
+  if (failed.length === 0) return { isValid: true, message: '' };
+  const message = failed.map((r, i) => `${i + 1}. ${r.message}`).join('\n');
+  return { isValid: false, message };
+};
 
+const parseCommitMessage = commitMessage => {
+  return commitMessage
+    .trim()
+    .split(';')
+    .map(s => s.trim())
+    .filter(Boolean);
+};
+
+const determineState = parsed => {
+  const len = parsed.length;
   return {
-    isValid: false,
-    message,
-  }
-}
+    parsed,
+    len,
+    isLessThanTwoArgs: len < 2,
+    isTwoArgs: len === 2,
+    isThreeArgs: len === 3,
+    isMoreThanThreeArgs: len > 3,
+    isFirstArgCommitType: COMMIT_TYPE_RE.test(parsed[0] || '')
+  };
+};
 
-const getValidationState = (parsedCommitMessage, {
-  isLessThanTwoArgs,
-  isTwoArgs,
-  isThreeArgs,
-  isFirstArgIsTaskType,
-}) => {
+const getValidationState = state => {
+  const { parsed, isLessThanTwoArgs, isTwoArgs, isThreeArgs, isFirstArgCommitType, isMoreThanThreeArgs } = state;
   if (isLessThanTwoArgs) {
-    return validate([{ isValid: false, message: 'There are no params divided by ";"' }]);
+    return validateAll([{ isValid: false, message: 'There are no params divided by ";"' }]);
   }
 
-  if (isTwoArgs && isFirstArgIsTaskType) {
-    return validate([checkTaskType(parsedCommitMessage[0])]);
+  if (isTwoArgs && isFirstArgCommitType) {
+    return validateAll([validators.commitType(parsed[0])]);
   }
 
-  if (isTwoArgs && !isFirstArgIsTaskType) {
-    return validate([{ isValid: false, message: 'In case of 2 arguments the first one need to be commit type' }]);
-  }
-
-  if (isThreeArgs || isMoreThanThreeArgs) {
-    return validate([checkTaskNumber(parsedCommitMessage[0]), checkTaskType(parsedCommitMessage[1])])
-  }
-}
-
-const formatMessage = (parsedCommitMessage, { isTwoArgs, isThreeArgs, isFirstArgIsTaskType }) => {
-  let result = '';
-  const messageBody = `: ${parsedCommitMessage[parsedCommitMessage.length - 1].trim()}`;
-  const getMessageWithTasksNumber = () => `[${parsedCommitMessage[0].trim().split(',').filter(v => !!v).map(taskNumber => `${JIRA_TAG}-${taskNumber}`).join(',')}]`;
-  const getMessageWithCommitType = (index = 1) => `[${parsedCommitMessage[index].trim().toUpperCase()}]`;
-
-  if (isTwoArgs && isFirstArgIsTaskType) {
-    result = getMessageWithCommitType(0);
-    result = result + messageBody;
-    return result;
+  if (isTwoArgs && !isFirstArgCommitType) {
+    return validateAll([{ isValid: false, message: 'In case of 2 arguments the first one needs to be commit type' }]);
   }
 
   if (isThreeArgs || isMoreThanThreeArgs) {
-    result = getMessageWithTasksNumber();
-    result = result + getMessageWithCommitType();
-    result = result + messageBody;
-    return result;
+    return validateAll([validators.taskNumbers(parsed[0]), validators.commitType(parsed[1])]);
   }
 
-  return message;
-}
+  return { isValid: false, message: 'Unknown validation state' };
+};
 
-const main = () => {
-  const rootDir = process.cwd();
-  const commitFilePath = path.join(rootDir, '.git', 'COMMIT_EDITMSG');
-  const commitMessage = fs.readFileSync(commitFilePath, 'utf8');
+const formatCommitMessage = state => {
+  const { parsed, isTwoArgs, isThreeArgs, isFirstArgCommitType, isMoreThanThreeArgs } = state;
+  const body = parsed[parsed.length - 1].trim();
 
-  const parsedCommitMessage = commitMessage.trim().split(';').filter(v => !!v).filter(v => v !== '\n' || v !== '\t');
-  const isLessThanTwoArgs = parsedCommitMessage.length < 2;
-  const isTwoArgs = parsedCommitMessage.length === 2;
-  const isThreeArgs = parsedCommitMessage.length === 3;
-  const isMoreThanThreeArgs = parsedCommitMessage.length > 3;
-  const isFirstArgIsTaskType = parsedCommitMessage[0].search(commitTypeRegExp) !== -1;
+  const tasksBlock = () => {
+    const ids = parsed[0].split(',').map(s => s.trim()).filter(Boolean);
+    return `(${ids.map(id => `${JIRA_TAG}-${id}`).join(',')})`;
+  };
 
-  const validationState = getValidationState(parsedCommitMessage, {
-    isLessThanTwoArgs,
-    isTwoArgs,
-    isThreeArgs,
-    isFirstArgIsTaskType,
-    isMoreThanThreeArgs,
-  });
+  const typeBlock = (index = 1) => `[${parsed[index].trim().toUpperCase()}]`;
 
-  if (isMessageWithSkipOption(commitMessage)) {
-    logSuccessBuildWithoutMessageConventional(validationState.isValid, validationState.message);
-    return process.exitCode = 0;
+  // Case: "refactor;Commit message" -> [REFACTOR]: Some text
+  if (isTwoArgs && isFirstArgCommitType) {
+    return `${typeBlock(0)}: ${body}`;
   }
 
-  if (!validationState.isValid) {
-    logFailedBuild(validationState.message);
-    return process.exit(1);
+  // Case: "123;fix;Commit message" or "123,222;test;Commit message" -> (JIRA_TAG-123):[FIX]: Commit message
+  if (isThreeArgs || isMoreThanThreeArgs) {
+    return `${tasksBlock()}:${typeBlock()}: ${body}`;
   }
 
-  const formattedMessage = formatMessage(parsedCommitMessage, {
-    isTwoArgs,
-    isThreeArgs,
-    isFirstArgIsTaskType,
-  });
+  return parsed.join(' ');
+};
 
-  fs.writeFileSync(commitFilePath, formattedMessage, { encoding: 'utf-8' });
-  logSuccessBuild();
-  console.log(magenta, `New message title: ${formattedMessage}`);
-}
+const readCommitFile = filePath => {
+  try {
+    return fs.readFileSync(filePath, 'utf8');
+  } catch (err) {
+    throw new Error(`Failed to read commit message file: ${err.message}`);
+  }
+};
 
-// print process.argv
-// process.argv.forEach((val, index) => {
-//   console.log(`${index}: ${val}`);
-// });
+const writeCommitFile = (filePath, message) => {
+  try {
+    fs.writeFileSync(filePath, message, { encoding: 'utf-8' });
+  } catch (err) {
+    throw new Error(`Failed to write commit message file: ${err.message}`);
+  }
+};
 
 main();
