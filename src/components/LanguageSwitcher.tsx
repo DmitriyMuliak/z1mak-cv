@@ -1,6 +1,12 @@
 'use client';
 
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select';
 import { useRouter, usePathname } from '@/navigation';
 import { routing } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
@@ -11,10 +17,7 @@ export function LanguageSwitcher() {
   const locale = useLocale();
 
   const changeLanguage = (newLocale: string) => {
-    router.replace(
-      { pathname },
-      { locale: newLocale }
-    );
+    router.replace({ pathname }, { locale: newLocale });
   };
 
   return (

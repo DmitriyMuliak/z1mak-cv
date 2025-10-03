@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/navigation';
 import { paths } from '@/i18n/routing';
-import styles from "./styles.module.css";
+import styles from './styles.module.css';
 import { useOptimistic, useEffect, startTransition } from 'react';
 
 export const Header = () => {
@@ -21,7 +21,7 @@ export const Header = () => {
   useEffect(() => {
     startTransition(() => {
       setOptimisticPathname(realPathname);
-    })
+    });
   }, [realPathname, setOptimisticPathname]);
 
   return (
@@ -31,7 +31,7 @@ export const Header = () => {
           <Link
             key={link.href}
             href={link.href}
-            className={optimisticPathname === link.href ? styles.active : ""}
+            className={optimisticPathname === link.href ? styles.active : ''}
             onClick={() => {
               window.dispatchEvent(new CustomEvent('locationChangeCustom', { detail: link.href }));
               startTransition(() => {

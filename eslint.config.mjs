@@ -24,21 +24,19 @@ const eslintConfig = defineConfig([
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
-          'args': 'all',
-          'argsIgnorePattern': '^_',
-          'caughtErrors': 'all',
-          'caughtErrorsIgnorePattern': '^_',
-          'destructuredArrayIgnorePattern': '^_',
-          'varsIgnorePattern': '^_',
-          'ignoreRestSiblings': true
-        }
+          args: 'all',
+          argsIgnorePattern: '^_',
+          caughtErrors: 'all',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
       ],
       'no-unused-expressions': 'off', // Note: you must disable the base rule as it can report incorrect errors
       '@typescript-eslint/no-unused-expressions': 'off',
-          
     },
   },
-
 ]);
 
 export default eslintConfig;

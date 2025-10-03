@@ -11,11 +11,11 @@
 .nav {
   display: flex;
   padding: 0 20px;
-  background-color: rgba(255, 255, 255, .05);
+  background-color: rgba(255, 255, 255, 0.05);
   border-radius: 200px;
   backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, .06);
-  transition: 1s all cubic-bezier(0.075, 0.82, 0.165, 1) .2s;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: 1s all cubic-bezier(0.075, 0.82, 0.165, 1) 0.2s;
   box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.2);
 }
 
@@ -40,7 +40,7 @@
 }
 
 .active::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 40%;
   left: 50%;

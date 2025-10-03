@@ -55,8 +55,20 @@ const EXAMPLES = [
 ];
 
 const COMMIT_TYPES = [
-  'fix','feat','wip','none','chore','change','update','refactor',
-  'feature','doc','infra','add','test','style'
+  'fix',
+  'feat',
+  'wip',
+  'none',
+  'chore',
+  'change',
+  'update',
+  'refactor',
+  'feature',
+  'doc',
+  'infra',
+  'add',
+  'test',
+  'style',
 ];
 
 const COMMIT_TYPE_RE = new RegExp(`^(${COMMIT_TYPES.join('|')})$`);
@@ -65,7 +77,11 @@ const SKIP_FLAG_RE = /--skipmessagecheck|--skipMessageCheck/;
 
 const logger = {
   fail(errors) {
-    console.log(COLORS.BG_RED, 'Aborting commit: the commit message does not comply with conventional commits standard.', COLORS.RESET);
+    console.log(
+      COLORS.BG_RED,
+      'Aborting commit: the commit message does not comply with conventional commits standard.',
+      COLORS.RESET,
+    );
     console.log(COLORS.GREEN, `\nExamples:\n${EXAMPLES.join('\n')}`, COLORS.RESET);
     console.log('Accepted commit types:', COMMIT_TYPES.join('|'));
     if (errors) {
@@ -78,25 +94,33 @@ const logger = {
   },
   passWithSkip(message) {
     if (!message) return this.pass();
-    console.log(COLORS.YELLOW, 'Your commit message is not valid but passed because message linting was skipped. Fix ASAP.', COLORS.RESET);
+    console.log(
+      COLORS.YELLOW,
+      'Your commit message is not valid but passed because message linting was skipped. Fix ASAP.',
+      COLORS.RESET,
+    );
     console.log('Commit message linting error:');
     console.log(message);
   },
   info(msg) {
     console.log(COLORS.MAGENTA, msg, COLORS.RESET);
-  }
+  },
 };
 
 const validators = {
   taskNumbers(value) {
-    const ids = value.trim().split(',').map(s => s.trim()).filter(Boolean);
+    const ids = value
+      .trim()
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
     if (ids.length === 0) {
       return { isValid: false, message: "You didn't pass task id" };
     }
-    const allNumeric = ids.every(id => !Number.isNaN(Number(id)));
+    const allNumeric = ids.every((id) => !Number.isNaN(Number(id)));
     return {
       isValid: allNumeric,
-      message: allNumeric ? '' : 'Task references are not valid numbers.'
+      message: allNumeric ? '' : 'Task references are not valid numbers.',
     };
   },
 
@@ -105,27 +129,29 @@ const validators = {
     const ok = COMMIT_TYPE_RE.test(formatted);
     return {
       isValid: ok,
-      message: ok ? '' : `You should pass commit type as second argument. Accepted type values: ${COMMIT_TYPES.join(',')}`
+      message: ok
+        ? ''
+        : `You should pass commit type as second argument. Accepted type values: ${COMMIT_TYPES.join(',')}`,
     };
-  }
+  },
 };
 
-const validateAll = results => {
-  const failed = results.filter(r => !r.isValid);
+const validateAll = (results) => {
+  const failed = results.filter((r) => !r.isValid);
   if (failed.length === 0) return { isValid: true, message: '' };
   const message = failed.map((r, i) => `${i + 1}. ${r.message}`).join('\n');
   return { isValid: false, message };
 };
 
-const parseCommitMessage = commitMessage => {
+const parseCommitMessage = (commitMessage) => {
   return commitMessage
     .trim()
     .split(';')
-    .map(s => s.trim())
+    .map((s) => s.trim())
     .filter(Boolean);
 };
 
-const determineState = parsed => {
+const determineState = (parsed) => {
   const len = parsed.length;
   return {
     parsed,
@@ -134,12 +160,19 @@ const determineState = parsed => {
     isTwoArgs: len === 2,
     isThreeArgs: len === 3,
     isMoreThanThreeArgs: len > 3,
-    isFirstArgCommitType: COMMIT_TYPE_RE.test(parsed[0] || '')
+    isFirstArgCommitType: COMMIT_TYPE_RE.test(parsed[0] || ''),
   };
 };
 
-const getValidationState = state => {
-  const { parsed, isLessThanTwoArgs, isTwoArgs, isThreeArgs, isFirstArgCommitType, isMoreThanThreeArgs } = state;
+const getValidationState = (state) => {
+  const {
+    parsed,
+    isLessThanTwoArgs,
+    isTwoArgs,
+    isThreeArgs,
+    isFirstArgCommitType,
+    isMoreThanThreeArgs,
+  } = state;
   if (isLessThanTwoArgs) {
     return validateAll([{ isValid: false, message: 'There are no params divided by ";"' }]);
   }
@@ -149,7 +182,9 @@ const getValidationState = state => {
   }
 
   if (isTwoArgs && !isFirstArgCommitType) {
-    return validateAll([{ isValid: false, message: 'In case of 2 arguments the first one needs to be commit type' }]);
+    return validateAll([
+      { isValid: false, message: 'In case of 2 arguments the first one needs to be commit type' },
+    ]);
   }
 
   if (isThreeArgs || isMoreThanThreeArgs) {
@@ -159,13 +194,16 @@ const getValidationState = state => {
   return { isValid: false, message: 'Unknown validation state' };
 };
 
-const formatCommitMessage = state => {
+const formatCommitMessage = (state) => {
   const { parsed, isTwoArgs, isThreeArgs, isFirstArgCommitType, isMoreThanThreeArgs } = state;
   const body = parsed[parsed.length - 1].trim();
 
   const tasksBlock = () => {
-    const ids = parsed[0].split(',').map(s => s.trim()).filter(Boolean);
-    return `(${ids.map(id => `${JIRA_TAG}-${id}`).join(',')})`;
+    const ids = parsed[0]
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    return `(${ids.map((id) => `${JIRA_TAG}-${id}`).join(',')})`;
   };
 
   const typeBlock = (index = 1) => `[${parsed[index].trim().toUpperCase()}]`;
@@ -183,7 +221,7 @@ const formatCommitMessage = state => {
   return parsed.join(' ');
 };
 
-const readCommitFile = filePath => {
+const readCommitFile = (filePath) => {
   try {
     return fs.readFileSync(filePath, 'utf8');
   } catch (err) {

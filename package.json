@@ -13,7 +13,8 @@
     "lint-fix": "eslint . --ext .js,.jsx,.ts,.tsx,.mjs --fix",
     "format-check": "prettier --check .",
     "format-fix": "prettier --write .",
-    "fix-code": "npm run lint-fix && npm run format-fix"
+    "tsc": "tsc",
+    "fix-code": "npm run tsc && npm run lint-fix && npm run format-fix"
   },
   "dependencies": {
     "@radix-ui/react-select": "^2.2.6",

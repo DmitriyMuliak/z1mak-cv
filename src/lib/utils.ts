@@ -1,7 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-
 // oklch — це новітній простір кольорів, створений для людського сприйняття,
 // а не для технічного зберігання кольору (як rgb чи hex).
 

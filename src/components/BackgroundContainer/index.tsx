@@ -36,18 +36,17 @@ export const BackgroundContainer = () => {
   const activePath = (paths.includes(current as MenuPaths) ? current : paths[0]) as MenuPaths;
 
   return (
-    <div className='global-background-container' aria-hidden>
+    <div className="global-background-container" aria-hidden>
       {paths.map((path, index) => {
         const isActive = activePath === path;
         return (
           <div
             key={path}
             // className={cn(styles.item, `${styles.item}-${index}`, isActive && styles.active)}
-            className={`global-background-item global-background-item-${index} ${isActive ? 'global-background-item-active': ''} `}
+            className={`global-background-item global-background-item-${index} ${isActive ? 'global-background-item-active' : ''} `}
           />
         );
       })}
     </div>
   );
 };
-
