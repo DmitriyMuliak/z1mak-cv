@@ -1,22 +1,29 @@
 import { getTranslations } from 'next-intl/server';
-import { ClientUseLangExample } from '@/components/ClientUseLangExample';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import ToggleTheme from '@/components/ToggleTheme';
 import { AnimatedPhoto } from '@/components/AnimatedPhoto';
+import { cn } from '@/lib/utils';
+// import ToggleTheme from '@/components/ToggleTheme';
 
 type PageProps = { params: { locale: string } };
 
 export default async function AboutPage(props: PageProps) {
   const { locale } = await props.params;
-  const t = await getTranslations({ locale, namespace: 'header.menu' });
+  const t = await getTranslations({ locale, namespace: 'pages.about' });
 
   return (
-    <div>
-      <h1>{t('aboutTitle')}</h1>
-      <ClientUseLangExample />
-      <LanguageSwitcher />
-      <ToggleTheme />
-      <AnimatedPhoto />
+    <div className={cn('flex flex-col md:flex-row gap-4')}>
+      <div className={cn('md:w-1/2 flex flex-col justify-center ')}>
+        <h1 className={cn('text-xl mb-4 md:text-6xl')}>{t('title')}</h1>
+        <div>
+          <h2 className={cn('text-base mb-4 md:text-2xl')}>{t('description1')}</h2>
+          <h3 style={{ whiteSpace: 'pre-line' }} className={cn('text-base mb-4 md:text-2xl')}>
+            {t('description2')}
+          </h3>
+        </div>
+      </div>
+      <div className={cn('md:w-1/2 h-[250px] sm:h-auto flex flex-col justify-center items-center')}>
+        <AnimatedPhoto />
+        {/* <ToggleTheme />  */}
+      </div>
     </div>
   );
 }

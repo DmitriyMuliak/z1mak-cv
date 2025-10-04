@@ -24,9 +24,12 @@ export function AnimatedPhoto() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width={262.608}
-      height={366.055}
+      // width={262.608}
+      // height={366.055}
+      width={400}
+      height={'100%'}
       viewBox="0 0 196.956 274.541"
+      style={{ fill: 'var(--foreground)' }}
     >
       <path d="M82.256.541c-1.7.7-1.6.9 1 1.1 1.7.1 4 .3 5.3.4 1.2.1 2.5-.2 2.8-.6.3-.5-.6-.9-2-.9-1.3 0-3-.2-3.8-.4-.7-.3-2.2-.1-3.3.4zM74.356 1.341c-.6 1 4 1 5-.1.4-.4-.4-.7-1.9-.7-1.4 0-2.8.4-3.1.8zM95.256 2.741c1.1.8 3.3 1.9 4.8 2.6 2.5 1.1 2.8 1 2.5-.5-.2-.9-1.2-1.7-2.3-1.9-1.1-.1-3.1-.5-4.5-.9-2.4-.7-2.4-.7-.5.7zM69.356 4.24c-.4.5-1.1.8-1.4.8-1.3.1-8.2 3.7-8.8 4.6-.8 1.4.3 1.1 4.6-1.1 2.2-1.099 4.6-1.999 5.5-1.999.9 0 1.4-.4 1-.9-.3-.5.5-1.2 1.7-1.4 2.1-.4 2.1-.4.2-.6-1.1 0-2.4.2-2.8.6zM84.256 6.24c-1.1.3-2.4.9-2.9 1.4-.5.501.5.401 2.4-.099 5.1-1.5 5.5-2.5.5-1.3zM103.756 6.641c0 .9 4.9 3.3 5.6 2.7.1-.2-1.1-1.1-2.7-2-1.6-.9-2.9-1.3-2.9-.7zM110.756 10.14c0 .5 1.5 2.5 3.4 4.3 1.8 1.801 3.9 5.101 4.6 7.401 1.6 4.8 1.4 4.3 2.5 8 .5 2 1 2.5 1.6 1.6.4-.7.5-1.7.2-2.2-.3-.4-.7-2.3-1-4-.3-1.8-1-3.8-1.6-4.6-.6-.7-1.2-2-1.4-2.9-.1-.9-.8-1.9-1.4-2.1-.7-.2-2.5-1.8-4.1-3.5-1.5-1.7-2.8-2.6-2.8-2zM55.056 17.741c-.6.7-1.3 2.2-1.7 3.2-.6 1.9-.6 1.9 1.2.3 1-.9 1.9-2.4 1.9-3.2 0-1.8-.2-1.8-1.4-.3zM73.756 18.241c-1.4.7-2 1.3-1.3 1.3.6 0 1.7.2 2.5.5.7.3 2.2-.1 3.2-.8 1.8-1.4 1.8-1.4 0-1.9-1-.2-3 .2-4.4.9z" />
       <path
@@ -89,7 +92,8 @@ const setupMoveEyesAndBrows = (
     const my = ev.clientY;
 
     brows.forEach((browRef) => {
-      const brow = browRef.current!;
+      const brow = browRef.current;
+      if (!brow) return;
       const { cx, cy } = getCenter(brow);
       const rect = brow.getBoundingClientRect();
       const dx = mx - (rect.left + rect.width / 2);
@@ -104,7 +108,8 @@ const setupMoveEyesAndBrows = (
     });
 
     eyes.forEach((eyeRef) => {
-      const eye = eyeRef.current!;
+      const eye = eyeRef.current;
+      if (!eye) return;
       const rect = eye.getBoundingClientRect();
       const dx = mx - (rect.left + rect.width / 2);
       const dy = my - (rect.top + rect.height / 2);
@@ -124,7 +129,7 @@ const setupMoveEyesAndBrows = (
 const setupFastMouseOpacityToggle = (
   eyelidRef: React.RefObject<SVGPathElement | null>,
   eyeRef: React.RefObject<SVGPathElement | null>,
-  speedThreshold = 10,
+  speedThreshold = 15,
   restoreDelay = 400,
 ) => {
   let lastX = 0;

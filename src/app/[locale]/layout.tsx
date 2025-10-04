@@ -5,10 +5,14 @@ import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { ThemeProvider } from '@/components/ThemeProvider';
-import { Header } from '@/components/Header';
 import { BackgroundContainer } from '@/components/BackgroundContainer';
-import styles from './styles.module.css';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { AnimatePresence } from 'framer-motion';
+import { Header } from '@/components/Header';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { Lamp } from '@/components/Lamp';
+import { cn } from '@/lib/utils';
+import styles from './layout.module.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -52,9 +56,13 @@ export default async function LocaleLayout({ children, params }: Props) {
         <NextIntlClientProvider>
           <ThemeProvider attribute="class" defaultTheme="light">
             <div className={styles.mainContainer}>
-              <div className={styles.mainContent}>
+              <div className={`${styles.mainContent} ${styles.mainContentFullHeight}`}>
+                <Lamp />
+                <LanguageSwitcher />
                 <Header />
-                {children}
+                <div className={cn('w-full max-w-[1200px] mx-auto px-4')}>
+                  <AnimatePresence mode="wait">{children}</AnimatePresence>
+                </div>
               </div>
             </div>
           </ThemeProvider>

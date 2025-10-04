@@ -92,6 +92,7 @@
 }
 
 .dark {
+  --root-bg-base: radial-gradient(circle, #1184b1 0%, #222e36 50%, #1b3540 100%);
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.21 0.006 285.885);
@@ -156,14 +157,19 @@
 .global-background-item-0 {
   background: var(--root-bg-base);
 }
+
 .global-background-item-1 {
   background: radial-gradient(
     circle,
-    rgba(87, 199, 133, 1) 0%,
-    rgba(237, 221, 83, 1) 50%,
-    rgba(237, 119, 83, 1) 100%
+    oklab(74.75500000000001% -0.12764 0.05959) 0%,
+    oklab(88.58500000000001% -0.03411 0.15152) 50%,
+    oklab(69.884% 0.12232 0.0944) 100%
   );
 }
+.dark .global-background-item-1 {
+  background: radial-gradient(circle, #333b66 0%, #63608b 50%, lab(9 -2.39 -16.5) 100%);
+}
+
 .global-background-item-2 {
   background: radial-gradient(
     circle,
@@ -172,6 +178,15 @@
     rgba(252, 176, 69, 1) 100%
   );
 }
+
+.dark .global-background-item-2 {
+  background: radial-gradient(circle, rgb(219 144 171 / 61%) 0%, #45220c 50%, #513308 100%);
+}
+
 .global-background-item-3 {
-  background: radial-gradient(circle, rgba(42, 42, 42, 1) 0%, rgba(0, 0, 0, 1) 100%);
+  background: radial-gradient(circle, rgb(235 255 251 / 61%) 0%, #5a97ad 50%, #1f4b56 100%);
+}
+
+.dark .global-background-item-3 {
+  background: radial-gradient(circle, rgb(15 114 94 / 61%) 0%, #0b303d 50%, #475559 100%);
 }

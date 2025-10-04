@@ -1,0 +1,47 @@
+.container {
+  width: 60px;
+  height: 50px;
+  background: oklab(57.236% -0.02601 -0.03002 / 0.322);
+  border-radius: 6px;
+  padding: 6px;
+  box-shadow: inset 0 0 6px oklab(69.926% 0 -0.00008);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #f9f9f9;
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease;
+}
+
+.btn input {
+  display: none;
+}
+
+.btn span {
+  position: absolute;
+  inset: 0;
+  background: #f0f0f0;
+  border-radius: 4px;
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.btn:active span {
+  transform: translateY(2px);
+}
+
+.btn input:checked + span {
+  background: oklab(0.57 -0.03 -0.03 / 0.32);
+  box-shadow: inset 0 0 6px oklab(69.926% 0 -0.00008);
+  transform: translateY(2px);
+}

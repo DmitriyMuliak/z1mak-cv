@@ -1,8 +1,12 @@
-export default function HomePage() {
-  return (
-    <div className="p-8 text-center">
-      <h1 className="text-4xl font-bold mb-4">Welcome!</h1>
-      <p>This is a sample home page. Navigate to About, Skills, Contact or CV Checker.</p>
-    </div>
-  );
+import { redirect } from '@/i18n/navigation';
+
+type Props = {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function RootPage({ params }: Props) {
+  const { locale } = await params;
+  // If there's no locale in the URL, use the browser's language.
+  // If it's not supported, fall back to 'en'.
+  redirect({ href: `/about`, locale });
 }

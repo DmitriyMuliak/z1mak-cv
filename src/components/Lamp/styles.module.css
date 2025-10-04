@@ -1,0 +1,65 @@
+.container {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-direction: column;
+  position: absolute;
+  top: 50px;
+  left: 0;
+}
+
+.lamp {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: grid;
+  place-items: center;
+}
+
+/* bulb base look */
+.bulb {
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.2));
+  transform: rotate(180deg);
+}
+
+/* filament & glass */
+.filament path {
+  fill: oklab(67.408% 0.00562 0.00168);
+  transition:
+    fill 0.25s,
+    filter 0.25s;
+}
+
+/* glow pseudo-element */
+.lamp::after {
+  content: '';
+  position: absolute;
+  inset: -40% -60%;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 235, 160, 0.6) 0%,
+    rgba(255, 200, 80, 0.12) 25%,
+    rgba(0, 0, 0, 0) 60%
+  );
+  transform: scale(0.95);
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+/* when on — change filament color and add stronger glow */
+.lamp[data-on='true'] .filament path {
+  fill: #ffdd66;
+  filter: drop-shadow(0 0 8px rgba(255, 200, 60, 0.9));
+}
+
+.lamp[data-on='true'] {
+  transform: translateY(-2px);
+}
+
+.lamp[data-on='true']::after {
+  opacity: 1;
+  transform: scale(1);
+}

@@ -22,7 +22,7 @@ export function LanguageSwitcher() {
 
   return (
     <Select onValueChange={changeLanguage} defaultValue={locale}>
-      <SelectTrigger className="w-[120px]">
+      <SelectTrigger className="w-[120px] absolute top-[72px] right-0 cursor-pointer">
         <SelectValue placeholder="Language" />
       </SelectTrigger>
       <SelectContent>

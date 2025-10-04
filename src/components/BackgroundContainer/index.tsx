@@ -5,7 +5,7 @@ import { menuPaths } from '@/i18n/routing';
 
 let currentPathName = '';
 type MenuPaths = keyof typeof menuPaths;
-const paths = Object.keys(menuPaths) as Array<MenuPaths>;
+const paths = Object.values(menuPaths) as Array<MenuPaths>;
 
 function getSnapshot(): string {
   return currentPathName || (window.location.pathname.split('/')[2] ?? '');
