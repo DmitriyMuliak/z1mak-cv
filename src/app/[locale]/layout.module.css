@@ -1,0 +1,20 @@
+.mainContainer {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.mainContent {
+  position: relative;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  margin: 0 50px;
+  padding-top: 166px;
+}
+
+.mainContentFullHeight {
+  min-height: calc(100vh - 166px);
+  align-items: center;
+  justify-content: center;
+}
