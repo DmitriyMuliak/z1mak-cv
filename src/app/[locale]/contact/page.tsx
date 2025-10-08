@@ -1,10 +1,12 @@
-import { ContactForm } from '@/components/Forms/ContactForm';
+import { ContactForm } from './ContactForm';
 
 export default function ContactPage() {
   return (
-    <div className="p-8">
+    <div className="md:p-8">
       <h2 className="text-3xl font-semibold mb-4">Contact Me</h2>
-      <ContactForm />
+      <div className="flex justify-center items-center">
+        <ContactForm />
+      </div>
     </div>
   );
 }

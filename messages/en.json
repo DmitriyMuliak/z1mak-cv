@@ -33,5 +33,47 @@
       "description1": "A software engineer from Lviv, Ukraine",
       "description2": "Curious to know more about me?\nLet’s explore together! :)"
     }
-  }
+  },
+
+  "zod": {
+
+
+    "required": "This field is required",
+    "invalid_type": "Invalid data type",
+    "too_small": "Value is too short (minimum {minimum})",
+    "too_big": "Value is too big (maximum {maximum})",
+    "invalid_email": "Invalid email",
+
+
+    
+    "too_small_with_fieldName": "{fieldName} is too short (minimum {min})",
+
+    "name_too_short": "Name is too short",
+    "message_too_short": "Message is too short",
+
+    "file_too_large": "File is too large. Maximum {max} MB",
+    "file_invalid_type": "Invalid file type",
+    "file_problem": "There is a problem with the file",
+    "file_added": "File added: {fileName}"
+  },
+
+  "fields": {
+    "name": {
+      "label": "Name*",
+      "placeholder": "Enter your name"
+    },
+    "email": {
+      "label": "Email*",
+      "placeholder": "Enter your email"
+    },
+    "message": {
+      "label": "Message*",
+      "placeholder": "Enter your message"
+    },
+    "file": {
+      "addedFileTitle": "Added File",
+      "mainAddFileTitle": "Drag 'n' drop file here, or click to select"
+    }
+  },
+  "pluralTranslationExample": "{count, plural, one {# product} other {# products}}"
 }

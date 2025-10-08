@@ -22,9 +22,9 @@
   transition: transform 0.15s ease;
 }
 
-.btn input {
+/* .btn input {
   display: none;
-}
+} */
 
 .btn span {
   position: absolute;
@@ -38,6 +38,10 @@
 
 .btn:active span {
   transform: translateY(2px);
+}
+
+.btn input:focus + span {
+  outline: 3px solid rgb(82, 101, 126);
 }
 
 .btn input:checked + span {
