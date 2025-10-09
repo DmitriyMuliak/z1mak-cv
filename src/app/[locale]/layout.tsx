@@ -13,6 +13,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Lamp } from '@/components/Lamp';
 import { cn } from '@/lib/utils';
 import styles from './layout.module.css';
+import { Configurator } from '@/components/Configurator';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -57,6 +58,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           <ThemeProvider attribute="class" defaultTheme="light">
             <div className={styles.mainContainer}>
               <div className={`${styles.mainContent} ${styles.mainContentFullHeight}`}>
+                <Configurator />
                 <Lamp />
                 <LanguageSwitcher />
                 <Header />

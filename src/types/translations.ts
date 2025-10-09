@@ -4,8 +4,8 @@ import type { DeepKeyOf } from '@/types/utils';
 
 type MessagesBase = typeof en;
 export type NameSpacedTranslationMessages = NamespaceKeys<MessagesBase, DeepKeyOf<MessagesBase>>;
-export type ZodTranslationKeys = keyof MessagesBase['zod'];
+export type ValidatorKeys = keyof MessagesBase['validator'];
 export type TranslationFn = (
-  key: ZodTranslationKeys,
-  params?: Record<string, string | number | Date> | undefined,
+  key: ValidatorKeys,
+  params?: Record<string, string | number | Date>, // params?: Record<string, unknown>,
 ) => string;

@@ -36,7 +36,7 @@ export function FileDropzoneField<T extends FieldValues>({
   files,
 }: FileDropzoneFieldProps<T>) {
   const t = useTranslations('fields.file');
-  const tZod = useTranslations('zod');
+  const tValidator = useTranslations('validator');
   return (
     <div className="relative" data-form-field-id={name}>
       {files.map((_, index) => (
@@ -86,26 +86,27 @@ export function FileDropzoneField<T extends FieldValues>({
                   if (tooLarge) {
                     setError(name, {
                       type: 'manual',
-                      message: tZod('file_too_large', { max: MAX_SIZE_MB }),
+                      message: tValidator('file_too_large', { max: MAX_SIZE_MB }),
                     });
                   } else if (wrongType) {
                     setError(name, {
                       type: 'manual',
-                      message: tZod('file_invalid_type'),
+                      message: tValidator('file_invalid_type'),
                     });
                   } else {
                     setError(name, {
                       type: 'manual',
-                      message: tZod('file_problem'),
+                      message: tValidator('file_problem'),
                     });
                   }
                 }}
               >
-                {({ getRootProps, getInputProps }) => (
+                {({ getRootProps, getInputProps, isDragActive }) => (
                   <div
                     {...getRootProps({
                       className: cn(
                         'p-3 mb-2 flex flex-col items-center justify-center w-full rounded-md cursor-pointer border border-stone-950 hover:bg-gray-600/10 dark:border-slate-400/20 dark:bg-input/30 dark:hover:bg-gray-600/10 ',
+                        isDragActive ? `bg-gray-600/10 dark:bg-gray-600/10` : '',
                       ),
                     })}
                   >
