@@ -38,7 +38,7 @@ export function TextField<T extends FieldValues>({
                 )}
               />
             </FormControl>
-            <FormMessage className="text-red-700 dark:text-red-600 capitalize" />
+            <FormMessage className="text-red-700 dark:text-red-600" />
           </FormItem>
         )}
       />

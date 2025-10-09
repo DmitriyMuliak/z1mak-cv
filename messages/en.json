@@ -34,29 +34,6 @@
       "description2": "Curious to know more about me?\nLet’s explore together! :)"
     }
   },
-
-  "zod": {
-
-
-    "required": "This field is required",
-    "invalid_type": "Invalid data type",
-    "too_small": "Value is too short (minimum {minimum})",
-    "too_big": "Value is too big (maximum {maximum})",
-    "invalid_email": "Invalid email",
-
-
-    
-    "too_small_with_fieldName": "{fieldName} is too short (minimum {min})",
-
-    "name_too_short": "Name is too short",
-    "message_too_short": "Message is too short",
-
-    "file_too_large": "File is too large. Maximum {max} MB",
-    "file_invalid_type": "Invalid file type",
-    "file_problem": "There is a problem with the file",
-    "file_added": "File added: {fileName}"
-  },
-
   "validator": {
     "invalid_type": "Invalid type. Expected {{expected}}, received {{received}}.",
     "too_small": "Value is too small. Minimum is {{min}}.",
@@ -75,9 +52,11 @@
     "invalid_custom": "Invalid value.",
     "custom": "Invalid value.",
 
-    "file_too_large": "Файл завеликий. Максимум {max} MB",
-    "file_invalid_type": "Неприпустимий тип файлу",
-    "file_problem": "Проблема з файлом"
+    "c_required": "This field is required.",
+    "c_min_length": "Custom min expected: {{min}}.",
+    "file_too_large": "File is too large. Maximum {max} MB.",
+    "file_invalid_type": "Invalid file type.",
+    "file_problem": "There is a problem with the file."
   },
 
   "fields": {

@@ -6,13 +6,9 @@ import { FormField } from '@/components/FormField';
 
 import { FormClientProvider } from '@/components/FormClientProvider';
 import { SubmitButton } from '@/components/SubmitButton';
-import { z } from 'zod';
+// import { z } from 'zod';
 
-export const Schema = z.object({
-  name: z.string().min(2, 'Name is too short'),
-  email: z.email('Invalid email'),
-  message: z.string().min(5, 'Message is too short'),
-});
+export const Schema = {};
 
 export function BaseForm() {
   return (

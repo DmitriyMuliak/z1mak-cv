@@ -52,9 +52,11 @@
     "invalid_custom": "Невірне значення.",
     "custom": "Невірне значення.",
 
-    "file_too_large": "Файл завеликий. Максимум {max} MB",
-    "file_invalid_type": "Неприпустимий тип файлу",
-    "file_problem": "Проблема з файлом"
+    "c_required": "Це поле є обов'язковим.",
+    "c_min_length": "Кастомний мінімум: {{min}}.",
+    "file_too_large": "Файл завеликий. Максимум {max} MB.",
+    "file_invalid_type": "Неприпустимий тип файлу.",
+    "file_problem": "Проблема з файлом."
   },
   "fields": {
     "name": {

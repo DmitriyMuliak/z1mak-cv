@@ -6,6 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { z } from 'zod';
 import { cn } from '@/lib/utils';
 
+// TODO: Fix types -> move from zod to valibot
+
 interface FormClientProviderProps<T extends z.ZodType> {
   schema: T;
   defaultValues: z.infer<T>;
