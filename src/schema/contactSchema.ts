@@ -1,17 +1,21 @@
 import * as v from 'valibot';
-import type { ValidatorKeys } from '@/types/translations';
-const getErrorKey = (v: ValidatorKeys) => v;
+import { createMessageHandler } from '@/lib/validator/createMessageHandler';
+
+const _ExampleNameSchema = v.pipe(
+  v.string(),
+  v.minLength(5, createMessageHandler('specificNameKey')),
+);
 
 const NameSchema = v.pipe(
   v.string(),
-  v.check((value) => !!value, getErrorKey('c_required')),
+  v.check((value) => !!value, createMessageHandler('c_required')),
 );
 
 const EmailSchema = v.pipe(v.string(), v.email());
 
 const MessageSchema = v.pipe(
   v.string(),
-  v.check((value) => !!value, getErrorKey('c_required')),
+  v.check((value) => !!value, createMessageHandler('c_required')),
 );
 
 const FileSchema = v.object({

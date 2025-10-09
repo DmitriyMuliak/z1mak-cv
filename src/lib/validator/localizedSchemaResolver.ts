@@ -1,11 +1,8 @@
 import * as v from 'valibot';
 import { valibotResolver as baseValibotResolver } from '@hookform/resolvers/valibot';
-import type { TranslationFn, ValidatorKeys } from '@/types/translations';
+import type { TranslationFn } from '@/types/translations';
 import type { Resolver, FieldError } from 'react-hook-form';
-
-type TPlaceholder = Record<string, string | number | Date>;
-type CustomMessage<T extends string> = `${T}`; //  `c_${T}`;
-const CustomMessagePrefix = 'c_';
+import { resolveMessage } from './resolveMessage';
 
 /*
  * Function for map and change default messages from valibot
@@ -30,16 +27,9 @@ export function localizedValibotResolver<
         const fieldError = error as FieldError & {
           ref?: { issue?: Record<string, unknown> };
         };
-        const _code = (fieldError.type || 'custom') as ValidatorKeys;
         const message = fieldError.message || '';
-        const isCustomError = message.startsWith(CustomMessagePrefix);
-        const placeholders = fieldError.ref?.issue ?? {};
 
-        if (isCustomError) {
-          fieldError.message =
-            t(`${message}` as CustomMessage<ValidatorKeys>, placeholders as TPlaceholder) ||
-            fieldError.message;
-        }
+        fieldError.message = resolveMessage(message, t);
       }
     }
 

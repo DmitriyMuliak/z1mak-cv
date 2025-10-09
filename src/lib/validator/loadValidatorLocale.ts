@@ -1,12 +1,12 @@
 import * as v from 'valibot';
 
+const map: Record<string, string> = {
+  en: '@valibot/i18n/en',
+  uk: '@valibot/i18n/uk',
+};
+
 export async function loadValidatorLocale(locale: string) {
   try {
-    const map: Record<string, string> = {
-      en: '@valibot/i18n/en',
-      uk: '@valibot/i18n/uk',
-    };
-
     const path = map[locale] || map.en;
     await import(path);
 

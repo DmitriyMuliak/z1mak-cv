@@ -52,6 +52,7 @@
     "invalid_custom": "Invalid value.",
     "custom": "Invalid value.",
 
+    "specificNameKey": "Need to have min {expected} length",
     "c_required": "This field is required.",
     "c_min_length": "Custom min expected: {{min}}.",
     "file_too_large": "File is too large. Maximum {max} MB.",
