@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 
 export default function PluralTranslateExample({ count }: { count: number }) {
-  const t = useTranslations('messages');
+  const t = useTranslations('examples');
 
   // count — змінна з числом.
   // one {# товар} — для 1.

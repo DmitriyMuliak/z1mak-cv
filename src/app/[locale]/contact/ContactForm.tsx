@@ -13,6 +13,7 @@ import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolve
 
 export function ContactForm() {
   const t = useTranslations('fields');
+  const tc = useTranslations('common');
   const ts = useTranslations('validator');
   const form = useForm<ContactSchemaType>({
     resolver: localizedValibotResolver(ContactSchema, ts),
@@ -82,7 +83,7 @@ export function ContactForm() {
           files={fields}
         />
         <Button type="submit" className="!mt-0 w-full">
-          Send
+          {tc('formButtonSendTitle')}
         </Button>
       </form>
     </Form>

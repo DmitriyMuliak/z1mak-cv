@@ -14,9 +14,9 @@ import {
 import { XIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-const OneMb = 1048576;
-const MAX_SIZE = OneMb * 10;
-const MAX_SIZE_MB = (MAX_SIZE / 1024).toFixed();
+const OneMbInKb = 1048576;
+const MAX_SIZE = OneMbInKb * 10;
+const MAX_SIZE_MB = (MAX_SIZE / 1024 / 1024).toFixed();
 
 interface FileDropzoneFieldProps<T extends FieldValues> {
   control: Control<T>;
@@ -66,7 +66,12 @@ export function FileDropzoneField<T extends FieldValues>({
                 maxSize={MAX_SIZE}
                 maxFiles={1}
                 accept={{
-                  '': ['.jpg', '.jpeg', '.png', '.pdf', '.doc', '.docx'],
+                  'image/jpeg': ['.jpg', '.jpeg'],
+                  'application/pdf': ['.pdf'],
+                  'application/msword': ['.doc'],
+                  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [
+                    '.docx',
+                  ],
                 }}
                 onDropAccepted={(acceptedFiles) => {
                   const newFiles = acceptedFiles.map((acceptedFile) => {

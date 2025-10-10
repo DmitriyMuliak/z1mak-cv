@@ -59,7 +59,6 @@
     "file_invalid_type": "Invalid file type.",
     "file_problem": "There is a problem with the file."
   },
-
   "fields": {
     "name": {
       "label": "Name*",
@@ -78,5 +77,10 @@
       "mainAddFileTitle": "Drag 'n' drop file here, or click to select"
     }
   },
-  "pluralTranslationExample": "{count, plural, one {# product} other {# products}}"
+  "common": {
+    "formButtonSendTitle": "Send"
+  },
+  "examples": {
+    "pluralTranslationExample":"{count, plural, one {# product} other {# products}}"
+  }
 }
