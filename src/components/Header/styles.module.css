@@ -1,26 +1,56 @@
+/* @theme inline {
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+} */
+
 .header {
   position: fixed;
   z-index: 1000;
   display: flex;
   width: max-content;
   justify-content: center;
-  top: 60px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 0;
+  left: 0%;
+  width: 100%;
 }
 
 .nav {
   display: flex;
+  flex-direction: column;
+  width: 100%;
   padding: 0 20px;
   background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 200px;
   backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  transition: 1s all cubic-bezier(0.075, 0.82, 0.165, 1) 0.2s;
+  /* transition: 1s all cubic-bezier(0.075, 0.82, 0.165, 1) 0.2s; */
   box-shadow: 0px 0px 4px 1px rgba(0, 0, 0, 0.2);
+  
+  position: absolute;
+  left: 0;
+  top: 0;
+  transition: opacity 0.3s;
 }
 
-.nav a {
+.navClosed {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.navLink {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.navLink:hover .linkText{
+  background-position: -100% 0;
+}
+
+.linkText {
+  display: inline-block;
   position: relative;
   color: transparent;
   background: linear-gradient(to right, #ffffff, #ffffff, #86a8e7, #df8439);
@@ -33,14 +63,10 @@
   font-size: 15px;
   letter-spacing: 2px;
   text-transform: lowercase;
-  transition: 0.5s all;
+  transition: background-position 0.5s;
 }
 
-.nav a:hover {
-  background-position: -100% 0;
-}
-
-.active::after {
+.linkTextActive::after {
   content: '';
   position: absolute;
   width: 40%;
@@ -49,4 +75,81 @@
   height: 1px;
   background-color: white;
   transform: translateX(-50%);
+}
+
+.closeBtn {
+  max-width: fit-content;
+  align-self: center;
+  padding: 20px;
+  transition: color 0.3s;
+}
+
+.openBtn {
+  position: absolute;
+  padding: 20px;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+ }
+
+ .closeBtn,
+ .openBtn {
+  color: white;
+ }
+
+/* @media (pointer: coarse) {} */
+@media (hover: hover) and (pointer: fine) {
+  .closeBtn:hover,
+  .openBtn:hover {
+    transition: color 0.3s;
+  }
+  .closeBtn:hover,
+  .openBtn:hover {
+    color: #86a8e7;
+  }
+}
+
+
+@media (min-width: 1024px) {
+  .header {
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: initial;
+  }
+
+  .nav {
+    width: initial;
+    flex-direction: row;
+
+
+
+
+    border-radius: 200px;
+
+
+
+      position: initial;
+      left: initial;
+      top: initial;
+      transition: none;
+  }
+
+ .navClosed {
+  opacity: 1;
+  pointer-events: all;
+ }
+
+  .linkText {
+  width: max-content;
+
+
+
+  }
+
+
+  .closeBtn, .openBtn {
+    display: none;
+  }
+  
 }

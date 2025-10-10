@@ -21,17 +21,19 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <Select onValueChange={changeLanguage} defaultValue={locale}>
-      <SelectTrigger className="w-[120px] absolute top-[72px] right-0 cursor-pointer">
-        <SelectValue placeholder="Language" />
-      </SelectTrigger>
-      <SelectContent>
-        {routing.locales.map((l) => (
-          <SelectItem key={l} value={l}>
-            {l === 'en' ? 'English' : 'Українська'}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div className="absolute top-[20px] lg:top-[72px] right-0 text-white">
+      <Select onValueChange={changeLanguage} defaultValue={locale}>
+        <SelectTrigger className="w-[120px] cursor-pointer frosted-card">
+          <SelectValue placeholder="Language" />
+        </SelectTrigger>
+        <SelectContent className=" m-0 p-0">
+          {routing.locales.map((l) => (
+            <SelectItem key={l} value={l}>
+              {l === 'en' ? 'English' : 'Українська'}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }

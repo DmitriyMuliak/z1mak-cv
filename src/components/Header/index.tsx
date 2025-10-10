@@ -4,9 +4,12 @@ import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/navigation';
 import { paths } from '@/i18n/routing';
 import styles from './styles.module.css';
-import { useOptimistic, useEffect, startTransition } from 'react';
+import { useOptimistic, useEffect, startTransition, useState } from 'react';
+import { cn } from '@/lib/utils';
+import { Hamburger, SquareX } from 'lucide-react';
 
 export const Header = () => {
+  const [isClosed, setIsClosed] = useState(true);
   const realPathname = usePathname();
   const [optimisticPathname, setOptimisticPathname] = useOptimistic(realPathname);
   const t = useTranslations('header.menu');
@@ -25,13 +28,19 @@ export const Header = () => {
   }, [realPathname, setOptimisticPathname]);
 
   return (
-    <header className={styles.header}>
-      <nav className={styles.nav}>
+    <header className={cn(styles.header)}>
+      <button onClick={() => setIsClosed(false)} className={styles.openBtn}>
+        <Hamburger size={30} />
+      </button>
+      <nav className={cn(styles.nav, isClosed ? styles.navClosed : '')}>
+        <button onClick={() => setIsClosed(true)} className={styles.closeBtn}>
+          <SquareX size={30} />
+        </button>
         {links.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className={optimisticPathname === link.href ? styles.active : ''}
+            className={styles.navLink}
             onClick={() => {
               window.dispatchEvent(new CustomEvent('locationChangeCustom', { detail: link.href }));
               startTransition(() => {
@@ -39,7 +48,14 @@ export const Header = () => {
               });
             }}
           >
-            {link.label}
+            <span
+              className={cn(
+                styles.linkText,
+                optimisticPathname === link.href ? styles.linkTextActive : '',
+              )}
+            >
+              {link.label}
+            </span>
           </Link>
         ))}
       </nav>

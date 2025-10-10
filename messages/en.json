@@ -31,7 +31,10 @@
     "about": {
       "title": "Hey! I'm Dima",
       "description1": "A software engineer from Lviv, Ukraine",
-      "description2": "Curious to know more about me?\nLet’s explore together! :)"
+      "description2": "Curious to know more about me?\nLet’s go to the skills page 🙂"
+    },
+        "contact": {
+      "title": "Message me"
     }
   },
   "validator": {
