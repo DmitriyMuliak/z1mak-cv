@@ -1,16 +1,18 @@
-// 'use server';
-// import { ContactSchema } from '@/schema/contactSchema';
+'use server';
 
-// export async function sendContactServerAction(formData: FormData) {
-//   const raw = {
-//     name: formData.get('name'),
-//     email: formData.get('email'),
-//     message: formData.get('message'),
-//   };
+import * as v from 'valibot';
+import { ContactSchema } from '@/schema/contactSchema';
 
-//   const result = ContactSchema.safeParse(raw);
+export async function sendContactServerAction(formData: FormData) {
+  const raw = {
+    name: formData.get('name'),
+    email: formData.get('email'),
+    message: formData.get('message'),
+  };
 
-//   if (!result.success) {
-//     throw new Error(JSON.stringify(result.error.flatten().fieldErrors));
-//   }
-// }
+  const result = v.safeParse(ContactSchema, raw);
+
+  if (!result.success) {
+    throw new Error(JSON.stringify(result.issues));
+  }
+}
