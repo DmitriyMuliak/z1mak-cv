@@ -130,7 +130,7 @@ const setupFastMouseOpacityToggle = (
   eyelidRef: React.RefObject<SVGPathElement | null>,
   eyeRef: React.RefObject<SVGPathElement | null>,
   speedThreshold = 15,
-  restoreDelay = 400,
+  restoreDelay = 300,
 ) => {
   let lastX = 0;
   let lastY = 0;
@@ -151,7 +151,7 @@ const setupFastMouseOpacityToggle = (
     const distance = Math.sqrt(dx * dx + dy * dy);
     const speed = distance / dt; // px per ms
 
-    if (speed > speedThreshold && !isVisible) {
+    const blinkEyelid = () => {
       eyeElement.style.opacity = '0';
       eyeLidElement.style.opacity = '1';
       isVisible = true;
@@ -162,6 +162,20 @@ const setupFastMouseOpacityToggle = (
         eyeLidElement.style.opacity = '0';
         isVisible = false;
       }, restoreDelay);
+    };
+
+    const keepEyelidState = () => restoreTimeout && clearTimeout(restoreTimeout);
+
+    if (speed > speedThreshold && !isVisible) {
+      blinkEyelid();
+    }
+
+    if (speed > speedThreshold && isVisible) {
+      keepEyelidState();
+    }
+
+    if (speed < speedThreshold && isVisible) {
+      blinkEyelid();
     }
 
     lastX = ev.clientX;

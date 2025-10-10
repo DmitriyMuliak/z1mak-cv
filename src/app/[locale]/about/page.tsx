@@ -1,7 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { AnimatedPhoto } from '@/components/AnimatedPhoto';
 import { cn } from '@/lib/utils';
-// import ToggleTheme from '@/components/ToggleTheme';
 
 type PageProps = { params: { locale: string } };
 
@@ -22,7 +21,6 @@ export default async function AboutPage(props: PageProps) {
       </div>
       <div className={cn('md:w-1/2 h-[250px] sm:h-auto flex flex-col justify-center items-center')}>
         <AnimatedPhoto />
-        {/* <ToggleTheme />  */}
       </div>
     </div>
   );

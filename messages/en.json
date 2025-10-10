@@ -31,7 +31,59 @@
     "about": {
       "title": "Hey! I'm Dima",
       "description1": "A software engineer from Lviv, Ukraine",
-      "description2": "Curious to know more about me?\nLet’s explore together! :)"
+      "description2": "Curious to know more about me?\nLet’s go to the skills page 🙂"
+    },
+        "contact": {
+      "title": "Message me"
     }
+  },
+  "validator": {
+    "invalid_type": "Invalid type. Expected {{expected}}, received {{received}}.",
+    "too_small": "Value is too small. Minimum is {{min}}.",
+    "too_big": "Value is too big. Maximum is {{max}}.",
+    "invalid_string": "Invalid string format.",
+    "invalid_number": "Invalid number.",
+    "invalid_boolean": "Invalid boolean.",
+    "invalid_enum_value": "Invalid value. Expected one of {{expected}}.",
+    "invalid_literal": "Invalid literal.",
+    "invalid_date": "Invalid date format.",
+    "invalid_array": "Invalid array.",
+    "invalid_union": "Value does not match any of the allowed types.",
+    "invalid_intersection": "Value must satisfy all types.",
+    "invalid_instanceof": "Value is not an instance of {{expected}}.",
+    "invalid_function": "Invalid function.",
+    "invalid_custom": "Invalid value.",
+    "custom": "Invalid value.",
+
+    "specificNameKey": "Need to have min {expected} length",
+    "c_required": "This field is required.",
+    "c_min_length": "Custom min expected: {{min}}.",
+    "file_too_large": "File is too large. Maximum {max} MB.",
+    "file_invalid_type": "Invalid file type.",
+    "file_problem": "There is a problem with the file."
+  },
+  "fields": {
+    "name": {
+      "label": "Name*",
+      "placeholder": "Enter your name"
+    },
+    "email": {
+      "label": "Email*",
+      "placeholder": "Enter your email"
+    },
+    "message": {
+      "label": "Message*",
+      "placeholder": "Enter your message"
+    },
+    "file": {
+      "addedFileTitle": "Added File",
+      "mainAddFileTitle": "Drag 'n' drop file here, or click to select"
+    }
+  },
+  "common": {
+    "formButtonSendTitle": "Send"
+  },
+  "examples": {
+    "pluralTranslationExample":"{count, plural, one {# product} other {# products}}"
   }
 }

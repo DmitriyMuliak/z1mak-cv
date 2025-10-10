@@ -1,9 +1,34 @@
-import { z } from 'zod';
+import * as v from 'valibot';
+import { createMessageHandler } from '@/lib/validator/createMessageHandler';
 
-export const ContactSchema = z.object({
-  name: z.string().min(2, 'Name is too short'),
-  email: z.string().email('Invalid email'),
-  message: z.string().min(5, 'Message is too short'),
+const _ExampleNameSchema = v.pipe(
+  v.string(),
+  v.minLength(5, createMessageHandler('specificNameKey')),
+);
+
+const NameSchema = v.pipe(
+  v.string(),
+  v.check((value) => !!value, createMessageHandler('c_required')),
+);
+
+const EmailSchema = v.pipe(v.string(), v.email());
+
+const MessageSchema = v.pipe(
+  v.string(),
+  v.check((value) => !!value, createMessageHandler('c_required')),
+);
+
+const FileSchema = v.object({
+  file: v.any(),
 });
 
-export type ContactSchemaType = z.infer<typeof ContactSchema>;
+const BaseContactSchema = v.object({
+  name: NameSchema,
+  email: EmailSchema,
+  message: MessageSchema,
+  files: v.optional(v.array(FileSchema)),
+});
+
+export const ContactSchema = v.required(BaseContactSchema, ['name', 'email']);
+
+export type ContactSchemaType = v.InferOutput<typeof ContactSchema>;

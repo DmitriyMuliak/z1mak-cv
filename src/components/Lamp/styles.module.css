@@ -1,17 +1,17 @@
 .container {
   display: flex;
-  gap: 20px;
+  gap: 5px;
   align-items: center;
   flex-direction: column;
   position: absolute;
-  top: 50px;
+  top: -11px;
   left: 0;
 }
 
 .lamp {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 70px;
+  height: 70px;
   display: grid;
   place-items: center;
 }
@@ -55,11 +55,29 @@
   filter: drop-shadow(0 0 8px rgba(255, 200, 60, 0.9));
 }
 
-.lamp[data-on='true'] {
-  transform: translateY(-2px);
-}
-
 .lamp[data-on='true']::after {
   opacity: 1;
   transform: scale(1);
+}
+
+@media (min-width: 640px) {
+  .container {
+    top: -13px;
+    gap: 10px;
+  }
+  .lamp{
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    top: -19px;
+    gap: 20px;
+  }
+  .lamp{
+    width: 120px;
+    height: 120px;
+  }
 }

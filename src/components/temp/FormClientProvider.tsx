@@ -2,28 +2,34 @@
 
 import { ReactNode } from 'react';
 import { useForm, FormProvider, FieldValues, Resolver } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import type { z } from 'zod';
 import { cn } from '@/lib/utils';
 
-interface FormClientProviderProps<T extends z.ZodType> {
+// TODO: Fix types -> move from zod to valibot
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ZodType = any;
+
+interface FormClientProviderProps<T extends ZodType> {
   schema: T;
-  defaultValues: z.infer<T>;
+  defaultValues: ZodType;
   action: (formData: FormData) => Promise<{ success: boolean; errors?: Record<string, string[]> }>;
   children: ReactNode;
 }
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function FormClientProvider<T extends z.ZodType<any, any, any>>({
+const valibotResolver = (_args: any) => {};
+
+export function FormClientProvider<T extends ZodType>({
   schema,
   defaultValues,
   action,
   children,
 }: FormClientProviderProps<T>) {
-  type FormValuesType = z.infer<T>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  type FormValuesType = any;
 
-  type FormValues = z.infer<T>;
-  const resolver = zodResolver(schema) as unknown as Resolver<FormValues>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  type FormValues = any;
+  const resolver = valibotResolver(schema) as unknown as Resolver<FormValues>;
 
   const form = useForm<FormValuesType & FieldValues>({
     resolver,

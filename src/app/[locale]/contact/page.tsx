@@ -1,10 +1,18 @@
-import { ContactForm } from '@/components/Forms/ContactForm';
+import { ContactForm } from './ContactForm';
 
-export default function ContactPage() {
+import { getTranslations } from 'next-intl/server';
+type PageProps = { params: { locale: string } };
+
+export default async function ContactPage(props: PageProps) {
+  const { locale } = await props.params;
+  const t = await getTranslations({ locale, namespace: 'pages.contact' });
+
   return (
-    <div className="p-8">
-      <h2 className="text-3xl font-semibold mb-4">Contact Me</h2>
-      <ContactForm />
+    <div className="md:p-8">
+      <h2 className="text-3xl font-semibold mb-4">{t('title')}</h2>
+      <div className="flex justify-center items-center">
+        <ContactForm />
+      </div>
     </div>
   );
 }

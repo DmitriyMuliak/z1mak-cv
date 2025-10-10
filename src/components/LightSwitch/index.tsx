@@ -10,8 +10,14 @@ export const LightSwitch: React.FC<Props> = ({ onClick, isOn }) => {
   return (
     <div className={styles.container}>
       <label className={styles.btn}>
-        <input type="checkbox" checked={isOn} onChange={handleChange} />
-        <span></span>
+        <input
+          className="sr-only"
+          type="checkbox"
+          checked={isOn}
+          onChange={handleChange}
+          aria-label="Toggle lights"
+        />
+        <span aria-hidden="true"></span>
       </label>
     </div>
   );

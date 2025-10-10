@@ -50,7 +50,18 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+@theme {
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  /* You can add custom breakpoints here */
+  --breakpoint-tablet: 900px;
+}
+
 :root {
+  --color-info-background: rgba(255, 255, 255, 0.05); /*bg-info-background*/
   --root-bg-base: radial-gradient(
     circle,
     rgba(42, 123, 155, 1) 0%,
@@ -134,11 +145,16 @@
     @apply bg-background text-foreground;
   }
   button:not([disabled]),
-  [role="button"]:not([disabled]) {
+  [role='button']:not([disabled]) {
     cursor: pointer;
   }
 }
 
+@layer utilities {
+  .frosted-card {
+    @apply backdrop-blur-sm bg-white/5 border border-white/6 rounded-[20px] shadow-[0_0_4px_1px_rgba(0,0,0,0.2)];
+  }
+}
 
 /* Global background styles because css modules had a "flash/blink effect" issue */
 .global-background-container {
@@ -171,6 +187,7 @@
     oklab(69.884% 0.12232 0.0944) 100%
   );
 }
+
 .dark .global-background-item-1 {
   background: radial-gradient(circle, #333b66 0%, #63608b 50%, lab(9 -2.39 -16.5) 100%);
 }
@@ -194,4 +211,24 @@
 
 .dark .global-background-item-3 {
   background: radial-gradient(circle, rgb(15 114 94 / 61%) 0%, #0b303d 50%, #475559 100%);
+}
+
+
+/* 
+Syntax in Tailwind v4 for @custom-variant different between PostCSS-plugins with old style.
+@custom-variant motion-reduce (@media (prefers-reduced-motion: reduce) { &:is(&) }); 
+*/
+@custom-variant motion-reduce (&:is(&)) (prefers-reduced-motion: reduce);
+.motion-reduce-style {
+  @apply transition-all duration-500 motion-reduce:transition-none;
+}
+
+@custom-variant supports-backdrop (&:is(&)) (supports(backdrop-filter: blur(2px)));
+.supports-backdrop-style {
+  @apply bg-gray-800/50 supports-backdrop:bg-gray-800/30;
+}
+
+@custom-variant rtl (&:is([dir="rtl"] &));
+.text {
+  @apply text-left rtl:text-right;
 }

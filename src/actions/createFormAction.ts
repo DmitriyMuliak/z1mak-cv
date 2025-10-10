@@ -1,45 +1,56 @@
-import { z } from 'zod';
+import { extractIssueKey } from '@/lib/validator/extractIssueKey';
+import { formDataToObject } from '@/utils/formDataToObject';
+import * as v from 'valibot';
 
 type ResultReturnError = Record<string, string[]>;
 type ResultReturn = { success: boolean; errors?: ResultReturnError };
 type OnSubmitReturn = { errors?: ResultReturnError };
-type OnSubmit<T> = (
-  data: z.ZodSafeParseResult<z.core.output<T>>,
+
+type OnSubmit<TEntries extends v.ObjectEntries> = (
+  data: v.InferOutput<v.ObjectSchema<TEntries, undefined>>,
   formData?: FormData,
 ) => Promise<OnSubmitReturn | void>;
+
 type ActionConfig = { isAutoSuccessReturn: boolean };
+const defaultConfig: ActionConfig = { isAutoSuccessReturn: true };
 
-const defaultConfig = { isAutoSuccessReturn: true };
-
-async function serverFormAction<T extends z.ZodSchema>(
-  schema: T,
-  onSubmit: OnSubmit<T>,
-  _config: ActionConfig,
+async function serverFormAction<TEntries extends v.ObjectEntries>(
+  schema: v.ObjectSchema<TEntries, undefined>,
+  onSubmit: OnSubmit<TEntries>,
   formData: FormData,
+  _config: ActionConfig,
 ): Promise<ResultReturn> {
-  const raw = Object.fromEntries(formData.entries());
-  const parsed = schema.safeParse(raw);
+  const raw = formDataToObject(formData);
 
-  if (!parsed.success) {
-    // TODO: use z.treeifyError instead of parsed.error.flatten()
-    return {
-      success: false,
-      errors: parsed.error.flatten().fieldErrors as Record<string, string[]>,
-    };
+  try {
+    const result = v.safeParse(schema, raw);
+
+    if (!result.success) {
+      const errors: ResultReturnError = {};
+      for (const issue of result.issues) {
+        const key = extractIssueKey(issue);
+        if (!errors[key]) errors[key] = [];
+        errors[key].push(issue.message);
+      }
+      return { success: false, errors };
+    }
+
+    const submitResult = await onSubmit(result.output, formData);
+    if (submitResult?.errors) return { success: false, errors: submitResult.errors };
+
+    return { success: true };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    return { success: false, errors: { _form: [error.message] } };
   }
-
-  console.log('✅ Valid data:', parsed.data);
-  const result = await onSubmit(parsed, formData);
-
-  if (result && result.errors) return { success: false, errors: result.errors };
-
-  return { success: true };
 }
 
-export function createFormAction<T extends z.ZodSchema>(
-  schema: T,
-  onSubmit: OnSubmit<T>,
+// Fabric
+export function createFormAction<TEntries extends v.ObjectEntries>(
+  schema: v.ObjectSchema<TEntries, undefined>,
+  onSubmit: OnSubmit<TEntries>,
   config?: ActionConfig,
 ) {
-  return serverFormAction.bind(null, schema, onSubmit, config || defaultConfig);
+  return (formData: FormData) =>
+    serverFormAction(schema, onSubmit, formData, config || defaultConfig);
 }
