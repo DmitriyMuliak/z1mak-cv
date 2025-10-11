@@ -62,7 +62,7 @@ export default async function LocaleLayout({ children, params }: Props) {
                 <Lamp />
                 <LanguageSwitcher />
                 <Header />
-                <div className={cn('w-full max-w-[1200px] mx-auto px-4')}>
+                <div className={cn('w-full max-w-[1200px] mx-auto md:px-4')}>
                   <AnimatePresence mode="wait">{children}</AnimatePresence>
                 </div>
               </div>

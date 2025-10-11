@@ -27,6 +27,10 @@ export const Header = () => {
     });
   }, [realPathname, setOptimisticPathname]);
 
+  useEffect(() => {
+    setIsClosed(true);
+  }, [optimisticPathname]);
+
   return (
     <header className={cn(styles.header)}>
       <button onClick={() => setIsClosed(false)} className={styles.openBtn}>
