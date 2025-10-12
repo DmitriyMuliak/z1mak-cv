@@ -1,6 +1,8 @@
 export const ruleDivider = ':';
-export const CustomKeyPrefix = `custom_key${ruleDivider}`;
-export const OptionsPrefix = `custom_options${ruleDivider}`;
+export const CustomKeyPrefixName = `custom_key`;
+export const OptionsPrefixName = `custom_options`;
+export const CustomKeyPrefix = `${CustomKeyPrefixName}${ruleDivider}`;
+export const OptionsPrefix = `${OptionsPrefixName}${ruleDivider}`;
 export const rulesDivider = '|';
 export const valuesDivider = ';';
 export const valueDivider = '#';

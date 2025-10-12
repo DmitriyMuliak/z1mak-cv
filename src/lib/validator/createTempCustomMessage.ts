@@ -7,7 +7,7 @@ import {
   valuesDivider,
 } from './consts';
 
-const createCustomKey = (key: ValidatorKeys) => CustomKeyPrefix + key;
+const createCustomKey = (key: ValidatorKeys) => `${CustomKeyPrefix}${key}` as const;
 
 // key - string which starts with "custom_key:" => custom_key:any_key"
 // placeholders - object with keys like "max", "min", "customKey" and values

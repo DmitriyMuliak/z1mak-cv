@@ -12,11 +12,11 @@ import { useTranslations } from 'next-intl';
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
 
 export function ContactForm() {
-  const t = useTranslations('fields');
+  const tf = useTranslations('fields');
   const tc = useTranslations('common');
-  const ts = useTranslations('validator');
+  const tv = useTranslations('validator');
   const form = useForm<ContactSchemaType>({
-    resolver: localizedValibotResolver(ContactSchema, ts),
+    resolver: localizedValibotResolver(ContactSchema, tv),
     mode: 'onBlur',
     defaultValues: { name: '', email: '', message: '', files: [] },
   });
@@ -58,21 +58,21 @@ export function ContactForm() {
         <TextField
           control={form.control}
           name="name"
-          label={t('name.label')}
-          placeholder={t('name.placeholder')}
+          label={tf('name.label')}
+          placeholder={tf('name.placeholder')}
         />
         <TextField
           control={form.control}
           name="email"
-          label={t('email.label')}
-          placeholder={t('email.placeholder')}
+          label={tf('email.label')}
+          placeholder={tf('email.placeholder')}
           type="email"
         />
         <TextareaField
           control={form.control}
           name="message"
-          label={t('message.label')}
-          placeholder={t('message.placeholder')}
+          label={tf('message.label')}
+          placeholder={tf('message.placeholder')}
         />
         <FileDropzoneField
           control={form.control}
@@ -82,7 +82,7 @@ export function ContactForm() {
           clearErrors={form.clearErrors}
           files={fields}
         />
-        <Button type="submit" className="!mt-0 w-full">
+        <Button disabled={form.formState.isSubmitting} type="submit" className="!mt-0 w-full">
           {tc('formButtonSendTitle')}
         </Button>
       </form>

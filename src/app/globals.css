@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+/* Default theme vars - https://tailwindcss.com/docs/theme#default-theme-variable-reference */
+
 /* 
 * Fix for Tailwind CSS v4 - Unknown at rule @plugin, @custom-variant, @theme, @utility, @variant, @apply, @source, @reference in global.css
 * TLDR: add plugin Tailwind CSS Intellisense + files.associations in settings.json to your IDE
@@ -56,6 +58,7 @@
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1536px;
+  --breakpoint-3xl: 120rem;
   /* You can add custom breakpoints here */
   --breakpoint-tablet: 900px;
 }

@@ -1,5 +1,5 @@
 import { ValidatorKeys } from '@/types/translations';
-import { ruleDivider } from './consts';
+import { ruleDivider, CustomKeyPrefixName } from './consts';
 
 export const parseCustomKey = (tempKey: string) =>
-  tempKey.split(ruleDivider) as [string, ValidatorKeys];
+  tempKey.split(ruleDivider) as [typeof CustomKeyPrefixName, ValidatorKeys];

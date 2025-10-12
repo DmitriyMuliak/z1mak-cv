@@ -6,6 +6,10 @@ const _ExampleNameSchema = v.pipe(
   v.minLength(5, createMessageHandler('specificNameKey')),
 );
 
+const _ExampleOfExtendSchema = v.object({
+  // ...BaseContactSchema.entries,
+});
+
 const NameSchema = v.pipe(
   v.string(),
   v.check((value) => !!value, createMessageHandler('c_required')),

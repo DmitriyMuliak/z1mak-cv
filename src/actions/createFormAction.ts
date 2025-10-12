@@ -1,5 +1,7 @@
 import { extractIssueKey } from '@/lib/validator/extractIssueKey';
+import { resolveMessage } from '@/lib/validator/resolveMessage';
 import { formDataToObject } from '@/utils/formDataToObject';
+import { getTranslations } from 'next-intl/server';
 import * as v from 'valibot';
 
 type ResultReturnError = Record<string, string[]>;
@@ -20,6 +22,7 @@ async function serverFormAction<TEntries extends v.ObjectEntries>(
   formData: FormData,
   _config: ActionConfig,
 ): Promise<ResultReturn> {
+  const t = await getTranslations('validator');
   const raw = formDataToObject(formData);
 
   try {
@@ -30,8 +33,9 @@ async function serverFormAction<TEntries extends v.ObjectEntries>(
       for (const issue of result.issues) {
         const key = extractIssueKey(issue);
         if (!errors[key]) errors[key] = [];
-        errors[key].push(issue.message);
+        errors[key].push(resolveMessage(issue.message, t));
       }
+
       return { success: false, errors };
     }
 
