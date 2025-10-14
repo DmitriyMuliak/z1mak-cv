@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { BackgroundContainer } from '@/components/BackgroundContainer';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Bitter } from 'next/font/google';
 import { AnimatePresence } from 'framer-motion';
 import { Header } from '@/components/Header';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -17,12 +17,18 @@ import { Configurator } from '@/components/Configurator';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
-  subsets: ['latin'],
+  subsets: ['latin', 'cyrillic'],
 });
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+});
+
+const bitter = Bitter({
+  variable: '--font-bitter',
+  subsets: ['latin', 'cyrillic'],
+  weight: ['400', '500', '600', '700'],
 });
 
 export const metadata: Metadata = {
@@ -53,7 +59,9 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <html lang={locale} dir="ltr" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${bitter.variable} antialiased`}
+      >
         <NextIntlClientProvider>
           <ThemeProvider attribute="class" defaultTheme="light">
             <div className={styles.mainContainer}>

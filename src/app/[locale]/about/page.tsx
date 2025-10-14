@@ -11,12 +11,21 @@ export default async function AboutPage(props: PageProps) {
   return (
     <div className={cn('flex flex-col sm:flex-row gap-4')}>
       <div className={cn('sm:w-1/2 flex flex-col justify-center ')}>
-        <h1 className={cn('text-xl mb-4 md:text-4xl lg:text-6xl')}>{t('title')}</h1>
+        <h1 className={cn('text-xl mb-4 md:text-4xl lg:text-7xl font-heading whitespace-pre-line')}>
+          {t.rich('title', {
+            name: (chunks) => (
+              <span className={cn('font-bold text-[oklch(0.35_0_0)] dark:text-[oklch(0.75_0_0)]')}>
+                {chunks}
+              </span>
+            ),
+          })}
+        </h1>
         <div>
-          <h2 className={cn('text-base mb-4 md:text-lg lg:text-2xl')}>{t('description1')}</h2>
+          <h2 className={cn('text-base mb-4 md:text-lg lg:text-2xl font-heading')}>
+            {t('description1')}
+          </h2>
           <h3
-            style={{ whiteSpace: 'pre-line' }}
-            className={cn('text-base mb-4 md:text-lg lg:text-2xl')}
+            className={cn('text-base mb-4 md:text-lg lg:text-2xl font-heading whitespace-pre-line')}
           >
             {t('description2')}
           </h3>
