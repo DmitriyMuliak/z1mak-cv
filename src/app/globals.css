@@ -217,7 +217,6 @@
   background: radial-gradient(circle, rgb(15 114 94 / 61%) 0%, #0b303d 50%, #475559 100%);
 }
 
-
 /* 
 Syntax in Tailwind v4 for @custom-variant different between PostCSS-plugins with old style.
 @custom-variant motion-reduce (@media (prefers-reduced-motion: reduce) { &:is(&) }); 

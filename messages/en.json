@@ -33,7 +33,7 @@
       "description1": "A software engineer from Lviv, Ukraine",
       "description2": "Curious to know more about me?\nLet’s go to the skills page 🙂"
     },
-        "contact": {
+    "contact": {
       "title": "Message me"
     }
   },
@@ -84,6 +84,6 @@
     "formButtonSendTitle": "Send"
   },
   "examples": {
-    "pluralTranslationExample":"{count, plural, one {# product} other {# products}}"
+    "pluralTranslationExample": "{count, plural, one {# product} other {# products}}"
   }
 }
