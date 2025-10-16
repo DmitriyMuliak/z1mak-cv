@@ -1,11 +1,16 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { menuPaths } from '@/i18n/routing';
+import { pathsWithCustomBackground } from '@/i18n/routing';
 
 let currentPathName = '';
-type MenuPaths = keyof typeof menuPaths;
-const paths = Object.values(menuPaths) as Array<MenuPaths>;
+const defaultPath = 'defaultPath' as const;
+type PathsWithBackground = keyof typeof pathsWithCustomBackground | typeof defaultPath;
+
+const paths = [
+  ...Object.values(pathsWithCustomBackground),
+  defaultPath,
+] as Array<PathsWithBackground>;
 
 function getSnapshot(): string {
   return currentPathName || (window.location.pathname.split('/')[2] ?? '');
@@ -33,7 +38,9 @@ function subscribe(onStoreChange: () => void) {
 
 export const BackgroundContainer = () => {
   const current = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const activePath = (paths.includes(current as MenuPaths) ? current : paths[0]) as MenuPaths;
+  const activePath = (
+    paths.includes(current as PathsWithBackground) ? current : defaultPath
+  ) as PathsWithBackground;
 
   return (
     <div className="global-background-container" aria-hidden>

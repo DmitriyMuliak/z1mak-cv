@@ -10,9 +10,12 @@ export const paths = {
   skills: '/skills',
   contact: '/contact',
   cvChecker: '/cv-checker',
+  login: '/login',
+  privacyPolicy: '/privacy-policy',
+  termsOfService: '/terms-of-service',
 };
 
-export const menuPaths = {
+export const pathsWithCustomBackground = {
   about: 'about',
   skills: 'skills',
   contact: 'contact',
