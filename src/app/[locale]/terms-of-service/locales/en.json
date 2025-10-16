@@ -1,13 +1,13 @@
 {
   "TermsOfService": {
     "title": "Terms of Service",
-    "section1": "1. Purpose of the Service\nThis service is provided for demonstration and educational purposes only. It is not intended for production use or commercial activity.",
-    "section2": "2. Availability and Disclaimer\nThe service is provided “as is” without warranties of any kind, whether express or implied, including but not limited to fitness for a particular purpose, reliability, or availability. The service may be suspended, modified, or discontinued at any time without prior notice.",
-    "section3Intro": "3. Acceptable Use\nBy using this service, you agree not to:",
+    "section1": "1. Purpose of the Service.\nThis service is provided for demonstration and educational purposes only. It is not intended for production use or commercial activity.",
+    "section2": "2. Availability and Disclaimer.\nThe service is provided “as is” without warranties of any kind, whether express or implied, including but not limited to fitness for a particular purpose, reliability, or availability. The service may be suspended, modified, or discontinued at any time without prior notice.",
+    "section3Intro": "3. Acceptable Use.\nBy using this service, you agree not to:",
     "section3Item1": "Use it in violation of any applicable law.",
     "section3Item2": "Attempt to overload, disrupt, or attack the service.",
     "section3Item3": "Use automated scripts or bots to send excessive requests.",
-    "section4": "4. Limitation of Liability\nThe creator of this project shall not be held liable for any damages, losses, or issues arising from the use or inability to use this service.",
-    "section5": "5. Third-Party Services\nSome features rely on external services (e.g., Google OAuth for authentication and an AI provider for text analysis). Their functionality and availability are outside the control of this project."
+    "section4": "4. Limitation of Liability.\nThe creator of this project shall not be held liable for any damages, losses, or issues arising from the use or inability to use this service.",
+    "section5": "5. Third-Party Services.\nSome features rely on external services (e.g., Google OAuth for authentication and an AI provider for text analysis). Their functionality and availability are outside the control of this project."
   }
 }

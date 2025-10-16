@@ -9,18 +9,22 @@ import {
   FieldSeparator,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Link } from '@/navigation';
-import { paths } from '@/i18n/routing';
+import { Link } from '@/components/Link';
+import { paths } from '@/consts/routes';
+import { useTranslations } from 'next-intl';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
+  const t = useTranslations('pages.login');
+  const tf = useTranslations('fields');
+
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card className="bg-transparent shadow-none border-0">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
+          <CardTitle className="text-xl">{t('title')}</CardTitle>
           <CardDescription>
             {/* Login with your Apple or Google account */}
-            Login with your Google account
+            {t('oAuthTitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -43,29 +47,30 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                       fill="currentColor"
                     />
                   </svg>
-                  Login with Google
+                  {t('googleBtnTitle')}
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card *:data-[slot=field-separator-content]:rounded-xl">
-                Or continue with
+                {t('otherAuthWayTitle')}
               </FieldSeparator>
               <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <FieldLabel htmlFor="email">{tf('email.label')}</FieldLabel>
                 <Input id="email" type="email" placeholder="somename@example.com" required />
               </Field>
               <Field>
                 <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <FieldLabel htmlFor="password">{tf('password.label')}</FieldLabel>
                   <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
-                    Forgot your password?
+                    {t('forgotPasswordTitle')}
                   </a>
                 </div>
                 <Input id="password" type="password" required />
               </Field>
               <Field>
-                <Button type="button">Login</Button>
+                <Button type="button">{t('loginTitle')}</Button>
                 <FieldDescription className="text-center">
-                  Don&apos;t have an account? <a href="#">Sign up</a>
+                  {t('dontHaveAccountTitle')}
+                  <a href="#">{t('signUpTitle')}</a>
                 </FieldDescription>
               </Field>
             </FieldGroup>
@@ -73,9 +78,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our{' '}
-        <Link href={paths.termsOfService}>Terms of Service</Link> and{' '}
-        <Link href={paths.privacyPolicy}>Privacy Policy</Link>.
+        {t('termsAndPrivacyTitle')}{' '}
+        <Link href={paths.termsOfService}>{t('termsOfServiceTitle')}</Link>{' '}
+        {t('termsAndPrivacySeparatorTitle')}{' '}
+        <Link href={paths.privacyPolicy}>{t('privacyPolicyTitle')}</Link>.
       </FieldDescription>
     </div>
   );

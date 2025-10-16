@@ -35,6 +35,20 @@
     },
     "contact": {
       "title": "Message me"
+    },
+    "login": {
+      "title": "Welcome back",
+      "oAuthTitle": "Login with your Google account",
+      "googleBtnTitle": "Login with Google",
+      "otherAuthWayTitle": "Or continue with",
+      "forgotPasswordTitle": "Forgot your password?",
+      "dontHaveAccountTitle": "Don't have an account?",
+      "signUpTitle": "Sign up",
+      "loginTitle": "Login",
+      "termsAndPrivacyTitle": "By clicking continue, you agree to our",
+      "termsAndPrivacySeparatorTitle": "and",
+      "termsOfServiceTitle": "Terms of Service",
+      "privacyPolicyTitle": "Privacy Policy"
     }
   },
   "validator": {
@@ -70,6 +84,10 @@
     "email": {
       "label": "Email*",
       "placeholder": "Enter your email"
+    },
+    "password": {
+      "label": "Password*",
+      "placeholder": "Enter your password"
     },
     "message": {
       "label": "Message*",

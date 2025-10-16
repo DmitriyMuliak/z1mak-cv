@@ -1,19 +1,15 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { pathsWithCustomBackground } from '@/i18n/routing';
-
+import { defaultPath, paths, PathsWithBackground } from './consts';
 let currentPathName = '';
-const defaultPath = 'defaultPath' as const;
-type PathsWithBackground = keyof typeof pathsWithCustomBackground | typeof defaultPath;
 
-const paths = [
-  ...Object.values(pathsWithCustomBackground),
-  defaultPath,
-] as Array<PathsWithBackground>;
+function getPathNameWithoutLocale(location: typeof window.location) {
+  return location.pathname.split('/')[2] ?? '';
+}
 
 function getSnapshot(): string {
-  return currentPathName || (window.location.pathname.split('/')[2] ?? '');
+  return currentPathName || getPathNameWithoutLocale(window.location);
 }
 
 function getServerSnapshot(): string {
@@ -27,12 +23,16 @@ function subscribe(onStoreChange: () => void) {
     currentPathName = (event as LocationChangeCustomType).detail.split('/')[1] ?? '';
     onStoreChange();
   };
+  const popStateHandler = (event: Event) => {
+    currentPathName = getPathNameWithoutLocale((event.currentTarget as Window).location);
+    onStoreChange();
+  };
   window.addEventListener('locationChangeCustom', locationChangeHandler);
-  window.addEventListener('popstate', onStoreChange);
+  window.addEventListener('popstate', popStateHandler);
 
   return () => {
     window.removeEventListener('locationChangeCustom', locationChangeHandler);
-    window.removeEventListener('popstate', onStoreChange);
+    window.removeEventListener('popstate', popStateHandler);
   };
 }
 
@@ -49,7 +49,6 @@ export const BackgroundContainer = () => {
         return (
           <div
             key={path}
-            // className={cn(styles.item, `${styles.item}-${index}`, isActive && styles.active)}
             className={`global-background-item global-background-item-${index} ${isActive ? 'global-background-item-active' : ''} `}
           />
         );

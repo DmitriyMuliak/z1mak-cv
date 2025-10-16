@@ -19,7 +19,8 @@
     "ui": "@/components/ui",
     "lib": "@/lib",
     "hooks": "@/hooks",
-    "navigation": "@/i18n/navigation"
+    "navigation": "@/i18n/navigation",
+    "consts": "@/consts"
   },
   "registries": {}
 }

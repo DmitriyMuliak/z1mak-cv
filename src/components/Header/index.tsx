@@ -1,12 +1,14 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Link, usePathname } from '@/navigation';
-import { paths } from '@/i18n/routing';
+import { usePathname } from '@/navigation';
+
 import styles from './styles.module.css';
 import { useOptimistic, useEffect, startTransition, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Hamburger, SquareX } from 'lucide-react';
+import { paths } from '@/consts/routes';
+import { Link } from '@/components/Link';
 
 export const Header = () => {
   const [isClosed, setIsClosed] = useState(true);
@@ -15,7 +17,7 @@ export const Header = () => {
   const t = useTranslations('header.menu');
 
   const links = [
-    { href: paths.about, label: t('aboutTitle') },
+    { href: paths.home, label: t('aboutTitle') },
     { href: paths.skills, label: t('skillsTitle') },
     { href: paths.contact, label: t('contactTitle') },
     { href: paths.cvChecker, label: t('cvCheckerTitle') },
@@ -46,7 +48,6 @@ export const Header = () => {
             href={link.href}
             className={styles.navLink}
             onClick={() => {
-              window.dispatchEvent(new CustomEvent('locationChangeCustom', { detail: link.href }));
               startTransition(() => {
                 setOptimisticPathname(link.href);
               });

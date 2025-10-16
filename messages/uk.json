@@ -35,6 +35,20 @@
     },
     "contact": {
       "title": "Напишіть мені"
+    },
+    "login": {
+      "title": "З поверненням",
+      "oAuthTitle": "Увійдіть за допомогою облікового запису Google",
+      "googleBtnTitle": "Увійти через Google",
+      "otherAuthWayTitle": "Або продовжіть за допомогою",
+      "forgotPasswordTitle": "Забули пароль?",
+      "dontHaveAccountTitle": "Немає облікового запису?",
+      "signUpTitle": "Зареєструватися",
+      "loginTitle": "Увійти",
+      "termsAndPrivacyTitle": "Натискаючи «Продовжити», ви погоджуєтеся з нашими",
+      "termsAndPrivacySeparatorTitle": "та",
+      "termsOfServiceTitle": "Умовами використання",
+      "privacyPolicyTitle": "Політикою конфіденційності"
     }
   },
   "validator": {
@@ -74,6 +88,10 @@
     "message": {
       "label": "Повідомлення*",
       "placeholder": "Введіть повідомлення"
+    },
+    "password": {
+      "label": "Пароль*",
+      "placeholder": "Введіть ваш пароль"
     },
     "file": {
       "addedFileTitle": "Файл доданий",
