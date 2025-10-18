@@ -49,7 +49,7 @@ export const BackgroundContainer = () => {
         return (
           <div
             key={path}
-            className={`global-background-item global-background-item-${index} ${isActive ? 'global-background-item-active' : ''} `}
+            className={`global-background-item global-background-item-${index} ${isActive ? 'global-background-item-active' : ''}`}
           />
         );
       })}

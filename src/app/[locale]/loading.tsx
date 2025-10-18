@@ -1,7 +1,9 @@
-// type Props = {
-//   params: Promise<{ locale: string }>;
-// };
+import { TwoLineCircle } from '@/components/Loaders/TwoLineCircle';
 
 export default async function Loader() {
-  return <div>loading ... (Global loader)</div>;
+  return (
+    <div className="flex items-center justify-center w-full">
+      <TwoLineCircle />
+    </div>
+  );
 }

@@ -1,5 +1,6 @@
 import * as v from 'valibot';
 import { createMessageHandler } from '@/lib/validator/createMessageHandler';
+// import { allowedContactFilesMimeTypes } from './consts';
 
 const _ExampleNameSchema = v.pipe(
   v.string(),
@@ -23,14 +24,32 @@ const MessageSchema = v.pipe(
 );
 
 const FileSchema = v.object({
-  file: v.any(),
+  name: v.string(),
+  type: v.string(), // mimetype
+  size: v.number(),
 });
+
+const FilesSchema = v.optional(
+  v.array(
+    v.pipe(
+      FileSchema,
+      // v.check(
+      //   (file) => allowedContactFilesMimeTypes.includes(file.type),
+      //   (input) => `Invalid file type: ${(input as any)?.type || 'unknown'}`
+      // ),
+      // v.check(
+      //   (file) => file.size <= 5 * 1024 * 1024, // до 5MB, якщо треба
+      //   (input) => `File too large: ${(input as any)?.name || 'unknown'}`
+      // )
+    ),
+  ),
+);
 
 const BaseContactSchema = v.object({
   name: NameSchema,
   email: EmailSchema,
   message: MessageSchema,
-  files: v.optional(v.array(FileSchema)),
+  files: FilesSchema,
 });
 
 export const ContactSchema = v.required(BaseContactSchema, ['name', 'email']);

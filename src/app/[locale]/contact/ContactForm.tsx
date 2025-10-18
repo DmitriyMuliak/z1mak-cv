@@ -30,9 +30,12 @@ export function ContactForm() {
     Object.entries(rest).forEach(([key, value]) => formData.append(key, value as string));
 
     files?.forEach((item) => {
-      if (item?.file instanceof File) {
-        formData.append('files', item.file);
+      if (item instanceof File) {
+        formData.append('files', item);
       }
+      // if (item?.file instanceof File) {
+      //   formData.append('files', item.file);
+      // }
     });
 
     // Files can be added to array from FormData on the server or parser
