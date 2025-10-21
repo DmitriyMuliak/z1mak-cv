@@ -18,21 +18,41 @@ export function localizedValibotResolver<
   return async (values, context, options) => {
     const result = await baseResolver(values, context, options);
 
-    if (result.errors) {
-      for (const key of Object.keys(result.errors)) {
-        const error = result.errors[key];
+    if (!result.errors) {
+      return result;
+    }
 
-        if (!error) continue;
+    for (const key of Object.keys(result.errors)) {
+      const error = result.errors[key];
 
-        const fieldError = error as FieldError & {
-          ref?: { issue?: Record<string, unknown> };
-        };
-        const message = fieldError.message || '';
+      if (!error) continue;
 
-        fieldError.message = resolveMessage(message, t);
+      if (Array.isArray(error)) {
+        resolveInnerMessage(error, t);
+        continue;
       }
+
+      const fieldError = error as FieldError & {
+        ref?: { issue?: Record<string, unknown> };
+      };
+
+      const pureMessage = fieldError.message || '';
+      fieldError.message = resolveMessage(pureMessage, t);
     }
 
     return result;
   };
 }
+
+const resolveInnerMessage = (errors: FieldError[], t: TranslationFn) => {
+  for (const key of Object.keys(errors)) {
+    const item = errors[key as unknown as number];
+
+    if (item.message) {
+      item.message = resolveMessage(item.message, t);
+      continue;
+    }
+
+    resolveInnerMessage(item as unknown as FieldError[], t);
+  }
+};

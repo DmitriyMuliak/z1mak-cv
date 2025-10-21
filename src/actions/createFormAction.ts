@@ -1,7 +1,7 @@
 import { extractIssueKey } from '@/lib/validator/extractIssueKey';
 import { resolveMessage } from '@/lib/validator/resolveMessage';
 import { formDataToObject } from '@/utils/formDataToObject';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 import * as v from 'valibot';
 
 type ResultReturnError = Record<string, string[]>;
@@ -19,11 +19,12 @@ const defaultConfig: ActionConfig = { isAutoSuccessReturn: true };
 async function serverFormAction<TEntries extends v.ObjectEntries>(
   schema: v.ObjectSchema<TEntries, undefined>,
   onSubmit: OnSubmit<TEntries>,
-  formData: FormData,
+  formData: FormData, // Re-created by Next into raw
   _config: ActionConfig,
 ): Promise<ResultReturn> {
-  const t = await getTranslations('validator');
-  const raw = formDataToObject(formData);
+  const locale = await getLocale();
+  const t = await getTranslations({ namespace: 'validator', locale });
+  const raw = formDataToObject(formData); // TODO: fix converting keys to array. In case of one file from FE -> Invalid type: Expected Array but received File
 
   try {
     const result = v.safeParse(schema, raw);

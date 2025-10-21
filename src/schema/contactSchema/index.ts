@@ -1,15 +1,10 @@
 import * as v from 'valibot';
 import { createMessageHandler } from '@/lib/validator/createMessageHandler';
-// import { allowedContactFilesMimeTypes } from './consts';
+import { allowedContactFilesMimeTypes } from './consts';
 
-const _ExampleNameSchema = v.pipe(
-  v.string(),
-  v.minLength(5, createMessageHandler('specificNameKey')),
-);
-
-const _ExampleOfExtendSchema = v.object({
-  // ...BaseContactSchema.entries,
-});
+const OneMbInKb = 1048576;
+const MAX_SIZE = OneMbInKb * 10;
+const MAX_SIZE_MB = (MAX_SIZE / 1024 / 1024).toFixed();
 
 const NameSchema = v.pipe(
   v.string(),
@@ -24,26 +19,24 @@ const MessageSchema = v.pipe(
 );
 
 const FileSchema = v.object({
-  name: v.string(),
-  type: v.string(), // mimetype
-  size: v.number(),
-});
-
-const FilesSchema = v.optional(
-  v.array(
-    v.pipe(
-      FileSchema,
-      // v.check(
-      //   (file) => allowedContactFilesMimeTypes.includes(file.type),
-      //   (input) => `Invalid file type: ${(input as any)?.type || 'unknown'}`
-      // ),
-      // v.check(
-      //   (file) => file.size <= 5 * 1024 * 1024, // до 5MB, якщо треба
-      //   (input) => `File too large: ${(input as any)?.name || 'unknown'}`
-      // )
+  file: v.pipe(
+    v.instance(File, createMessageHandler('file_problem')),
+    v.check(
+      (file) => allowedContactFilesMimeTypes.includes(file.type),
+      createMessageHandler('file_invalid_type'),
+    ),
+    v.check(
+      (file) => file.size <= Number(MAX_SIZE),
+      (issue) => {
+        const issueResolver = createMessageHandler('c_file_too_large');
+        const message = issueResolver({ ...issue, expected: `${MAX_SIZE_MB}` });
+        return message;
+      },
     ),
   ),
-);
+});
+
+const FilesSchema = v.pipe(v.optional(v.array(FileSchema)));
 
 const BaseContactSchema = v.object({
   name: NameSchema,
@@ -52,6 +45,15 @@ const BaseContactSchema = v.object({
   files: FilesSchema,
 });
 
-export const ContactSchema = v.required(BaseContactSchema, ['name', 'email']);
+export const ContactSchema = v.required(BaseContactSchema, ['name', 'email', 'message']);
+export const ContactSchemaBE = v.object({
+  ...BaseContactSchema.entries,
+  files: v.optional(
+    v.union([
+      v.array(v.any()),
+      v.any(), // TODO: add validation for files -> can be arr or single file
+    ]),
+  ),
+});
 
 export type ContactSchemaType = v.InferOutput<typeof ContactSchema>;

@@ -71,7 +71,9 @@
 
     "specificNameKey": "Довжина імені має бути мінімум {expected} символів.",
     "c_required": "Це поле є обов'язковим.",
-    "c_min_length": "Кастомний мінімум: {{min}}.",
+    "c_min_length": "Кастомний мінімум: {min}.",
+    "c_file_too_large": "Файл завеликий. Максимум {expected} MB.",
+
     "file_too_large": "Файл завеликий. Максимум {max} MB.",
     "file_invalid_type": "Неприпустимий тип файлу.",
     "file_problem": "Проблема з файлом."

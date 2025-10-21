@@ -1,4 +1,4 @@
-const contactFileTypes = {
+export const contactFileTypes = {
   'image/jpeg': ['.jpg', '.jpeg'],
   'application/pdf': ['.pdf'],
   'application/msword': ['.doc'],
