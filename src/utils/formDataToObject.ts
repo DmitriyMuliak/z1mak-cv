@@ -17,9 +17,10 @@ export function formDataToObject(formData: FormData) {
 }
 
 /*
-  For simple structure, doesn't create array for formData.append('files', file, file.name)
+  For array keys need be named like: propName[];
+  Example: formData.append('files[0]', file, file.name);
 */
-export function formDataToObjectOld(formData: FormData): Record<string, unknown> {
+export function formDataToObjectWithIndexedArrays(formData: FormData): Record<string, unknown> {
   const obj: Record<string, unknown> = {};
 
   for (const [rawKey, value] of formData.entries()) {

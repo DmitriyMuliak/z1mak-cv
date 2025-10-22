@@ -101,7 +101,8 @@
     }
   },
   "common": {
-    "formButtonSendTitle": "Send"
+    "formButtonSendTitle": "Send",
+    "formButtonSendSuccessTitle": "Successfully Sent"
   },
   "examples": {
     "pluralTranslationExample": "{count, plural, one {# product} other {# products}}"

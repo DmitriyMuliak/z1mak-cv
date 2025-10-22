@@ -1,12 +1,10 @@
 'use server';
 
 import { ContactSchemaBE } from '@/schema/contactSchema';
-import { createFormAction } from './createFormAction';
+import { createFormAction } from './utils';
 
-const contactAction = createFormAction(ContactSchemaBE, async (data) => {
-  // await new Promise((r) => setTimeout(r, 2000));
+export const sendContactAction = createFormAction(ContactSchemaBE, async (data) => {
+  await new Promise((r) => setTimeout(r, 5000));
   // return { errors: { name: ["Something bad"] } }
   console.log('data on submit server action', data);
 });
-
-export const sendContactAction = async (formData: FormData) => contactAction(formData);

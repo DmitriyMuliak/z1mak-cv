@@ -101,7 +101,8 @@
     }
   },
   "common": {
-    "formButtonSendTitle": "Надіслати"
+    "formButtonSendTitle": "Надіслати",
+    "formButtonSendSuccessTitle": "Успішно надіслано"
   },
   "examples": {
     "pluralTranslationExample": "{count, plural, {count, plural, one {# товар} few {# товари} many {# товарів} other {# товару}}"

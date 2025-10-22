@@ -19,12 +19,12 @@ const defaultConfig: ActionConfig = { isAutoSuccessReturn: true };
 async function serverFormAction<TEntries extends v.ObjectEntries>(
   schema: v.ObjectSchema<TEntries, undefined>,
   onSubmit: OnSubmit<TEntries>,
-  formData: FormData, // Re-created by Next into raw
+  formData: FormData, // Re-created by Next from http request
   _config: ActionConfig,
 ): Promise<ResultReturn> {
   const locale = await getLocale();
   const t = await getTranslations({ namespace: 'validator', locale });
-  const raw = formDataToObject(formData); // TODO: fix converting keys to array. In case of one file from FE -> Invalid type: Expected Array but received File
+  const raw = formDataToObject(formData);
 
   try {
     const result = v.safeParse(schema, raw);
@@ -46,7 +46,7 @@ async function serverFormAction<TEntries extends v.ObjectEntries>(
     return { success: true };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    return { success: false, errors: { _form: [error.message] } };
+    return { success: false, errors: { _form: [error && error?.message] } };
   }
 }
 
@@ -56,6 +56,8 @@ export function createFormAction<TEntries extends v.ObjectEntries>(
   onSubmit: OnSubmit<TEntries>,
   config?: ActionConfig,
 ) {
-  return (formData: FormData) =>
+  return async (formData: FormData) =>
     serverFormAction(schema, onSubmit, formData, config || defaultConfig);
 }
+
+export type ActionHandlerType = (formData: FormData) => Promise<ResultReturn>;

@@ -7,51 +7,34 @@ import { TextField } from '@/components/Forms/fields/TextField';
 import { TextareaField } from '@/components/Forms/fields/TextareaField';
 import { FileDropzoneField } from '@/components/Forms/fields/FileDropzoneField';
 import { sendContactAction } from '@/actions/sendContact';
-import { ContactSchema, ContactSchemaType } from '@/schema/contactSchema';
+import { ContactSchemaFE, ContactSchemaFEType } from '@/schema/contactSchema';
 import { useTranslations } from 'next-intl';
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
 import { contactFileTypes } from '@/schema/contactSchema/consts';
+import { createOnSubmitHandler } from '@/components/Forms/utils';
+import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
+import { CheckIcon, RefreshCw } from 'lucide-react';
 
 export function ContactForm() {
   const tf = useTranslations('fields');
   const tc = useTranslations('common');
   const tv = useTranslations('validator');
-  const form = useForm<ContactSchemaType>({
-    resolver: localizedValibotResolver(ContactSchema, tv),
+  const form = useForm<ContactSchemaFEType>({
+    resolver: localizedValibotResolver(ContactSchemaFE, tv),
     mode: 'onBlur',
     defaultValues: { name: '', email: '', message: '', files: [] },
   });
-
   const { fields, replace, remove, prepend } = useFieldArray({
     name: 'files',
     control: form.control,
   });
+  const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
+  const isSubmitting = form.formState.isSubmitting;
+  const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
+  const showSuccessLoader = delayedIsLoading && isSuccess;
 
-  const onSubmit = form.handleSubmit(async (data) => {
-    console.log('handleSubmit', data);
-    const formData = new FormData();
-
-    Object.entries(data).forEach(([key, value]) => {
-      if (typeof value !== 'object' && value !== null) formData.append(key, value);
-      if (value && Array.isArray(value)) {
-        if (value.length && value[0].file) {
-          value.forEach((fileContainer) => {
-            formData.append('files', fileContainer.file, fileContainer.file.name);
-          });
-        }
-      }
-    });
-
-    const res = await sendContactAction(formData);
-
-    if (res.errors) {
-      Object.entries(res.errors).forEach(([field, messages]) =>
-        form.setError(field as keyof ContactSchemaType, { message: messages.join(', ') }),
-      );
-    }
-
-    if (res.success) form.reset();
-  });
+  const handleSubmitCb = createOnSubmitHandler(sendContactAction, form);
+  const onSubmit = form.handleSubmit(handleSubmitCb);
 
   return (
     <Form {...form}>
@@ -90,13 +73,16 @@ export function ContactForm() {
           accept={contactFileTypes}
         />
         <Button
-          disabled={form.formState.isSubmitting || !form.formState.isValid}
+          disabled={isSubmitting || !form.formState.isValid}
           type="submit"
-          className="!mt-0 w-full"
+          className={`!mt-0 w-full transition-colors duration-300 ${showSuccessLoader ? 'bg-green-500 hover:bg-green-500' : ''}`}
         >
-          {tc('formButtonSendTitle')}
+          {showSuccessLoader ? tc('formButtonSendSuccessTitle') : tc('formButtonSendTitle')}
+          {showSuccessLoader ? <CheckIcon className="w-5 h-5 mr-2" /> : null}
+          {isSubmitting ? <RefreshCw className="w-5 h-5 mr-2 animate-spin" /> : null}
         </Button>
       </form>
     </Form>
   );
 }
+// className={`!mt-0 w-full transition-colors duration-300 ${isSuccess ? 'bg-green-500 hover:bg-green-600' : ''}`}

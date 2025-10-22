@@ -119,6 +119,7 @@ export function FileDropzoneField<T extends FieldValues>({
                 className="pr-1"
                 onClick={() => {
                   remove(index);
+                  validateTrigger(name);
                 }}
               >
                 <XIcon className="size-5 text-white hover:text-red-500" />
