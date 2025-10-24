@@ -2,9 +2,19 @@
 
 import { ContactSchemaBE } from '@/schema/contactSchema';
 import { createFormAction } from './utils';
+// TODO: enable recaptcha verification
+// import { verifyRecaptchaToken } from './verifyRecaptchaToken';
 
 export const sendContactAction = createFormAction(ContactSchemaBE, async (data) => {
-  await new Promise((r) => setTimeout(r, 5000));
-  // return { errors: { name: ["Something bad"] } }
-  console.log('data on submit server action', data);
+  return { success: true, data };
+
+  // if(data.recaptchaToken){
+  //   const result = await verifyRecaptchaToken(data.recaptchaToken);
+
+  //   if(!result.success){
+  //     return { success: false, errors: { recaptchaToken: ['Invalid reCAPTCHA'] } };
+  //   }
+
+  //   return { success: true, data: result };
+  // }
 });

@@ -1,26 +1,56 @@
-import type { ActionHandlerType } from '@/actions/utils';
+import type { ActionHandlerType, SuccessData, ResultReturn } from '@/actions/utils';
 import type { FormState, FieldValues, UseFormReturn, Path } from 'react-hook-form';
 
 export const createOnSubmitHandler =
-  <TFieldValues extends FieldValues>(
-    actionHandler: ActionHandlerType,
+  <TFieldValues extends FieldValues, TData extends SuccessData | void = void>(
+    actionHandler: ActionHandlerType<TData>,
     form: UseFormReturn<TFieldValues>,
+    onResult?: (dataFromActionHandler: ResultReturn<TData>) => void,
   ) =>
   async (data: TFieldValues) => {
     const formData = new FormData();
 
     Object.entries(data).forEach(([key, value]) => {
-      if (typeof value !== 'object' && value !== null) formData.append(key, value);
+      if (typeof value !== 'object' && value !== null) {
+        formData.append(key, String(value));
+        return;
+      }
+
       if (value && Array.isArray(value)) {
-        if (value.length && value[0].file) {
-          value.forEach((fileContainer) => {
+        if (
+          value.length &&
+          typeof value[0] === 'object' &&
+          (value[0] as { file?: File }).file instanceof File
+        ) {
+          (value as { file: File }[]).forEach((fileContainer) => {
             formData.append(key, fileContainer.file, fileContainer.file.name);
           });
+          return;
+        } else {
+          value.forEach((keyValue) => {
+            formData.append(key, String(keyValue));
+          });
+          return;
         }
+      }
+
+      if (
+        typeof value === 'object' &&
+        value !== null &&
+        !(value instanceof File) &&
+        !(value instanceof Blob)
+      ) {
+        throw new Error(
+          `Unsupported nested object in form data at key: ${key}. Need add flatten & unflatten logic + check {file: File} structure.`,
+        );
       }
     });
 
     const res = await actionHandler(formData);
+
+    if (onResult) {
+      onResult(res);
+    }
 
     if (res.errors) {
       Object.entries(res.errors).forEach(([field, messages]) =>

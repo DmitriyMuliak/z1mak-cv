@@ -68,15 +68,17 @@
     "invalid_function": "Невірна функція.",
     "invalid_custom": "Невірне значення.",
     "custom": "Невірне значення.",
+    
+    "file_too_large": "Файл завеликий. Максимум {max} MB.",
+    "file_invalid_type": "Неприпустимий тип файлу.",
+    "file_problem": "Проблема з файлом.",
 
     "specificNameKey": "Довжина імені має бути мінімум {expected} символів.",
     "c_required": "Це поле є обов'язковим.",
     "c_min_length": "Кастомний мінімум: {min}.",
     "c_file_too_large": "Файл завеликий. Максимум {expected} MB.",
+    "captchaRequired": "Будь ласка, пройдіть капчу."
 
-    "file_too_large": "Файл завеликий. Максимум {max} MB.",
-    "file_invalid_type": "Неприпустимий тип файлу.",
-    "file_problem": "Проблема з файлом."
   },
   "fields": {
     "name": {
@@ -98,6 +100,10 @@
     "file": {
       "addedFileTitle": "Файл доданий",
       "mainAddFileTitle": "Перетягніть сюди файл, або натисть для вибору"
+    },
+    "captcha": {
+      "label": "Капча*",
+      "placeholder": "Будь ласка, пройдіть капчу"
     }
   },
   "common": {

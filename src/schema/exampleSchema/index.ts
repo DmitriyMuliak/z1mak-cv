@@ -1,5 +1,8 @@
 import * as v from 'valibot';
 import { createMessageHandler } from '@/lib/validator/createMessageHandler';
+// import { toOpenApi } from 'valibot-openapi';
+// toOpenApi(ProductSchema) Will convert this to JSON schema OpenAPI.
+
 const allowedContactFilesMimeTypes = ['images'];
 const MIN_SIZE_BYTES = 10000;
 

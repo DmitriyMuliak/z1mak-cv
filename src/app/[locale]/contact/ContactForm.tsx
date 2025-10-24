@@ -14,6 +14,7 @@ import { contactFileTypes } from '@/schema/contactSchema/consts';
 import { createOnSubmitHandler } from '@/components/Forms/utils';
 import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
 import { CheckIcon, RefreshCw } from 'lucide-react';
+import { RecaptchaField } from '@/components/Forms/fields/Recapthca';
 
 export function ContactForm() {
   const tf = useTranslations('fields');
@@ -22,7 +23,7 @@ export function ContactForm() {
   const form = useForm<ContactSchemaFEType>({
     resolver: localizedValibotResolver(ContactSchemaFE, tv),
     mode: 'onBlur',
-    defaultValues: { name: '', email: '', message: '', files: [] },
+    defaultValues: { name: '', email: '', message: '', files: [], recaptchaToken: '' },
   });
   const { fields, replace, remove, prepend } = useFieldArray({
     name: 'files',
@@ -35,6 +36,7 @@ export function ContactForm() {
 
   const handleSubmitCb = createOnSubmitHandler(sendContactAction, form);
   const onSubmit = form.handleSubmit(handleSubmitCb);
+  const isFormInvalid = Object.keys(form.formState.errors).length > 0;
 
   return (
     <Form {...form}>
@@ -72,8 +74,14 @@ export function ContactForm() {
           multiple={false}
           accept={contactFileTypes}
         />
+        <RecaptchaField
+          control={form.control}
+          name="recaptchaToken"
+          clearErrors={form.clearErrors}
+          visible={fields.length > 0}
+        />
         <Button
-          disabled={isSubmitting || !form.formState.isValid}
+          disabled={isSubmitting || isFormInvalid} // !form.formState.isValid - works differently than isFormInvalid
           type="submit"
           className={`!mt-0 w-full transition-colors duration-300 ${showSuccessLoader ? 'bg-green-500 hover:bg-green-500' : ''}`}
         >

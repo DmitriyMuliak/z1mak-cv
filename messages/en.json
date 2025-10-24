@@ -69,14 +69,16 @@
     "invalid_custom": "Invalid value.",
     "custom": "Invalid value.",
 
+    "file_too_large": "File is too large. Maximum {max} MB.",
+    "file_invalid_type": "Invalid file type.",
+    "file_problem": "There is a problem with the file.",
+
     "specificNameKey": "Need to have min {expected} length",
     "c_required": "This field is required.",
     "c_min_length": "Custom min expected: {min}.",
     "c_file_too_large": "File is too large. Maximum {expected} MB.",
 
-    "file_too_large": "File is too large. Maximum {max} MB.",
-    "file_invalid_type": "Invalid file type.",
-    "file_problem": "There is a problem with the file."
+    "captchaRequired": "Please complete the captcha."
   },
   "fields": {
     "name": {
@@ -98,6 +100,10 @@
     "file": {
       "addedFileTitle": "Added File",
       "mainAddFileTitle": "Drag 'n' drop file here, or click to select"
+    },
+    "captcha": {
+      "label": "Captcha*",
+      "placeholder": "Please complete the captcha"
     }
   },
   "common": {

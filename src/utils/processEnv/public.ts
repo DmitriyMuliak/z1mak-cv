@@ -1,0 +1,21 @@
+import * as v from 'valibot';
+
+// Custom variables without the NEXT_PUBLIC_ prefix are not exposed to the client-side bundle. They are only available on the server.
+export const EnvSchema = v.object({
+  NEXT_PUBLIC_RECAPTCHA_SITE_KEY: v.pipe(v.string(), v.minLength(1)),
+  NODE_ENV: v.union([v.literal('development'), v.literal('testing'), v.literal('production')]),
+});
+
+const parsedEnv = v.safeParse(EnvSchema, {
+  NEXT_PUBLIC_RECAPTCHA_SITE_KEY: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
+  NODE_ENV: process.env.NODE_ENV,
+});
+
+if (!parsedEnv.success) {
+  console.error('❌ Have wrong environment variables:', parsedEnv.issues);
+
+  throw new Error('Configuration Error: Invalid Public environment variables');
+}
+
+export const publicPrEnv = parsedEnv.output;
+export type PublicEnvSchemaType = v.InferOutput<typeof EnvSchema>;

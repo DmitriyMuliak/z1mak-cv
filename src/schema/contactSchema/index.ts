@@ -1,5 +1,8 @@
 import * as v from 'valibot';
-import { createMessageHandler } from '@/lib/validator/createMessageHandler';
+import {
+  createMessageHandler,
+  createSimpleMessageHandler,
+} from '@/lib/validator/createMessageHandler';
 import { allowedContactFilesMimeTypes } from './consts';
 
 const OneMbInKb = 1048576;
@@ -48,7 +51,30 @@ const FilesSchemaFE = v.pipe(v.optional(v.array(FileSchemaFE)));
 export const ContactSchemaBaseFE = v.object({
   ...BaseContactSchema.entries,
   files: FilesSchemaFE,
+  recaptchaToken: v.optional(v.string()),
 });
+
+export const ContactSchemaFE = v.pipe(
+  ContactSchemaBaseFE,
+  v.rawCheck(({ dataset, addIssue }) => {
+    const data = dataset.value as ContactSchemaFEType;
+    const hasFiles = Array.isArray(data.files) && data.files.length > 0;
+    if (hasFiles && !data.recaptchaToken) {
+      addIssue({
+        path: [
+          {
+            type: 'object',
+            key: 'recaptchaToken',
+            origin: 'value',
+            input: data,
+            value: data.recaptchaToken,
+          } satisfies v.IssuePathItem,
+        ],
+        message: createSimpleMessageHandler('captchaRequired'),
+      });
+    }
+  }),
+);
 
 const isFileObject = (input: unknown): input is File => {
   return (
@@ -68,10 +94,32 @@ const FileSchemaBE = v.pipe(
 
 const FilesSchemaBE = v.optional(v.union([v.array(FileSchemaBE), FileSchemaBE]));
 
-export const ContactSchemaBE = v.object({
+export const ContactSchemaBaseBE = v.object({
   ...BaseContactSchema.entries,
   files: FilesSchemaBE,
+  recaptchaToken: v.optional(v.string()),
 });
 
-export const ContactSchemaFE = v.required(ContactSchemaBaseFE, ['name', 'email', 'message']);
+export const ContactSchemaBE = v.pipe(
+  ContactSchemaBaseBE,
+  v.rawCheck(({ dataset, addIssue }) => {
+    const data = dataset.value as ContactSchemaFEType;
+    const hasFiles = Array.isArray(data.files) && data.files.length > 0;
+    if (hasFiles && !data.recaptchaToken) {
+      addIssue({
+        path: [
+          {
+            type: 'object',
+            key: 'recaptchaToken',
+            origin: 'value',
+            input: data,
+            value: data.recaptchaToken,
+          } satisfies v.IssuePathItem,
+        ],
+        message: createSimpleMessageHandler('captchaRequired'),
+      });
+    }
+  }),
+);
+
 export type ContactSchemaFEType = v.InferOutput<typeof ContactSchemaFE>;
