@@ -78,3 +78,7 @@ export function createFormAction<
 export type ActionHandlerType<TData extends SuccessData | void = void> = (
   formData: FormData,
 ) => Promise<ResultReturn<TData>>;
+
+// type TDataFromAction = Awaited<ReturnType<typeof sendContactAction>> extends { success: true, data: infer D } ? D : void;
+// type TData = Awaited<ReturnType<typeof sendContactAction>>;
+// const onSuccessCb = (data: TData) => data;

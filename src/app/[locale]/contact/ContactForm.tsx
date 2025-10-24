@@ -16,6 +16,9 @@ import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
 import { CheckIcon, RefreshCw } from 'lucide-react';
 import { RecaptchaField } from '@/components/Forms/fields/Recapthca';
 
+type TData = Awaited<ReturnType<typeof sendContactAction>>;
+const onSuccessCb = (data: TData) => data;
+
 export function ContactForm() {
   const tf = useTranslations('fields');
   const tc = useTranslations('common');
@@ -34,7 +37,7 @@ export function ContactForm() {
   const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
   const showSuccessLoader = delayedIsLoading && isSuccess;
 
-  const handleSubmitCb = createOnSubmitHandler(sendContactAction, form);
+  const handleSubmitCb = createOnSubmitHandler(sendContactAction, form, onSuccessCb);
   const onSubmit = form.handleSubmit(handleSubmitCb);
   const isFormInvalid = Object.keys(form.formState.errors).length > 0;
 
