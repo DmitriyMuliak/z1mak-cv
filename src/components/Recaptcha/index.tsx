@@ -17,20 +17,16 @@ export function RecaptchaV2({ visible, onVerify }: CaptchaBoxProps) {
   const captchaRef = useRef<ReCAPTCHA | null>(null);
   const [_expired, setExpired] = useState(false);
 
-  // 🔁 коли токен спливає
   const handleExpired = () => {
     setExpired(true);
     onVerify(null);
   };
 
-  // ✅ коли користувач проходить перевірку
   const handleChange = (token: string | null) => {
     setExpired(false);
     onVerify(token);
   };
 
-  // 🧹 якщо компонент став невидимим (файли видалили)
-  // не видаляємо капчу, просто скидаємо токен
   useEffect(() => {
     if (!visible && captchaRef.current) {
       captchaRef.current.reset();
@@ -39,13 +35,7 @@ export function RecaptchaV2({ visible, onVerify }: CaptchaBoxProps) {
   }, [visible]);
 
   return (
-    <div
-      style={{
-        display: visible ? 'block' : 'none', // 🔹 просто ховаємо, не unmount
-        transition: 'opacity 0.3s ease',
-        opacity: visible ? 1 : 0,
-      }}
-    >
+    <div>
       <ReCAPTCHA
         ref={captchaRef}
         sitekey={publicPrEnv.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
@@ -54,7 +44,7 @@ export function RecaptchaV2({ visible, onVerify }: CaptchaBoxProps) {
       />
       {/* {expired && (
         <p style={{ color: 'red', fontSize: '0.9rem', marginTop: 4 }}>
-          Термін дії капчі сплив — пройди перевірку знову.
+          Captcha is expired — please pass it one more time.
         </p>
       )} */}
     </div>

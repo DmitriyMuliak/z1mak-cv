@@ -25,4 +25,10 @@ export const createMessageHandler =
     return createTempCustomMessage(key, extractPlaceholdersFromIssue(issue));
   };
 
-export const createSimpleMessageHandler = (key: ValidatorKeys) => createCustomKey(key);
+export const createSimpleMessageHandler =
+  (key: ValidatorKeys) =>
+  <T>(_issue: BaseIssue<T>) => {
+    return createCustomKey(key);
+  };
+
+export const createSimpleMessage = (key: ValidatorKeys) => createCustomKey(key);

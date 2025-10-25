@@ -78,6 +78,7 @@
     "c_min_length": "Custom min expected: {min}.",
     "c_file_too_large": "File is too large. Maximum {expected} MB.",
 
+    "captchaInvalid": "Captcha is invalid.",
     "captchaRequired": "Please complete the captcha."
   },
   "fields": {

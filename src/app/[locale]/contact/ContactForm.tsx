@@ -26,7 +26,7 @@ export function ContactForm() {
   const form = useForm<ContactSchemaFEType>({
     resolver: localizedValibotResolver(ContactSchemaFE, tv),
     mode: 'onBlur',
-    defaultValues: { name: '', email: '', message: '', files: [], recaptchaToken: '' },
+    defaultValues: { name: '', email: '', message: '', files: [], recaptchaToken: null },
   });
   const { fields, replace, remove, prepend } = useFieldArray({
     name: 'files',

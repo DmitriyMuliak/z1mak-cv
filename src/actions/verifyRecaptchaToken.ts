@@ -10,9 +10,21 @@ type RecaptchaPostData = {
   response: string;
 };
 
+export const recaptchaErrorCodes = {
+  'missing-input-secret': 'The secret parameter is missing.',
+  'invalid-input-secret': 'The secret parameter is invalid or malformed.',
+  'missing-input-response': 'The response parameter is missing.',
+  'invalid-input-response': 'The response parameter is invalid or malformed.',
+  'bad-request': 'The request is invalid or malformed.',
+  'timeout-or-duplicate':
+    'The response is no longer valid: either is too old or has been used previously.',
+};
+
+type RecaptchaErrorCodes = keyof typeof recaptchaErrorCodes;
+
 export type RecaptchaVerifyResponse = {
   success: boolean;
-  'error-codes'?: string[];
+  'error-codes'?: RecaptchaErrorCodes[];
   action: string;
   challenge_ts: string;
   hostname: string;

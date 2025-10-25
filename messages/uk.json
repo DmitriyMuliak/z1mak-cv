@@ -77,8 +77,9 @@
     "c_required": "Це поле є обов'язковим.",
     "c_min_length": "Кастомний мінімум: {min}.",
     "c_file_too_large": "Файл завеликий. Максимум {expected} MB.",
-    "captchaRequired": "Будь ласка, пройдіть капчу."
 
+    "captchaInvalid": "Капча не валідна.",
+    "captchaRequired": "Будь ласка, пройдіть капчу."
   },
   "fields": {
     "name": {
@@ -111,6 +112,6 @@
     "formButtonSendSuccessTitle": "Успішно надіслано"
   },
   "examples": {
-    "pluralTranslationExample": "{count, plural, {count, plural, one {# товар} few {# товари} many {# товарів} other {# товару}}"
+    "pluralTranslationExample": "{count, plural, one {# товар} few {# товари} many {# товарів} other {# товару}}"
   }
 }

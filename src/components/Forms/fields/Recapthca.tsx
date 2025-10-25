@@ -26,7 +26,13 @@ export function RecaptchaField<T extends FieldValues>({
   }, [visible]);
 
   return (
-    <div className="relative" data-form-field-id={name}>
+    <div
+      className="relative"
+      data-form-field-id={name}
+      style={{
+        display: visible ? 'block' : 'none',
+      }}
+    >
       <FormField
         control={control}
         name={name}

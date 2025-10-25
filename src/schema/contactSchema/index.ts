@@ -1,8 +1,5 @@
 import * as v from 'valibot';
-import {
-  createMessageHandler,
-  createSimpleMessageHandler,
-} from '@/lib/validator/createMessageHandler';
+import { createMessageHandler, createSimpleMessage } from '@/lib/validator/createMessageHandler';
 import { allowedContactFilesMimeTypes } from './consts';
 
 const OneMbInKb = 1048576;
@@ -51,7 +48,7 @@ const FilesSchemaFE = v.pipe(v.optional(v.array(FileSchemaFE)));
 export const ContactSchemaBaseFE = v.object({
   ...BaseContactSchema.entries,
   files: FilesSchemaFE,
-  recaptchaToken: v.optional(v.string()),
+  recaptchaToken: v.optional(v.union([v.string(), v.null()])),
 });
 
 export const ContactSchemaFE = v.pipe(
@@ -70,7 +67,7 @@ export const ContactSchemaFE = v.pipe(
             value: data.recaptchaToken,
           } satisfies v.IssuePathItem,
         ],
-        message: createSimpleMessageHandler('captchaRequired'),
+        message: createSimpleMessage('captchaRequired'),
       });
     }
   }),
@@ -104,7 +101,7 @@ export const ContactSchemaBE = v.pipe(
   ContactSchemaBaseBE,
   v.rawCheck(({ dataset, addIssue }) => {
     const data = dataset.value as ContactSchemaFEType;
-    const hasFiles = Array.isArray(data.files) && data.files.length > 0;
+    const hasFiles = !!(Array.isArray(data.files) ? data.files.length > 0 : data.files);
     if (hasFiles && !data.recaptchaToken) {
       addIssue({
         path: [
@@ -116,7 +113,7 @@ export const ContactSchemaBE = v.pipe(
             value: data.recaptchaToken,
           } satisfies v.IssuePathItem,
         ],
-        message: createSimpleMessageHandler('captchaRequired'),
+        message: createSimpleMessage('captchaRequired'),
       });
     }
   }),
