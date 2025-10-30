@@ -120,3 +120,4 @@ export const ContactSchemaBE = v.pipe(
 );
 
 export type ContactSchemaFEType = v.InferOutput<typeof ContactSchemaFE>;
+export type ContactSchemaBEType = v.InferOutput<typeof ContactSchemaBaseBE>;

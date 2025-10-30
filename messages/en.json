@@ -72,6 +72,7 @@
     "file_too_large": "File is too large. Maximum {max} MB.",
     "file_invalid_type": "Invalid file type.",
     "file_problem": "There is a problem with the file.",
+    "file_upload_base_error": "Problems with file uploading, try later",
 
     "specificNameKey": "Need to have min {expected} length",
     "c_required": "This field is required.",
