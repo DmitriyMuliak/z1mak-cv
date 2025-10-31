@@ -69,8 +69,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
               <Field>
                 <Button type="button">{t('loginTitle')}</Button>
                 <FieldDescription className="text-center">
-                  {t('dontHaveAccountTitle')}
-                  <a href="#">{t('signUpTitle')}</a>
+                  {t('dontHaveAccountTitle')} <a href="#">{t('signUpTitle')}</a>
                 </FieldDescription>
               </Field>
             </FieldGroup>
