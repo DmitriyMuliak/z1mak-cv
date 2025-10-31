@@ -111,9 +111,11 @@
 
 @media (min-width: 1024px) {
   .header {
+    /* --removed-body-scroll-bar-size - added by react-remove-scroll-bar */
+    --left-translateX: calc(-50% - calc(var(--removed-body-scroll-bar-size, 0px) / 2));
     top: 60px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(var(--left-translateX));
     width: initial;
   }
 
