@@ -1,0 +1,106 @@
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import { Link } from '@/components/Link'
+import { paths } from '@/consts/routes'
+import { JavascriptIcon, TypeScriptIcon, ReactIcon, NextIcon, NodeJsIcon, PostgresSQLIcon, WebpackIcon, JestIcon, GithubIcon, DockerIcon } from '@/components/icons'
+
+
+
+<h2 className="text-3xl font-semibold mb-6">Skills</h2>
+
+<div className="flex flex-col gap-6">
+
+<Card className="frosted-card p-6">
+  <CardHeader>
+  <CardTitle>🧠 Summary</CardTitle>
+  </CardHeader>
+  <CardContent>
+  <p>Experienced Front-end engineer with 10+ years of expertise in building scalable, high-performance web and mobile applications.</p>
+  <p>Strong focus on product quality, system design, and user experience (UX).</p>
+  <p>Committed to clean architecture, testing culture, and a product mindset.</p>
+  <p>
+    You can contact me via{' '}
+    <a className="text-primary font-medium underline underline-offset-4" href="https://www.linkedin.com/in/dmitriymuliak/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    {' '}or directly{' '}
+    <Link className="text-primary font-medium underline underline-offset-4" href={paths.contact}>here</Link>.
+  </p>
+  </CardContent>
+</Card>
+
+<Card className="frosted-card p-6">
+  <CardHeader>
+  <CardTitle>⚙️ Tech Stack</CardTitle>
+  </CardHeader>
+  <CardContent>
+  <div className="space-y-1">
+    <p>
+    <b>Frontend:</b> React, TypeScript, MobX, Mobx-state-tree, Redux (Toolkit, Saga,
+    Thunk), Volibot, Zod, React Testing Library, Jest, Puppeteer, Storybook, CSS
+    Modules, Tailwind, Styled Components, Webpack, ESLint, Prettier, .etc
+    </p>
+    <p>
+    <b>Backend:</b> Node.js (BFF), Express.js, Next.js, MongoDB, Redis, GCP
+    (Lambda/Cloud Functions), Jest, .etc
+    </p>
+    <p>
+    <b>CI/CD:</b> Webpack, Docker, Remote repo pipelines (e.g., Github Actions), .etc
+    </p>
+    <p>
+    <b>Paradigms, principles:</b> SOLID, FP, OOP, GOF, GRASP, KISS, YAGNI, DRY, .etc
+    </p>
+    <p>
+    <b>Testing:</b> Unit, Integration, E2E, TDD approach.
+    </p>
+  </div>
+  <Separator className="my-4" />
+  <div className="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-4 mt-2 items-center justify-items-center w-full">
+    <div className="w-12 h-12"><JavascriptIcon /></div>
+    <div className="w-12 h-12"><TypeScriptIcon /></div>
+    <div className="w-12 h-12"><ReactIcon /></div>
+    <div className="w-12 h-12"><NextIcon /></div>
+    <div className="w-12 h-12"><NodeJsIcon /></div>
+    <div className="w-12 h-12"><PostgresSQLIcon /></div>
+    <div className="w-12 h-12"><WebpackIcon /></div>
+    <div className="w-12 h-12"><JestIcon /></div>
+    <div className="w-12 h-12"><GithubIcon /></div>
+    <div className="w-12 h-12"><DockerIcon /></div>
+  </div>
+  </CardContent>
+</Card>
+
+<Card className="frosted-card p-6">
+  <CardHeader><CardTitle>💼 Experience</CardTitle></CardHeader>
+  <CardContent>
+  <p>I have worked on complex systems, ranging from investment platforms and payment infrastructure to logistics tools.</p>
+  <ul className="list-disc list-inside mt-2">
+    <li>Developed and maintained FE and BFF (Backend-for-Frontend) for high-traffic payment modules.</li>
+    <li>Integrated global payment providers (Google Pay, Stripe, Square, etc.).</li>
+    <li>Developed modular React-Native architectures for enterprise systems.</li>
+    <li>Designed and launched projects from scratch (Greenfield).</li>
+  </ul>
+  </CardContent>
+</Card>
+
+<Card className="frosted-card p-6">
+  <CardHeader><CardTitle>🎓 Education</CardTitle></CardHeader>
+  <CardContent>
+  <p>Ukrainian National Forestry University — Master's Degree in Management and Foreign Economic Activity (2012–2018)</p>
+  </CardContent>
+</Card>
+
+<Card className="frosted-card p-6">
+  <CardHeader><CardTitle>💬 Languages</CardTitle></CardHeader>
+  <CardContent>
+  <ul><li>Ukrainian — Native</li><li>English — Upper-Intermediate</li></ul>
+  </CardContent>
+</Card>
+
+<Card className="frosted-card p-6">
+  <CardHeader><CardTitle>💡 Soft Skills</CardTitle></CardHeader>
+  <CardContent>
+  <p>Responsible • Persistent • Proactive • Self-critical • Product-oriented</p>
+  <p>**P.S.:** It's no secret that I'm interested in Chinese tea, skydiving, and making music. I'd be happy to share experiences in my free time :)</p>
+  </CardContent>
+</Card>
+
+</div>
