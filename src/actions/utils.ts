@@ -62,7 +62,11 @@ async function serverFormAction<TSchema extends AnySchema, TData extends Success
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    return { success: false, errors: { _form: [error && error?.message] } };
+    console.error('Contact Form Unexpected error', error);
+    return {
+      success: false,
+      errors: { 'root.unexpected': ['Unexpected error, please try again later.'] },
+    };
   }
 }
 

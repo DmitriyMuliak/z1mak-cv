@@ -7,7 +7,7 @@ import { TextField } from '@/components/Forms/fields/TextField';
 import { TextareaField } from '@/components/Forms/fields/TextareaField';
 import { FileDropzoneField } from '@/components/Forms/fields/FileDropzoneField';
 import { sendContactAction } from '@/actions/sendContact';
-import { ContactSchemaFE, ContactSchemaFEType } from '@/schema/contactSchema';
+import { ContactSchemaFE, ContactSchemaFEType } from '@/schema/contactSchema/contactSchemaFE';
 import { useTranslations } from 'next-intl';
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
 import { contactFileTypes } from '@/schema/contactSchema/consts';
@@ -15,6 +15,7 @@ import { createOnSubmitHandler } from '@/components/Forms/utils';
 import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
 import { CheckIcon, RefreshCw } from 'lucide-react';
 import { RecaptchaField } from '@/components/Forms/fields/Recapthca';
+import { GlobalFormErrorMessage } from '@/components/Forms/fields/GlobalFormErrorMessage';
 
 type TData = Awaited<ReturnType<typeof sendContactAction>>;
 const onSuccessCb = (data: TData) => data;
@@ -92,6 +93,7 @@ export function ContactForm() {
           {showSuccessLoader ? <CheckIcon className="w-5 h-5 mr-2" /> : null}
           {isSubmitting ? <RefreshCw className="w-5 h-5 mr-2 animate-spin" /> : null}
         </Button>
+        <GlobalFormErrorMessage />
       </form>
     </Form>
   );

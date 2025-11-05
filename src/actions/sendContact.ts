@@ -2,7 +2,7 @@
 import { getLocale, getTranslations } from 'next-intl/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import nodemailer from 'nodemailer';
-import { ContactSchemaBE, type ContactSchemaBEType } from '@/schema/contactSchema';
+import { ContactSchemaBE, type ContactSchemaBEType } from '@/schema/contactSchema/contactSchemaBE';
 import { verifyRecaptchaToken } from './verifyRecaptchaToken';
 import { createFormAction } from './utils';
 import { privatePrEnv } from '@/utils/processEnv/private';

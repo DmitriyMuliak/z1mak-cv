@@ -1,7 +1,7 @@
 'use server';
 
 import * as v from 'valibot';
-import { ContactSchemaFE } from '@/schema/contactSchema';
+import { ContactSchemaBE } from '@/schema/contactSchema/contactSchemaBE';
 
 export async function sendContactServerAction(formData: FormData) {
   const raw = {
@@ -10,7 +10,7 @@ export async function sendContactServerAction(formData: FormData) {
     message: formData.get('message'),
   };
 
-  const result = v.safeParse(ContactSchemaFE, raw);
+  const result = v.safeParse(ContactSchemaBE, raw);
 
   if (!result.success) {
     throw new Error(JSON.stringify(result.issues));
