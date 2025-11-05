@@ -132,7 +132,7 @@ function getEmailBody(
   return html;
 }
 
-type SendContactActionErrorType = [string];
+type SendContactActionErrorType = string[];
 type SendContactActionReturn = Promise<{
   success: boolean;
   errors: {
