@@ -49,6 +49,23 @@
       "termsAndPrivacySeparatorTitle": "and",
       "termsOfServiceTitle": "Terms of Service",
       "privacyPolicyTitle": "Privacy Policy"
+    },
+    "signUp": {
+      "title": "Registration",
+      "description": "You'll get a confirmation email. If you can't find it, check your spam folder.",
+      "signUpTitle": "Sign up",
+      "termsAndPrivacyTitle": "By clicking continue, you agree to our",
+      "termsAndPrivacySeparatorTitle": "and",
+      "termsOfServiceTitle": "Terms of Service",
+      "privacyPolicyTitle": "Privacy Policy"
+    },
+    "requestResetPassword": {
+      "title": "Reset Password",
+      "description": "A temporary link to reset your password will be sent to your email."
+    },
+    "setPassword": {
+      "title": "Set a New Password",
+      "description": "Confirm your new password by entering it in both fields."
     }
   },
   "validator": {
@@ -75,12 +92,14 @@
     "file_upload_base_error": "Problems with file uploading, try later",
 
     "specificNameKey": "Need to have min {expected} length",
+    "c_min_length": "The value must be at least {expected} characters long.",
     "c_required": "This field is required.",
-    "c_min_length": "Custom min expected: {min}.",
     "c_file_too_large": "File is too large. Maximum {expected} MB.",
+    "c_two_passwords_not_match": "The two passwords do not match.",
 
     "captchaInvalid": "Captcha is invalid.",
-    "captchaRequired": "Please complete the captcha."
+    "captchaRequired": "Please complete the captcha.",
+    "invalid_credentials": "The credentials were incorrect."
   },
   "fields": {
     "name": {
@@ -93,6 +112,10 @@
     },
     "password": {
       "label": "Password*",
+      "placeholder": "Enter your password"
+    },
+    "confirmPassword": {
+      "label": "Confirm password*",
       "placeholder": "Enter your password"
     },
     "message": {

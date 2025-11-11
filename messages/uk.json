@@ -49,6 +49,23 @@
       "termsAndPrivacySeparatorTitle": "та",
       "termsOfServiceTitle": "Умовами використання",
       "privacyPolicyTitle": "Політикою конфіденційності"
+    },
+    "signUp": {
+      "title": "Реєстрація",
+      "description": "Ви отримаєте лист із підтвердженням. Якщо не знайдете його — перевірте папку “Спам”.",
+      "signUpTitle": "Зареєструватися",
+      "termsAndPrivacyTitle": "Натискаючи «Продовжити», ви погоджуєтеся з нашими",
+      "termsAndPrivacySeparatorTitle": "та",
+      "termsOfServiceTitle": "Умовами використання",
+      "privacyPolicyTitle": "Політикою конфіденційності"
+    },
+    "requestResetPassword": {
+      "title": "Скидання паролю",
+      "description": "На ваш email прийде тимчасове посилання для зміни паролю."
+    },
+    "setPassword": {
+      "title": "Встановіть новий пароль",
+      "description": "Підтвердіть новий пароль та введіть його у два поля."
     }
   },
   "validator": {
@@ -76,11 +93,13 @@
 
     "specificNameKey": "Довжина імені має бути мінімум {expected} символів.",
     "c_required": "Це поле є обов'язковим.",
-    "c_min_length": "Кастомний мінімум: {min}.",
+    "c_min_length": "Значення має бути не менше ніж {expected} символів завдовжки.",
     "c_file_too_large": "Файл завеликий. Максимум {expected} MB.",
+    "c_two_passwords_not_match": "Два пароля не співпадають.",
 
     "captchaInvalid": "Капча не валідна.",
-    "captchaRequired": "Будь ласка, пройдіть капчу."
+    "captchaRequired": "Будь ласка, пройдіть капчу.",
+    "invalid_credentials": "Облікові дані були неправильними."
   },
   "fields": {
     "name": {
@@ -97,6 +116,10 @@
     },
     "password": {
       "label": "Пароль*",
+      "placeholder": "Введіть ваш пароль"
+    },
+    "confirmPassword": {
+      "label": "Підтвердіть пароль*",
       "placeholder": "Введіть ваш пароль"
     },
     "file": {

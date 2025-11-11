@@ -1,11 +1,13 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
+import { useSyncExternalStore, useEffect } from 'react';
 import { defaultPath, paths, PathsWithBackground } from './consts';
+import { stripLocale } from '@/utils/stripLocale';
+import { usePathname } from '@/i18n/navigation';
 let currentPathName = '';
 
 function getPathNameWithoutLocale(location: typeof window.location) {
-  return location.pathname.split('/')[2] ?? '';
+  return stripLocale(location.pathname);
 }
 
 function getSnapshot(): string {
@@ -41,6 +43,15 @@ export const BackgroundContainer = () => {
   const activePath = (
     paths.includes(current as PathsWithBackground) ? current : defaultPath
   ) as PathsWithBackground;
+
+  const pathName = usePathname();
+
+  useEffect(() => {
+    if (currentPathName !== pathName) {
+      currentPathName = pathName;
+      window.dispatchEvent(new CustomEvent('locationChangeCustom', { detail: currentPathName }));
+    }
+  }, [pathName]);
 
   return (
     <div className="global-background-container" aria-hidden>

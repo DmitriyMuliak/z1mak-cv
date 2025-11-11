@@ -1,16 +1,17 @@
 import * as v from 'valibot';
 
 const EnvSchema = v.object({
-  RECAPTCHA_SECRET_KEY: v.pipe(v.string(), v.minLength(1)),
   NODE_ENV: v.union([v.literal('development'), v.literal('testing'), v.literal('production')]),
+  SUPABASE_SERVICE_ROLE_KEY: v.pipe(v.string(), v.minLength(1)),
+  RECAPTCHA_SECRET_KEY: v.pipe(v.string(), v.minLength(1)),
   GMAIL_PASS: v.pipe(v.string(), v.minLength(1)),
   GMAIL_USER: v.pipe(v.string(), v.minLength(1)),
   AWS_ACCESS_KEY_ID: v.pipe(v.string(), v.minLength(1)),
   AWS_SECRET_ACCESS_KEY: v.pipe(v.string(), v.minLength(1)),
-  // Not secret key but not public
+  // Not secret key but not public --- start
   AWS_REGION: v.pipe(v.string(), v.minLength(1)),
   AWS_S3_BUCKET: v.pipe(v.string(), v.minLength(1)),
-  // Not secret key but not public
+  // Not secret key but not public --- end
 });
 
 const parsedEnv = v.safeParse(EnvSchema, process.env);

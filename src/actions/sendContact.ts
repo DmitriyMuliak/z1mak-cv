@@ -6,6 +6,7 @@ import { ContactSchemaBE, type ContactSchemaBEType } from '@/schema/contactSchem
 import { verifyRecaptchaToken } from './verifyRecaptchaToken';
 import { createFormAction } from './utils';
 import { privatePrEnv } from '@/utils/processEnv/private';
+import { requestContentTypes } from '@/consts/requestContentTypes';
 
 const AWS_REGION = privatePrEnv.AWS_REGION;
 const AWS_S3_BUCKET = privatePrEnv.AWS_S3_BUCKET;
@@ -67,7 +68,7 @@ export const sendContactAction = createFormAction(
         files.map(async (file) => ({
           filename: file.name,
           content: Buffer.from(await file.arrayBuffer()),
-          contentType: file.type || 'application/octet-stream',
+          contentType: file.type || requestContentTypes.octetStream,
         })),
       ),
     });
@@ -98,7 +99,7 @@ async function uploadFilesToBucket(files: File[]): Promise<UploadSuccess> {
         Bucket: AWS_S3_BUCKET,
         Key: key,
         Body: Buffer.from(arrayBuffer),
-        ContentType: file.type || 'application/octet-stream',
+        ContentType: file.type || requestContentTypes.octetStream,
         // ACL: 'public-read', // Don't need for public bucket (handled by Bucket policy)
       }),
     );

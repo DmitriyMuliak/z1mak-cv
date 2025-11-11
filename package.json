@@ -23,6 +23,8 @@
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.79.0",
     "@valibot/i18n": "^1.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -40,7 +42,8 @@
     "react-hook-form": "^7.64.0",
     "remark-unravel-mdx": "^1.0.0",
     "tailwind-merge": "^3.3.1",
-    "valibot": "^1.1.0"
+    "valibot": "^1.1.0",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/compat": "^1.4.0",

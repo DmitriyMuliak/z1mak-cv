@@ -1,11 +1,17 @@
-import type { ActionHandlerType, SuccessData, ResultReturn } from '@/actions/utils';
+import type {
+  ActionHandlerType,
+  SuccessData,
+  ResultReturn,
+  CreateOnSubmitHandlerConfig,
+} from '@/actions/utils';
 import type { FormState, FieldValues, UseFormReturn, Path } from 'react-hook-form';
 
 export const createOnSubmitHandler =
-  <TFieldValues extends FieldValues, TData extends SuccessData | void = void>(
-    actionHandler: ActionHandlerType<TData>,
+  <TFieldValues extends FieldValues, TData extends SuccessData | void = void, TFE = unknown>(
+    actionHandler: ActionHandlerType<TData, TFE>,
     form: UseFormReturn<TFieldValues>,
     onResult?: (dataFromActionHandler: ResultReturn<TData>) => void,
+    config?: CreateOnSubmitHandlerConfig<TFieldValues, TFE>,
   ) =>
   async (data: TFieldValues) => {
     const formData = new FormData();
@@ -46,7 +52,11 @@ export const createOnSubmitHandler =
       }
     });
 
-    const res = await actionHandler(formData);
+    const additionalFEData = config?.getAdditionalFEData
+      ? config.getAdditionalFEData(data)
+      : undefined;
+
+    const res = await actionHandler(formData, additionalFEData);
 
     if (onResult) {
       onResult(res);

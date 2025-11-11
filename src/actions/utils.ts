@@ -2,6 +2,7 @@ import { extractIssueKey } from '@/lib/validator/extractIssueKey';
 import { resolveMessage } from '@/lib/validator/resolveMessage';
 import { formDataToObject } from '@/utils/formDataToObject';
 import { getLocale, getTranslations } from 'next-intl/server';
+import { unstable_rethrow } from 'next/navigation';
 import * as v from 'valibot';
 
 // Schema can be:
@@ -22,20 +23,27 @@ type OnSubmitReturn<TData extends SuccessData | void = void> = {
   data?: TData;
 };
 
-type OnSubmit<TSchema extends AnySchema, TData extends SuccessData | void = void> = (
+type OnSubmit<TSchema extends AnySchema, TData extends SuccessData | void = void, TFE = unknown> = (
   data: v.InferOutput<TSchema>,
-  formData?: FormData,
+  formData: FormData,
+  additionalFEData: TFE | undefined,
 ) => Promise<OnSubmitReturn<TData> | void>;
 
 type ActionConfig = { isAutoSuccessReturn: boolean };
 const defaultConfig: ActionConfig = { isAutoSuccessReturn: true };
 
-async function serverFormAction<TSchema extends AnySchema, TData extends SuccessData | void = void>(
+async function serverFormAction<
+  TSchema extends AnySchema,
+  TData extends SuccessData | void = void,
+  TFE = unknown,
+>(
   schema: TSchema,
-  onSubmit: OnSubmit<TSchema, TData>,
+  onSubmit: OnSubmit<TSchema, TData, TFE>,
   formData: FormData, // Re-created by Next from http request
+  additionalFEData: TFE | undefined,
   _config: ActionConfig,
 ): Promise<ResultReturn<TData>> {
+  'use server';
   const locale = await getLocale();
   const t = await getTranslations({ namespace: 'validator', locale });
   const raw = formDataToObject(formData);
@@ -54,7 +62,7 @@ async function serverFormAction<TSchema extends AnySchema, TData extends Success
       return { success: false, errors };
     }
 
-    const submitResult = await onSubmit(result.output, formData);
+    const submitResult = await onSubmit(result.output, formData, additionalFEData);
 
     if (submitResult?.errors) return { success: false, errors: submitResult.errors };
 
@@ -63,6 +71,7 @@ async function serverFormAction<TSchema extends AnySchema, TData extends Success
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Contact Form Unexpected error', error);
+    unstable_rethrow(error);
     return {
       success: false,
       errors: { 'root.unexpected': ['Unexpected error, please try again later.'] },
@@ -74,16 +83,29 @@ async function serverFormAction<TSchema extends AnySchema, TData extends Success
 export function createFormAction<
   TSchema extends AnySchema,
   TData extends SuccessData | void = void,
->(schema: TSchema, onSubmit: OnSubmit<TSchema, TData>, config?: ActionConfig) {
-  return async (formData: FormData) =>
-    serverFormAction(schema, onSubmit, formData, config || defaultConfig);
+  TFE = unknown,
+>(schema: TSchema, onSubmit: OnSubmit<TSchema, TData, TFE>, config?: ActionConfig) {
+  return async (formData: FormData, additionalFEData?: TFE) =>
+    serverFormAction(schema, onSubmit, formData, additionalFEData, config || defaultConfig);
 }
 
-export type ActionHandlerType<TData extends SuccessData | void = void> = (
+export type ActionHandlerType<TData extends SuccessData | void = void, TFE = unknown> = (
   formData: FormData,
+  additionalFEData?: TFE,
 ) => Promise<ResultReturn<TData>>;
 
 // Example of add type to on success callback:
 // type TDataFromAction = Awaited<ReturnType<typeof sendContactAction>> extends { success: true, data: infer D } ? D : void;
 // type TData = Awaited<ReturnType<typeof sendContactAction>>;
 // const onSuccessCb = (data: TData) => data;
+
+type FieldErrors<T> = Partial<Record<keyof T, string[]>>;
+
+export type ActionReturn<T> = Promise<{
+  success: boolean;
+  errors: FieldErrors<T>;
+} | void>;
+
+export interface CreateOnSubmitHandlerConfig<TFieldValues, T = unknown> {
+  getAdditionalFEData?: (data: TFieldValues) => T;
+}

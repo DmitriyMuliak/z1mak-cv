@@ -3,14 +3,16 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { ReactNode } from 'react';
 import { Control, FieldValues, Path } from 'react-hook-form';
 
 interface TextFieldProps<T extends FieldValues> {
   control: Control<T>;
   name: Path<T>;
-  label: string;
+  label: string | ReactNode;
   placeholder?: string;
   type?: string;
+  inputClassName?: string;
 }
 
 export function TextField<T extends FieldValues>({
@@ -19,6 +21,7 @@ export function TextField<T extends FieldValues>({
   label,
   placeholder,
   type = 'text',
+  inputClassName,
 }: TextFieldProps<T>) {
   return (
     <div className="relative" data-form-field-id={name}>
@@ -35,6 +38,7 @@ export function TextField<T extends FieldValues>({
                 placeholder={placeholder}
                 className={cn(
                   'placeholder:text-foreground border-stone-950 dark:border-slate-400/20 text-gray-900 dark:text-white',
+                  inputClassName,
                 )}
               />
             </FormControl>
@@ -45,3 +49,5 @@ export function TextField<T extends FieldValues>({
     </div>
   );
 }
+
+export const defaultInputStyles = 'placeholder:text-muted-foreground border-input text-foreground';

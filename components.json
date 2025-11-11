@@ -12,6 +12,7 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
+    "store": "@/store",
     "actions": "@/actions",
     "schema": "@/schema",
     "components": "@/components",
