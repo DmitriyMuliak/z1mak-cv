@@ -4,6 +4,7 @@ import { privatePrEnv } from '@/utils/processEnv/private';
 import { publicPrEnv } from '@/utils/processEnv/public';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { getServerClientCookiesOptions } from './utils/getServerClientCookiesOptions';
 
 const publicInfoPatterns = [paths.termsOfService, paths.privacyPolicy];
 const publicAuthPatterns = [paths.login, paths.signUp, paths.resetPassword, paths.setPassword];
@@ -29,20 +30,14 @@ export async function updateSession(
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          // Updating cookies in the request
-          // request.cookies ignores all options (secure, sameSite, path, etc.) because they only make sense when we send the response back to the browser.
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-
-          // Updating cookies in the response so the browser receives them
           cookiesToSet.forEach(({ name, value, options }) => {
-            const fixedOptions = {
-              ...options,
-              secure: privatePrEnv.NODE_ENV === 'production',
-              // httpOnly: true, // TODO: add
-              sameSite: 'lax',
-              path: '/',
-            } as const;
+            // Updating cookies in the request
+            // request.cookies ignores all options (secure, sameSite, path, etc.)
+            // because they only make sense when we send the response back to the browser.
+            request.cookies.set(name, value);
 
+            // Updating cookies in the response so the browser receives them
+            const fixedOptions = getServerClientCookiesOptions(options);
             response.cookies.set(name, value, fixedOptions);
           });
         },
