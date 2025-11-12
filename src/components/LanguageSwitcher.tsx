@@ -23,8 +23,8 @@ export function LanguageSwitcher() {
   return (
     <div className="absolute top-[20px] lg:top-[72px] right-0 text-white">
       <Select onValueChange={changeLanguage} defaultValue={locale}>
-        <SelectTrigger className="w-[120px] cursor-pointer frosted-card">
-          <SelectValue placeholder="Language" />
+        <SelectTrigger className="min-w-[124px] cursor-pointer frosted-card">
+          <SelectValue placeholder="Language" className="ring-background" />
         </SelectTrigger>
         <SelectContent className=" m-0 p-0">
           {routing.locales.map((l) => (
