@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { publicPrEnv } from '@/utils/processEnv/public';
 
-/**
- * Інтерфейс, що повторює найбільш поширені методи console.
- */
 interface Logger {
   log(...args: any[]): void;
   warn(...args: any[]): void;
