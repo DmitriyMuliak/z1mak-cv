@@ -43,6 +43,7 @@ export const signInWithEmailAction = createFormAction(
     const { data, error } = await supabase.auth.signInWithPassword({
       email: dataForm.email,
       password: dataForm.password,
+      options: { captchaToken: dataForm.captchaToken },
     });
 
     if (error) {

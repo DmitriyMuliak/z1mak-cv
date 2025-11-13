@@ -5,12 +5,14 @@ export const EnvSchema = v.object({
   NEXT_PUBLIC_SUPABASE_URL: v.pipe(v.string(), v.minLength(1)),
   NEXT_PUBLIC_SUPABASE_PUBLISHEBLE_KEY: v.pipe(v.string(), v.minLength(1)),
   NEXT_PUBLIC_RECAPTCHA_SITE_KEY: v.pipe(v.string(), v.minLength(1)),
-  NODE_ENV: v.union([v.literal('development'), v.literal('testing'), v.literal('production')]),
+  NEXT_PUBLIC_CLOUDFLARE_CAPTCHA_SITE_KEY: v.pipe(v.string(), v.minLength(1)),
   NEXT_PUBLIC_DEV_LOGGER: v.optional(v.union([v.literal('true'), v.literal('false')])),
+  NODE_ENV: v.union([v.literal('development'), v.literal('testing'), v.literal('production')]),
 });
 
 const parsedEnv = v.safeParse(EnvSchema, {
   NEXT_PUBLIC_RECAPTCHA_SITE_KEY: process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY,
+  NEXT_PUBLIC_CLOUDFLARE_CAPTCHA_SITE_KEY: process.env.NEXT_PUBLIC_CLOUDFLARE_CAPTCHA_SITE_KEY,
   NODE_ENV: process.env.NODE_ENV,
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
   NEXT_PUBLIC_SUPABASE_PUBLISHEBLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHEBLE_KEY,

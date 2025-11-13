@@ -32,6 +32,7 @@ import {
 import { useRouter } from '@/i18n/navigation';
 import { Link } from '@/components/Link';
 import { stripLocale } from '@/utils/stripLocale';
+import { TurnstileCaptchaField } from '@/components/Forms/fields/TurnstileCaptcha';
 
 const getAdditionalFEData = () => getStateWithRedirectFromUrl();
 
@@ -80,7 +81,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
           <CardTitle className="text-xl">{t('title')}</CardTitle>
           <CardDescription>{t('oAuthTitle')}</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-2 sm:px-6">
           <Form {...form}>
             <form onSubmit={onSubmit} className="flex-1 max-w-md space-y-5">
               <FieldGroup>
@@ -105,26 +106,29 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                   placeholder={tf('email.placeholder')}
                   inputClassName={defaultInputStyles}
                 />
-                <Field>
-                  <TextField
-                    control={form.control}
-                    type="password"
-                    name="password"
-                    label={
-                      <div className="flex items-center w-full">
-                        <FieldLabel htmlFor="password">{tf('password.label')}</FieldLabel>
-                        <Link
-                          href={paths.resetPassword}
-                          className="ml-auto text-sm underline-offset-4 hover:underline"
-                        >
-                          {t('forgotPasswordTitle')}
-                        </Link>
-                      </div>
-                    }
-                    placeholder={tf('password.placeholder')}
-                    inputClassName={defaultInputStyles}
-                  />
-                </Field>
+                <TextField
+                  control={form.control}
+                  type="password"
+                  name="password"
+                  label={
+                    <div className="flex items-center w-full">
+                      <FieldLabel htmlFor="password">{tf('password.label')}</FieldLabel>
+                      <Link
+                        href={paths.resetPassword}
+                        className="ml-auto text-sm underline-offset-4 hover:underline"
+                      >
+                        {t('forgotPasswordTitle')}
+                      </Link>
+                    </div>
+                  }
+                  placeholder={tf('password.placeholder')}
+                  inputClassName={defaultInputStyles}
+                />
+                <TurnstileCaptchaField
+                  control={form.control}
+                  name="captchaToken"
+                  formName="sign-in"
+                />
                 <Field>
                   <SubmitActionButton
                     isSubmitting={isSubmitting}

@@ -13,6 +13,7 @@ export const requestResetPasswordAction = createFormAction(
     const locale = await getLocale();
     const url = getBaseUrl() + '/' + locale + '/auth/update-password';
     await supabase.auth.resetPasswordForEmail(values.email, {
+      captchaToken: values.captchaToken,
       redirectTo: url,
     });
   },

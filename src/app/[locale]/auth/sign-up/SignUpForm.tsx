@@ -20,8 +20,9 @@ import { paths } from '@/consts/routes';
 import { SubmitActionButton } from '@/components/Forms/buttons/SubmitActionButton';
 import { getRedirectFromUrl } from '@/utils/getRedirectFromUrl';
 import { devLogger } from '@/lib/devLogger';
+import { TurnstileCaptchaField } from '@/components/Forms/fields/TurnstileCaptcha';
+import { useRouter } from '@/i18n/navigation';
 
-const onSuccessCb = (data: unknown) => devLogger.log('onSuccessCb DATA', data);
 const getAdditionalFEData = () => getRedirectFromUrl();
 
 // Todo: use form factory with action creators and use server actions
@@ -35,12 +36,17 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<'div'>)
     mode: 'onBlur',
     defaultValues: { name: '', email: '', password: '' },
   });
+  const router = useRouter();
 
   const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
   const isSubmitting = form.formState.isSubmitting;
   const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
   const showSuccessLoader = delayedIsLoading && isSuccess;
 
+  const onSuccessCb = (data: unknown) => {
+    devLogger.log('onSuccessCb DATA', data);
+    router.push(paths.login);
+  };
   const handleSubmitCb = createOnSubmitHandler(signUpWithEmailAction, form, onSuccessCb, {
     getAdditionalFEData,
   });
@@ -54,7 +60,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<'div'>)
           <CardTitle className="text-xl">{t('title')}</CardTitle>
           <CardDescription>{t('description')}</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-2 sm:px-6">
           <Form {...form}>
             <form onSubmit={onSubmit} className="flex-1 max-w-md space-y-5">
               <FieldGroup>
@@ -80,6 +86,11 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<'div'>)
                   label={tf('password.label')}
                   placeholder={tf('password.placeholder')}
                   inputClassName={defaultInputStyles}
+                />
+                <TurnstileCaptchaField
+                  control={form.control}
+                  name="captchaToken"
+                  formName="sign-up"
                 />
                 <Field>
                   <SubmitActionButton

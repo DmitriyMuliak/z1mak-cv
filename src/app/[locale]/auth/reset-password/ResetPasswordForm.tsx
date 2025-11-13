@@ -20,6 +20,8 @@ import { Field, FieldGroup } from '@/components/ui/field';
 import { SubmitActionButton } from '@/components/Forms/buttons/SubmitActionButton';
 import { getStateWithRedirectFromUrl } from '@/utils/getRedirectFromUrl';
 import { useRouter } from '@/i18n/navigation';
+import { TurnstileCaptchaField } from '@/components/Forms/fields/TurnstileCaptcha';
+import { paths } from '@/consts/routes';
 
 const getAdditionalFEData = () => getStateWithRedirectFromUrl();
 
@@ -41,9 +43,7 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentProps<
   const showSuccessLoader = delayedIsLoading && isSuccess;
 
   const onSuccessCb = (_data: unknown) => {
-    if (!showSuccessLoader) {
-      router.replace('/');
-    }
+    router.replace(paths.home);
   };
 
   const handleSubmitCb = createOnSubmitHandler(requestResetPasswordAction, form, onSuccessCb, {
@@ -59,7 +59,7 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentProps<
           <CardTitle className="text-xl">{t('title')}</CardTitle>
           <CardDescription>{t('description')}</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-2 sm:px-6">
           <Form {...form}>
             <form onSubmit={onSubmit} className="flex-1 max-w-md space-y-5">
               <FieldGroup>
@@ -70,6 +70,11 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentProps<
                   label={tf('email.label')}
                   placeholder={tf('email.placeholder')}
                   inputClassName={defaultInputStyles}
+                />
+                <TurnstileCaptchaField
+                  control={form.control}
+                  name="captchaToken"
+                  formName="reset-pass-request"
                 />
                 <Field>
                   <SubmitActionButton

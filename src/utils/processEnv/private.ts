@@ -4,6 +4,7 @@ const EnvSchema = v.object({
   NODE_ENV: v.union([v.literal('development'), v.literal('testing'), v.literal('production')]),
   SUPABASE_SERVICE_ROLE_KEY: v.pipe(v.string(), v.minLength(1)),
   RECAPTCHA_SECRET_KEY: v.pipe(v.string(), v.minLength(1)),
+  CLOUDFLARE_CAPTCHA_SECRET_KEY: v.pipe(v.string(), v.minLength(1)),
   GMAIL_PASS: v.pipe(v.string(), v.minLength(1)),
   GMAIL_USER: v.pipe(v.string(), v.minLength(1)),
   AWS_ACCESS_KEY_ID: v.pipe(v.string(), v.minLength(1)),

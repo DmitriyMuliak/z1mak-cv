@@ -1,5 +1,5 @@
 import * as v from 'valibot';
-import { createMessageHandler } from '@/lib/validator/createMessageHandler';
+import { createMessageHandler, createSimpleMessage } from '@/lib/validator/createMessageHandler';
 
 const PasswordSchema = v.pipe(
   v.string(),
@@ -14,9 +14,15 @@ const NameSchema = v.pipe(
 
 const EmailSchema = v.pipe(v.string(), v.email());
 
+const CaptchaSchema = v.pipe(
+  v.optional(v.string()),
+  v.check((value) => !!value, createSimpleMessage('captchaRequired')),
+);
+
 export const SignInSchemaBase = v.object({
   email: EmailSchema,
   password: PasswordSchema,
+  captchaToken: CaptchaSchema,
 });
 
 export type SignInSchemaBaseType = v.InferOutput<typeof SignInSchemaBase>;
@@ -25,12 +31,14 @@ export const SignUpSchemaBase = v.object({
   name: NameSchema,
   email: EmailSchema,
   password: PasswordSchema,
+  captchaToken: CaptchaSchema,
 });
 
 export type SignUpSchemaBaseType = v.InferOutput<typeof SignUpSchemaBase>;
 
 export const RequestResetPasswordSchemaBase = v.object({
   email: EmailSchema,
+  captchaToken: CaptchaSchema,
 });
 
 export type RequestResetPasswordSchemaBaseType = v.InferOutput<

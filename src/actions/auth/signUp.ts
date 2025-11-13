@@ -17,6 +17,7 @@ export const signUpWithEmailAction = createFormAction(
       email: dataForm.email,
       password: dataForm.password,
       options: {
+        captchaToken: dataForm.captchaToken,
         emailRedirectTo: redirectTo,
         data: {
           full_name: dataForm.name, // add to user.user_metadata

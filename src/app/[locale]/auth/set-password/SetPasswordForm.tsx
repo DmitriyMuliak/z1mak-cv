@@ -43,7 +43,7 @@ export function SetPasswordForm({ className, ...props }: React.ComponentProps<'d
           <CardTitle className="text-xl">{t('title')}</CardTitle>
           <CardDescription>{t('description')}</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-2 sm:px-6">
           <Form {...form}>
             <form onSubmit={onSubmit} className="flex-1 max-w-md space-y-5">
               <FieldGroup>
