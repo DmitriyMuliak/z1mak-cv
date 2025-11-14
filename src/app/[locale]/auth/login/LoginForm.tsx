@@ -30,7 +30,7 @@ import {
   redirectedFromURLParamKey,
 } from '@/utils/getRedirectFromUrl';
 import { useRouter } from '@/i18n/navigation';
-import { Link } from '@/components/Link';
+import { Link } from '@/navigation';
 import { stripLocale } from '@/utils/stripLocale';
 import { TurnstileCaptchaField } from '@/components/Forms/fields/TurnstileCaptcha';
 
@@ -128,6 +128,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                   control={form.control}
                   name="captchaToken"
                   formName="sign-in"
+                  containerClassName="sm:-ml-[6px]"
                 />
                 <Field>
                   <SubmitActionButton

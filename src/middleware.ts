@@ -7,7 +7,10 @@ const handleI18nRouting = createMiddleware(routing);
 
 export async function middleware(request: NextRequest) {
   const response = handleI18nRouting(request);
-  return await updateSession(request, response);
+  const finalResponse = await updateSession(request, response);
+  // https://nextjs.org/docs/app/guides/content-security-policy
+  // finalResponse.headers.set('Content-Security-Policy', csp);
+  return finalResponse;
 }
 
 export const config = {

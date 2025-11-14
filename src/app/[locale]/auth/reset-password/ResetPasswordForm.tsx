@@ -75,6 +75,7 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentProps<
                   control={form.control}
                   name="captchaToken"
                   formName="reset-pass-request"
+                  containerClassName="sm:-ml-[6px]"
                 />
                 <Field>
                   <SubmitActionButton

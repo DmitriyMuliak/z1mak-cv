@@ -2,18 +2,17 @@
 
 import { useTranslations } from 'next-intl';
 import { usePathname } from '@/navigation';
-
-import styles from './styles.module.css';
-import { useOptimistic, useEffect, startTransition, useState } from 'react';
-import { cn } from '@/lib/utils';
+import { useState } from 'react';
 import { Hamburger, SquareX } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
 import { paths } from '@/consts/routes';
-import { Link } from '@/components/Link';
+import { Link } from '@/navigation';
+import styles from './styles.module.css';
 
 export const Header = () => {
   const [isClosed, setIsClosed] = useState(true);
   const realPathname = usePathname();
-  const [optimisticPathname, setOptimisticPathname] = useOptimistic(realPathname);
   const t = useTranslations('header.menu');
 
   const links = [
@@ -22,16 +21,6 @@ export const Header = () => {
     { href: paths.contact, label: t('contactTitle') },
     { href: paths.cvChecker, label: t('cvCheckerTitle') },
   ];
-
-  useEffect(() => {
-    startTransition(() => {
-      setOptimisticPathname(realPathname);
-    });
-  }, [realPathname, setOptimisticPathname]);
-
-  useEffect(() => {
-    setIsClosed(true);
-  }, [optimisticPathname]);
 
   return (
     <header className={cn(styles.header)}>
@@ -43,20 +32,11 @@ export const Header = () => {
           <SquareX size={30} />
         </button>
         {links.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={styles.navLink}
-            onClick={() => {
-              startTransition(() => {
-                setOptimisticPathname(link.href);
-              });
-            }}
-          >
+          <Link key={link.href} href={link.href} className={styles.navLink}>
             <span
               className={cn(
                 styles.linkText,
-                optimisticPathname === link.href ? styles.linkTextActive : '',
+                realPathname === link.href ? styles.linkTextActive : '',
               )}
             >
               {link.label}

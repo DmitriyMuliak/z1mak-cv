@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Field, FieldDescription, FieldGroup } from '@/components/ui/field';
-import { Link } from '@/components/Link';
+import { Link } from '@/navigation';
 import { paths } from '@/consts/routes';
 import { SubmitActionButton } from '@/components/Forms/buttons/SubmitActionButton';
 import { getRedirectFromUrl } from '@/utils/getRedirectFromUrl';
@@ -91,6 +91,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<'div'>)
                   control={form.control}
                   name="captchaToken"
                   formName="sign-up"
+                  containerClassName="sm:-ml-[6px]"
                 />
                 <Field>
                   <SubmitActionButton

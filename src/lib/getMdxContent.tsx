@@ -4,7 +4,7 @@ import { compileMDX } from 'next-mdx-remote/rsc';
 import { remarkUnravelMdx } from 'remark-unravel-mdx';
 import * as CardComponents from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Link } from '@/components/Link';
+import { Link } from '@/navigation';
 import * as Icons from '@/components/icons';
 import { paths } from '@/consts/routes';
 
