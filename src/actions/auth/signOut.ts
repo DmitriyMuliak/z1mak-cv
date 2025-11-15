@@ -1,5 +1,6 @@
 'use server';
 
+import { paths } from '@/consts/routes';
 import { redirect } from '@/i18n/navigation';
 import { devLogger } from '@/lib/devLogger';
 import { createServerClient } from '@/lib/supabase/server';
@@ -13,6 +14,6 @@ export const signOutAction = async () => {
     devLogger.log('signOutAction Error', error);
     return { success: false };
   } else {
-    redirect({ href: '/', locale });
+    redirect({ href: paths.home, locale });
   }
 };

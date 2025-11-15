@@ -52,6 +52,9 @@ export const signInWithEmailAction = createFormAction(
       if (error.code === 'invalid_credentials') {
         return { success: false, errors: { email: [''], password: [t('invalid_credentials')] } };
       }
+      if (error.code === 'captcha_failed') {
+        return { success: false, errors: { captchaToken: [t('captchaInvalid')] } };
+      }
       return { success: false };
     }
 

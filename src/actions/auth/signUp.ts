@@ -26,6 +26,12 @@ export const signUpWithEmailAction = createFormAction(
     });
     if (error) {
       devLogger.log('signInWithEmailAction Error', error);
+      return;
+    }
+    if (data.user && !data.session) {
+      // 'user_already_exists_try_login'
+      // after couple of tries - send an email with clarify about resetting password
+      devLogger.log('signInWithEmailAction already exist', data);
     }
     devLogger.log('signUp data', data);
   },

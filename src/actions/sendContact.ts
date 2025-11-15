@@ -15,7 +15,6 @@ const AWS_SECRET_ACCESS_KEY = privatePrEnv.AWS_SECRET_ACCESS_KEY;
 const GMAIL_USER = privatePrEnv.GMAIL_USER;
 const GMAIL_PASS = privatePrEnv.GMAIL_PASS;
 
-// TODO: add OAuth2 authentication
 const mailTransport = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -64,13 +63,14 @@ export const sendContactAction = createFormAction(
       to: GMAIL_USER,
       subject: 'Contact form from z1makCV',
       html,
-      attachments: await Promise.all(
-        files.map(async (file) => ({
-          filename: file.name,
-          content: Buffer.from(await file.arrayBuffer()),
-          contentType: file.type || requestContentTypes.octetStream,
-        })),
-      ),
+      // Commented for reduce outcome Vercel traffic
+      // attachments: await Promise.all(
+      //   files.map(async (file) => ({
+      //     filename: file.name,
+      //     content: Buffer.from(await file.arrayBuffer()),
+      //     contentType: file.type || requestContentTypes.octetStream,
+      //   })),
+      // ),
     });
   },
 );

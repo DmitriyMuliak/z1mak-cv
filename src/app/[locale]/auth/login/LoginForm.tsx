@@ -62,8 +62,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
   const onSuccessCb = (result: Awaited<ReturnType<typeof signInWithEmailAction>>) => {
     if (result.success && result.data) {
       const state = decodeURIComponent(result.data.redirectTo);
-      const pathName = JSON.parse(state) as { redirectedFrom?: string };
-      if (pathName.redirectedFrom) {
+      const pathName = JSON.parse(state) as { redirectedFrom?: string } | null;
+      if (pathName && pathName.redirectedFrom) {
         router.replace(stripLocale(pathName.redirectedFrom));
       }
     }

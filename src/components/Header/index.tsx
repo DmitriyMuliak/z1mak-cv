@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { usePathname } from '@/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Hamburger, SquareX } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -14,6 +14,11 @@ export const Header = () => {
   const [isClosed, setIsClosed] = useState(true);
   const realPathname = usePathname();
   const t = useTranslations('header.menu');
+
+  useEffect(() => {
+    if (!isClosed) setIsClosed(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [realPathname]);
 
   const links = [
     { href: paths.home, label: t('aboutTitle') },

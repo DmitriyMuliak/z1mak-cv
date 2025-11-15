@@ -10,7 +10,7 @@ import * as v from 'valibot';
 // v.ObjectSchema<TEntries, undefined> || v.SchemaWithPipe<v.ObjectSchema<TEntries, undefined>, v.BaseIssue<unknown>>
 type AnySchema = v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>;
 
-type ResultReturnError = Record<string, string[]>;
+type ResultReturnError = Partial<Record<string, string[]>>; // Partial need for TS correctly infer super return type after couple of object returns with different keys
 export type SuccessData = Record<string, unknown>;
 export type ResultReturn<TData extends SuccessData | void = void> = {
   success: boolean;
