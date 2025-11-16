@@ -1,13 +1,20 @@
 type RequestInterceptor<P> = (
   url: string,
   params?: P,
-  options?: RequestInit,
+  options?: ApiRequestOptions,
 ) => Promise<{ handled: boolean; data?: unknown }>;
-type RequestBody = object | string | FormData | undefined; // string | FormData | ReadableStream<any> | Blob | ArrayBuffer | ArrayBufferView<ArrayBuffer> | URLSearchParams | null;
+
+type RequestBody = object | string | FormData | undefined;
 
 interface ApiServiceOptions {
   baseUrl: string;
   headers?: Record<string, string>;
+}
+
+type ResponseParseType = 'json' | 'text' | 'blob' | 'arrayBuffer' | 'formData' | 'response';
+
+export interface ApiRequestOptions extends RequestInit {
+  responseAs?: ResponseParseType;
 }
 
 export class ApiService {
@@ -28,19 +35,15 @@ export class ApiService {
     this.interceptors.set(urlPattern, interceptor);
   }
 
-  private getCorrectHeaders(body: RequestBody, options?: RequestInit) {
-    const finalHeaders = { ...this.headers, ...options?.headers } as Record<string, string>; // can be Headers || string[][]
+  private getCorrectHeaders(body: RequestBody, options?: ApiRequestOptions) {
+    const finalHeaders = { ...this.headers, ...options?.headers } as Record<string, string>;
 
-    // Prevent setting default 'Content-Type': 'application/json'
-
-    // Browser and NodeJs will auto set correct header for FormData with boundary
     if (body instanceof FormData) {
       if (finalHeaders['Content-Type']) {
         delete finalHeaders['Content-Type'];
       }
     }
 
-    // Browser and NodeJs will auto set correct header for URLSearchParams
     if (body instanceof URLSearchParams) {
       if (finalHeaders['Content-Type']) {
         delete finalHeaders['Content-Type'];
@@ -58,10 +61,12 @@ export class ApiService {
 
   private async request<R, P = unknown>(
     endpoint: string,
-    options: RequestInit,
+    options: ApiRequestOptions,
     body?: P,
   ): Promise<R> {
     const url = `${this.baseUrl}${endpoint}`;
+
+    const { responseAs = 'json', ...fetchOptions } = options;
 
     if (this.getIsHaveInterceptors()) {
       const interceptorResult = await this._applyInterceptors(url, options, body);
@@ -72,9 +77,11 @@ export class ApiService {
 
     try {
       const parsedBody = body ? this.getParsedBody(body) : undefined;
-      const headers = this.getCorrectHeaders(body as RequestBody, options);
+
+      const headers = this.getCorrectHeaders(body as RequestBody, fetchOptions);
+
       const response = await fetch(url, {
-        ...options,
+        ...fetchOptions,
         headers,
         ...(parsedBody && { body: parsedBody }),
       });
@@ -88,7 +95,22 @@ export class ApiService {
         return undefined as R;
       }
 
-      return (await response.json()) as R;
+      switch (responseAs) {
+        case 'json':
+          return (await response.json()) as R;
+        case 'text':
+          return (await response.text()) as R;
+        case 'blob':
+          return (await response.blob()) as R;
+        case 'arrayBuffer':
+          return (await response.arrayBuffer()) as R;
+        case 'formData':
+          return (await response.formData()) as R;
+        case 'response':
+          return response as R;
+        default:
+          return (await response.json()) as R;
+      }
     } catch (error) {
       console.error('API request failed:', error);
       throw error;
@@ -98,13 +120,13 @@ export class ApiService {
   public get<R, P extends Record<string, unknown> = never>(
     endpoint: string,
     params?: P,
-    options?: RequestInit,
+    options?: ApiRequestOptions, // CHANGED
   ): Promise<R> {
     const urlWithParams = params
       ? `${endpoint}?${new URLSearchParams(params as Record<string, string>).toString()}`
       : endpoint;
 
-    const fetchOptions: RequestInit = {
+    const fetchOptions: ApiRequestOptions = {
       ...options,
       method: 'GET',
     };
@@ -115,9 +137,9 @@ export class ApiService {
   public post<R, P extends RequestBody>(
     endpoint: string,
     body: P,
-    options?: RequestInit,
+    options?: ApiRequestOptions,
   ): Promise<R> {
-    const fetchOptions: RequestInit = {
+    const fetchOptions: ApiRequestOptions = {
       ...options,
       method: 'POST',
     };
@@ -128,9 +150,9 @@ export class ApiService {
   public put<R, P extends RequestBody>(
     endpoint: string,
     body: P,
-    options?: RequestInit,
+    options?: ApiRequestOptions,
   ): Promise<R> {
-    const fetchOptions: RequestInit = {
+    const fetchOptions: ApiRequestOptions = {
       ...options,
       method: 'PUT',
     };
@@ -140,17 +162,17 @@ export class ApiService {
   public patch<R, P extends RequestBody>(
     endpoint: string,
     body: P,
-    options?: RequestInit,
+    options?: ApiRequestOptions,
   ): Promise<R> {
-    const fetchOptions: RequestInit = {
+    const fetchOptions: ApiRequestOptions = {
       ...options,
       method: 'PATCH',
     };
     return this.request<R, P>(endpoint, fetchOptions, body);
   }
 
-  public delete<R = undefined>(endpoint: string, options?: RequestInit): Promise<R> {
-    const fetchOptions: RequestInit = {
+  public delete<R = undefined>(endpoint: string, options?: ApiRequestOptions): Promise<R> {
+    const fetchOptions: ApiRequestOptions = {
       ...options,
       method: 'DELETE',
     };
@@ -161,7 +183,7 @@ export class ApiService {
     return this.interceptors.size > 0;
   }
 
-  private async _applyInterceptors<P>(url: string, options: RequestInit, params?: P) {
+  private async _applyInterceptors<P>(url: string, options: ApiRequestOptions, params?: P) {
     if (!this.getIsHaveInterceptors()) {
       return { handled: false };
     }
