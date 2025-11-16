@@ -1,8 +1,10 @@
+import { devLogger } from '@/lib/devLogger';
+
 type RequestInterceptor<P> = (
   url: string,
   params?: P,
   options?: ApiRequestOptions,
-) => Promise<{ handled: boolean; data?: unknown }>;
+) => Promise<{ data?: unknown }>;
 
 type RequestBody = object | string | FormData | undefined;
 
@@ -20,8 +22,7 @@ export interface ApiRequestOptions extends RequestInit {
 export class ApiService {
   private baseUrl: string;
   private headers: Record<string, string>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private interceptors: Map<string | RegExp, RequestInterceptor<any>> = new Map();
+  private interceptors: Map<string | RegExp, RequestInterceptor<unknown>> = new Map();
 
   constructor(options: ApiServiceOptions) {
     this.baseUrl = options.baseUrl;
@@ -32,7 +33,7 @@ export class ApiService {
   }
 
   public addInterceptor<P>(urlPattern: string | RegExp, interceptor: RequestInterceptor<P>): void {
-    this.interceptors.set(urlPattern, interceptor);
+    this.interceptors.set(urlPattern, interceptor as RequestInterceptor<unknown>);
   }
 
   private getCorrectHeaders(body: RequestBody, options?: ApiRequestOptions) {
@@ -87,10 +88,22 @@ export class ApiService {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        let errorData: Partial<Record<string, string>> = {};
+
+        try {
+          errorData = await response.json();
+        } catch (_parseError) {
+          errorData.message = response.statusText;
+        }
+
+        const errorMessage = errorData?.message || `${response.status}`;
+
+        devLogger.error('API Error Data:', errorData);
+        throw new Error(errorMessage);
       }
 
       if (response.status === 204) {
+        devLogger.info('API request done with: response.status === 204, return undefined');
         // No Content
         return undefined as R;
       }
@@ -112,7 +125,7 @@ export class ApiService {
           return (await response.json()) as R;
       }
     } catch (error) {
-      console.error('API request failed:', error);
+      devLogger.error('API request failed:', error);
       throw error;
     }
   }
@@ -120,7 +133,7 @@ export class ApiService {
   public get<R, P extends Record<string, unknown> = never>(
     endpoint: string,
     params?: P,
-    options?: ApiRequestOptions, // CHANGED
+    options?: ApiRequestOptions,
   ): Promise<R> {
     const urlWithParams = params
       ? `${endpoint}?${new URLSearchParams(params as Record<string, string>).toString()}`
@@ -195,9 +208,7 @@ export class ApiService {
 
       if (match) {
         const result = await interceptor(url, params, options);
-        if (result.handled) {
-          return result;
-        }
+        return { handled: true, data: result.data };
       }
     }
     return { handled: false };

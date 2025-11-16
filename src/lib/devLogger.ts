@@ -1,15 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { publicPrEnv } from '@/utils/processEnv/public';
 
 interface Logger {
-  log(...args: any[]): void;
-  warn(...args: any[]): void;
-  error(...args: any[]): void;
-  info(...args: any[]): void;
-  debug(...args: any[]): void;
-  table(tabularData: any, properties?: readonly string[]): void;
-  assert(condition?: boolean, ...args: any[]): void;
-  dir(item: any, options?: any): void;
+  log(...args: unknown[]): void;
+  warn(...args: unknown[]): void;
+  error(...args: unknown[]): void;
+  info(...args: unknown[]): void;
+  debug(...args: unknown[]): void;
+  table(tabularData: unknown, properties?: readonly string[]): void;
+  assert(condition?: boolean, ...args: unknown[]): void;
+  dir(item: unknown, options?: unknown): void;
 }
 
 /**
@@ -23,42 +22,43 @@ class DevLogger implements Logger {
     this.isLoggingEnabled = Boolean(publicPrEnv.NEXT_PUBLIC_DEV_LOGGER);
   }
 
-  private logIfEnabled(method: keyof Console, ...args: any[]): void {
-    if (this.isLoggingEnabled) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-      (console[method] as Function)(...args);
+  private logIfEnabled(method: keyof Console, ...args: unknown[]): void {
+    if (!this.isLoggingEnabled) {
+      return;
     }
+
+    (console[method] as (...args: unknown[]) => void)(...args);
   }
 
-  log(...args: any[]): void {
+  log(...args: unknown[]): void {
     this.logIfEnabled('log', ...args);
   }
 
-  warn(...args: any[]): void {
+  warn(...args: unknown[]): void {
     this.logIfEnabled('warn', ...args);
   }
 
-  error(...args: any[]): void {
+  error(...args: unknown[]): void {
     this.logIfEnabled('error', ...args);
   }
 
-  info(...args: any[]): void {
+  info(...args: unknown[]): void {
     this.logIfEnabled('info', ...args);
   }
 
-  debug(...args: any[]): void {
+  debug(...args: unknown[]): void {
     this.logIfEnabled('debug', ...args);
   }
 
-  table(tabularData: any, properties?: readonly string[]): void {
+  table(tabularData: unknown, properties?: readonly string[]): void {
     this.logIfEnabled('table', tabularData, properties);
   }
 
-  assert(condition?: boolean, ...args: any[]): void {
+  assert(condition?: boolean, ...args: unknown[]): void {
     this.logIfEnabled('assert', condition, ...args);
   }
 
-  dir(item: any, options?: any): void {
+  dir(item: unknown, options?: unknown): void {
     this.logIfEnabled('dir', item, options);
   }
 }
