@@ -35,6 +35,7 @@ interface FileDropzoneFieldProps<T extends FieldValues> extends DropzoneOptions 
   setError: UseFormSetError<T>;
   clearErrors: UseFormClearErrors<T>;
   files: { file: File }[];
+  className?: string;
 }
 
 export function FileDropzoneField<T extends FieldValues>({
@@ -46,6 +47,7 @@ export function FileDropzoneField<T extends FieldValues>({
   validateTrigger,
   prepend,
   isSingleFile,
+  className,
   // setError,
   // clearErrors,
   ...rest
@@ -91,6 +93,7 @@ export function FileDropzoneField<T extends FieldValues>({
                       className: cn(
                         'p-3 mb-2 flex flex-col items-center justify-center w-full rounded-md cursor-pointer border border-stone-950 hover:bg-gray-600/10 dark:border-slate-400/20 dark:bg-input/30 dark:hover:bg-gray-600/10 ',
                         isDragActive ? `bg-gray-600/10 dark:bg-gray-600/10` : '',
+                        className,
                       ),
                     })}
                   >

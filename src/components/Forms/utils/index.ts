@@ -4,7 +4,7 @@ import type {
   ResultReturn,
   CreateOnSubmitHandlerConfig,
 } from '@/actions/utils';
-import type { FormState, FieldValues, UseFormReturn, Path } from 'react-hook-form';
+import type { FieldValues, UseFormReturn, Path } from 'react-hook-form';
 
 export const createOnSubmitHandler =
   <TFieldValues extends FieldValues, TData extends SuccessData | void = void, TFE = unknown>(
@@ -64,40 +64,42 @@ export const createOnSubmitHandler =
 
     if (res.errors) {
       Object.entries(res.errors).forEach(([field, messages]) =>
-        form.setError(field as Path<TFieldValues>, { message: messages.join(', ') }),
+        form.setError(field as Path<TFieldValues>, { message: (messages as [string]).join(', ') }),
       );
     }
 
     if (res.success) form.reset();
   };
 
-/**
- *
- * This util add 'message' key to array with nested errors.
- * example of flat error:
- * { email: {message: 'Неправильний email: отримано ""', type: 'email', ref: undefined} }
- * example of nested error:
- * {
- *  files: [
- *    {
- *      name: {message: 'Неправильний тип: очікувався "name", але отримано undefined', type: 'object', ref: undefined}
- *      size: {message: 'Неправильний тип: очікувався "size", але отримано undefined', type: 'object', ref: undefined}
- *    }
- *  ]
- * }
- * @returns files && files.message = files[number], files[number + 1];
- */
-export const mergeNestedErrorsInOneMessage = <T extends FieldValues = FieldValues>(
-  errors: FormState<T>['errors'],
-) => {
-  Object.keys(errors).map((key) => {
-    const error = errors[key];
-    if (Array.isArray(error)) {
-      const errorMessages = error.flatMap((err) =>
-        Object.values(err).map((e) => (e as Record<string, string>)?.message),
-      );
-      error.message = errorMessages.join(', ');
+export type SimpleActionHandlerType<
+  TFormData extends FieldValues,
+  TData extends SuccessData | void = void,
+  TFE = unknown,
+> = (formData: TFormData, additionalFEData?: TFE) => Promise<ResultReturn<TData>>;
+
+export const createBaseOnSubmitHandler =
+  <TFieldValues extends FieldValues, TData extends SuccessData | void = void, TFE = unknown>(
+    actionHandler: SimpleActionHandlerType<TFieldValues, TData, TFE>,
+    form: UseFormReturn<TFieldValues>,
+    onResult?: (dataFromActionHandler: ResultReturn<TData>) => void,
+    config?: CreateOnSubmitHandlerConfig<TFieldValues, TFE>,
+  ) =>
+  async (data: TFieldValues) => {
+    const additionalFEData = config?.getAdditionalFEData
+      ? config.getAdditionalFEData(data)
+      : undefined;
+
+    const res = await actionHandler(data, additionalFEData);
+
+    if (onResult) {
+      onResult(res);
     }
-    return error;
-  });
-};
+
+    if (res.errors) {
+      Object.entries(res.errors).forEach(([field, messages]) =>
+        form.setError(field as Path<TFieldValues>, { message: (messages as [string]).join(', ') }),
+      );
+    }
+
+    if (res.success) form.reset();
+  };

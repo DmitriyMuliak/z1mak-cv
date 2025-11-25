@@ -1,3 +1,4 @@
+import { devLogger } from '@/lib/devLogger';
 import { extractIssueKey } from '@/lib/validator/extractIssueKey';
 import { resolveMessage } from '@/lib/validator/resolveMessage';
 import { formDataToObject } from '@/utils/formDataToObject';
@@ -70,7 +71,7 @@ async function serverFormAction<
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.error('Contact Form Unexpected error', error);
+    devLogger.error('Contact Form Unexpected error', error);
     unstable_rethrow(error);
     return {
       success: false,

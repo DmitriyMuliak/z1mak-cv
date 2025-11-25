@@ -47,3 +47,34 @@ const _DynamicMessageExample = v.custom<File[]>(
     return 'Невідома помилка';
   },
 );
+
+/*
+  Example of maximum dividing of schemas
+*/
+
+const MAX_TEXT_LENGTH = 5000;
+
+// 1. Variant A (Recommended): Inlining the action
+// TS will automatically understand that maxLength here applies specifically to string
+const BaseStringSchema = v.pipe(
+  v.string(),
+  v.maxLength(MAX_TEXT_LENGTH, createMessageHandler('c_max_length')),
+);
+
+// 2. Option B (If you really want to do it): Typing
+// We explicitly say that this action is ONLY for string
+const maxLenAction = v.maxLength<string, 5000, <T>(issue: v.BaseIssue<T>) => string>(
+  MAX_TEXT_LENGTH,
+  createMessageHandler('c_max_length'),
+);
+
+const _BaseStringSchemaVariantB = v.pipe(v.string(), maxLenAction);
+
+// --- Use in your factory ---
+
+const _RequiredStringSchema = v.pipe(
+  BaseStringSchema,
+  v.minLength(1, createMessageHandler('c_required')),
+);
+
+const _OptionalStringSchema = v.optional(BaseStringSchema);

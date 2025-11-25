@@ -14,8 +14,9 @@
 }
 
 .mainContentFullHeight {
-  align-items: center;
-  justify-content: center;
+  /* TODO: check */
+  /* align-items: center;
+  justify-content: center; */
 }
 
 @media (min-width: 640px) {

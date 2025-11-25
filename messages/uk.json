@@ -3,19 +3,19 @@
     "pages": {
       "about": {
         "title": "Про мене",
-        "description": "Дізнайтеся більше про нашу компанію"
+        "description": "Привіт, мене звати Дмитро"
       },
       "skills": {
         "title": "Навички",
-        "description": "Дізнайтеся більше про наші навички"
+        "description": "Дізнайтеся більше про мої навички"
       },
       "contact": {
         "title": "Контакти",
-        "description": "Зв'яжіться з нами"
+        "description": "Зв'яжіться зі мною"
       },
       "cvChecker": {
         "title": "Перевірка CV",
-        "description": "Дізнайтеся більше про нашу компанію"
+        "description": "Перевірте на скільки гарним є ваше резюме"
       }
     }
   },
@@ -35,6 +35,98 @@
     },
     "contact": {
       "title": "Напишіть мені"
+    },
+    "cvChecker": {
+      "title": "",
+      "description": "",
+      "modeBar": {
+        "evaluation": {
+          "title": "Режим:",
+          "items": {
+            "general": "Загальний",
+            "byJob": "Порівняльний"
+          }
+        },
+        "domain": {
+          "title": "Галузь:",
+          "items": {
+            "it": "IT",
+            "general": "Загальна"
+          }
+        },
+        "depth": {
+          "title": "Аналіз:",
+          "items": {
+            "standard": "Стандартний",
+            "deep": "Поглиблений"
+          }
+        }
+      },
+      "cvForm": {
+        "title": "Додайте ваше CV/Резюме:",
+        "textAreaPlaceholder": "Вставте або напишіть текст вашого резюме"
+      },
+      "jobForm": {
+        "title": "Додайте опис вакансії:",
+        "textAreaPlaceholder": "Вставте або напишіть опис вакансії"
+      },
+      "common": {
+        "fileTitle": "Файл",
+        "textTitle": "Текст",
+        "orTitle": "або"
+      },
+      "breadCrumbs": {
+        "cvChecker": "Перевірка CV",
+        "report": "Звіт аналізу"
+      }
+    },
+    "cvReport": {
+      "title": "Результат аналізу",
+      "overall": {
+        "matchScore": "Оцінка відповідності",
+        "fitAssessment": "Загальна оцінка відповідності",
+        "candidateLevel": "Рівень кандидата",
+        "jobTargetLevel": "Рівень вакансії",
+        "levelMatch": "Збіг рівнів",
+        "educationMatch": "Відповідність освіти",
+        "jobHoppingFlag": "Часта зміна роботи",
+        "yes": "Так",
+        "no": "Ні"
+      },
+      "metrics": {
+        "title": "Кількісні метрики",
+        "totalYears": "Загальний досвід:",
+        "relevantYears": "Релевантний досвід:",
+        "requiredYears": "Необхідний досвід:"
+      },
+      "skills": {
+        "title": "Покриття навичок",
+        "keyCoverage": "Ключові навички",
+        "stackRecency": "Актуальність стеку",
+        "softMatch": "Soft skills",
+        "analysisTitle": "Аналіз навичок"
+      },
+      "export": {
+        "title": "Експорт",
+        "downloadJson": "Завантажити JSON",
+        "downloadDoc": "Завантажити DOC"
+      },
+      "experience": {
+        "title": "Релевантність досвіду"
+      },
+      "redFlags": {
+        "title": "Червоні прапорці та ризики"
+      },
+      "improvement": {
+        "title": "План покращення",
+        "summaryRewrite": "Переписати Summary(про себе)",
+        "keywordOptimization": "Оптимізація ключових слів",
+        "missing": "Відсутні:",
+        "quantifyAchievements": "Оцифрування досягнень"
+      },
+      "questions": {
+        "title": "Питання для співбесіди"
+      }
     },
     "login": {
       "title": "З поверненням",
@@ -85,7 +177,7 @@
     "invalid_function": "Невірна функція.",
     "invalid_custom": "Невірне значення.",
     "custom": "Невірне значення.",
-    
+
     "file_too_large": "Файл завеликий. Максимум {max} MB.",
     "file_invalid_type": "Неприпустимий тип файлу.",
     "file_problem": "Проблема з файлом.",
@@ -94,6 +186,7 @@
     "specificNameKey": "Довжина імені має бути мінімум {expected} символів.",
     "c_required": "Це поле є обов'язковим.",
     "c_min_length": "Значення має бути не менше ніж {expected} символів завдовжки.",
+    "c_max_length": "Значення має бути не більше ніж {expected} символів завдовжки.",
     "c_file_too_large": "Файл завеликий. Максимум {expected} MB.",
     "c_two_passwords_not_match": "Два пароля не співпадають.",
 

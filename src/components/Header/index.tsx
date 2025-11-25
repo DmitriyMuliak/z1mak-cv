@@ -41,7 +41,7 @@ export const Header = () => {
             <span
               className={cn(
                 styles.linkText,
-                realPathname === link.href ? styles.linkTextActive : '',
+                realPathname.startsWith(link.href) ? styles.linkTextActive : '',
               )}
             >
               {link.label}

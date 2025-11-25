@@ -36,6 +36,98 @@
     "contact": {
       "title": "Message me"
     },
+    "cvChecker": {
+      "title": "",
+      "description": "",
+      "modeBar": {
+        "evaluation": {
+          "title": "Mode:",
+          "items": {
+            "general": "General",
+            "byJob": "Comparative"
+          }
+        },
+        "domain": {
+          "title": "Industry:",
+          "items": {
+            "it": "IT",
+            "general": "General"
+          }
+        },
+        "depth": {
+          "title": "Analysis:",
+          "items": {
+            "standard": "Standard",
+            "deep": "In-depth"
+          }
+        }
+      },
+      "cvForm": {
+        "title": "Add your CV/Resume:",
+        "textAreaPlaceholder": "Paste or type your resume text"
+      },
+      "jobForm": {
+        "title": "Add Job Description:",
+        "textAreaPlaceholder": "Paste or type the job description"
+      },
+      "common": {
+        "fileTitle": "File",
+        "textTitle": "Text",
+        "orTitle": "or"
+      },
+      "breadCrumbs": {
+        "cvChecker": "CV Checker",
+        "report": "Analysis Report"
+      }
+    },
+    "cvReport": {
+      "title": "Analysis Result",
+      "overall": {
+        "matchScore": "Match score",
+        "fitAssessment": "Overall Fit Assessment",
+        "candidateLevel": "Candidate level",
+        "jobTargetLevel": "Job target level",
+        "levelMatch": "Level match",
+        "educationMatch": "Education match",
+        "jobHoppingFlag": "Job hopping flag",
+        "yes": "Yes",
+        "no": "No"
+      },
+      "metrics": {
+        "title": "Quantitative metrics",
+        "totalYears": "Total years:",
+        "relevantYears": "Relevant years:",
+        "requiredYears": "Required years:"
+      },
+      "skills": {
+        "title": "Skill coverage",
+        "keyCoverage": "Key skill coverage",
+        "stackRecency": "Stack recency",
+        "softMatch": "Soft skill match",
+        "analysisTitle": "Skill Analysis"
+      },
+      "export": {
+        "title": "Export",
+        "downloadJson": "Download JSON",
+        "downloadDoc": "Download DOC"
+      },
+      "experience": {
+        "title": "Experience Relevance"
+      },
+      "redFlags": {
+        "title": "Red Flags and Concerns"
+      },
+      "improvement": {
+        "title": "Actionable Improvement Plan",
+        "summaryRewrite": "Summary rewrite",
+        "keywordOptimization": "Keyword optimization",
+        "missing": "Missing:",
+        "quantifyAchievements": "Quantify achievements"
+      },
+      "questions": {
+        "title": "Suggested Interview Questions"
+      }
+    },
     "login": {
       "title": "Welcome back",
       "oAuthTitle": "Login with your Google account",
@@ -93,6 +185,7 @@
 
     "specificNameKey": "Need to have min {expected} length",
     "c_min_length": "The value must be at least {expected} characters long.",
+    "c_max_length": "The value must be not more than {expected} characters long.",
     "c_required": "This field is required.",
     "c_file_too_large": "File is too large. Maximum {expected} MB.",
     "c_two_passwords_not_match": "The two passwords do not match.",

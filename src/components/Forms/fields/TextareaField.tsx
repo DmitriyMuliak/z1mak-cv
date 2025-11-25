@@ -10,6 +10,7 @@ interface TextareaFieldProps<T extends FieldValues> {
   name: Path<T>;
   label: string;
   placeholder?: string;
+  className?: string;
 }
 
 export function TextareaField<T extends FieldValues>({
@@ -17,6 +18,7 @@ export function TextareaField<T extends FieldValues>({
   name,
   label,
   placeholder,
+  className,
 }: TextareaFieldProps<T>) {
   return (
     <div className="relative" data-form-field-id={name}>
@@ -25,13 +27,14 @@ export function TextareaField<T extends FieldValues>({
         name={name}
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-sm">{label}</FormLabel>
+            {label.length ? <FormLabel className="text-sm">{label}</FormLabel> : null}
             <FormControl>
               <Textarea
                 placeholder={placeholder}
                 {...field}
                 className={cn(
                   'placeholder:text-foreground border-stone-950 dark:border-slate-400/20 text-gray-900 dark:text-white',
+                  className,
                 )}
               />
             </FormControl>

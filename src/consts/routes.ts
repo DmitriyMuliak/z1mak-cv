@@ -4,6 +4,7 @@ export const paths = {
   skills: '/skills',
   contact: '/contact',
   cvChecker: '/cv-checker',
+  cvReport: '/cv-checker/report',
   login: '/auth/login',
   signUp: '/auth/sign-up',
   resetPassword: '/auth/reset-password',
