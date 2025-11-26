@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { AnalysisSchemaType } from '../../schema/analysisSchema';
+import { AnalysisSchemaType } from '../../../schema/analysisSchema';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useTranslations } from 'next-intl';
 
@@ -11,6 +11,10 @@ type Props = {
 
 export const Experience: React.FC<Props> = ({ data }) => {
   const t = useTranslations('pages.cvReport');
+  const expData = data.experienceRelevanceAnalysis;
+
+  if (!expData) return null;
+
   return (
     <Card className="frosted-card">
       <CardHeader>
@@ -19,7 +23,7 @@ export const Experience: React.FC<Props> = ({ data }) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {data.experienceRelevanceAnalysis.jobs.map((j, i) => (
+          {expData.jobs.map((j, i) => (
             <div key={i} className="p-3 border rounded">
               <div className="flex justify-between">
                 <div>

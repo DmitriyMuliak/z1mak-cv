@@ -40,6 +40,7 @@
     "file-saver": "^2.0.5",
     "file-type": "^21.1.0",
     "framer-motion": "^12.23.22",
+    "immer": "^11.0.0",
     "lucide-react": "^0.544.0",
     "next": "15.5.6",
     "next-intl": "^4.3.9",

@@ -1,8 +1,8 @@
 import { publicPrEnv } from '@/utils/processEnv/public';
 import { GoogleGenAI, HarmCategory, HarmBlockThreshold } from '@google/genai';
-
-import { getCvAnalysisSchema } from './schema';
 import { Mode } from '@/feature/store/useCvStore';
+import { SchemaService } from '@/feature/services/SchemaService';
+import { devLogger } from '@/lib/devLogger';
 
 // https://ai.google.dev/gemini-api/docs/models
 const geminiModels = {
@@ -33,7 +33,10 @@ export const callGeminiAi = async ({
     options: { mode, locale },
   });
 
-  const responseSchema = getCvAnalysisSchema(mode);
+  const schemaService = new SchemaService(mode);
+  const responseSchema = schemaService.getGenAiSchema();
+
+  devLogger.log('getGenAiSchema', responseSchema);
 
   // TODO: handle
   // 1- ApiError: {"error":{"code":503,"message":"The model is overloaded. Please try again later.","status":"UNAVAILABLE"}}
@@ -41,7 +44,7 @@ export const callGeminiAi = async ({
 
   try {
     const result = await client.models.generateContent({
-      model: geminiModels.flashLite,
+      model: geminiModels.flash,
       contents: [
         {
           role: 'user',
@@ -198,6 +201,11 @@ const getImmediateInstruction = (mode: Mode, locale: string) => {
       `Write the answer in ${langName} language, but DO NOT translate specific domain terminology (keep tech stack/role names in English).`,
     ),
   );
+  lines.push(
+    builder.add(
+      `If CV in <CV_TEXT> have no sense (maybe it's empty or contain only random string), you can skip analyzing at all and return empty strings, empty arrays, 0 for numbers`,
+    ),
+  );
 
   // 2. Mode Specifics
   if (evaluationMode === 'byJob') {
@@ -253,7 +261,7 @@ const getImmediateInstruction = (mode: Mode, locale: string) => {
     ),
   );
 
-  return lines.join('\n      ');
+  return lines.join('\n');
 };
 
 const getLanguageName = (locale: string) => (locale === 'uk' ? 'Ukrainian' : 'English');

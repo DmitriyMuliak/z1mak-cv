@@ -2,8 +2,8 @@ import * as v from 'valibot';
 
 const SkillSchema = v.object({
   skill: v.string(),
-  type: v.string(), // 'Required' | 'Desired'
-  status: v.string(), // 'Strongly Present' | 'Mentioned' | 'Inferred' | 'Missing'
+  type: v.string(),
+  status: v.string(),
   evidenceFromCV: v.string(),
   confidenceScore: v.number(),
 });
@@ -19,71 +19,85 @@ const JobExpSchema = v.object({
 const FlagSchema = v.object({
   concern: v.string(),
   details: v.string(),
-  severity: v.string(), // 'Low' | 'Medium' | 'High'
+  severity: v.string(),
 });
 
 const QuantitativeMetricsSchema = v.object({
   totalYearsInCV: v.number(),
   relevantYearsInCV: v.number(),
-  requiredYearsInJob: v.number(),
   keySkillCoveragePercent: v.number(),
-  stackRecencyScore: v.number(),
-  softSkillsScore: v.number(),
+  stackRecencyScore: v.optional(v.number()),
+  softSkillsScore: v.optional(v.number()),
+  requiredYearsInJob: v.optional(v.number()),
 });
 
 const OverallAnalysisSchema = v.object({
-  matchScore: v.number(),
+  independentCvScore: v.number(),
+  independentTechCvScore: v.number(),
   candidateLevel: v.string(),
-  jobTargetLevel: v.string(),
-  levelMatch: v.boolean(),
   suitabilitySummary: v.string(),
-  educationMatch: v.boolean(),
-  jobHoppingFlag: v.boolean(),
+  // Optional fields
+  matchScore: v.optional(v.number()),
+  jobTargetLevel: v.optional(v.string()),
+  levelMatch: v.optional(v.boolean()),
+  educationMatch: v.optional(v.boolean()),
+  jobHoppingFlag: v.optional(v.boolean()),
 });
 
 export const AnalysisSchema = v.object({
   analysisTimestamp: v.string(),
   overallAnalysis: OverallAnalysisSchema,
   quantitativeMetrics: QuantitativeMetricsSchema,
-  detailedSkillAnalysis: v.object({
-    title: v.string(),
-    skills: v.array(SkillSchema),
-  }),
-  experienceRelevanceAnalysis: v.object({
-    title: v.string(),
-    jobs: v.array(JobExpSchema),
-  }),
+
   redFlagsAndConcerns: v.object({
     title: v.string(),
     flags: v.array(FlagSchema),
   }),
+
   actionableImprovementPlan: v.object({
     title: v.string(),
-    summaryRewrite: v.object({
-      suggestion: v.string(),
-      example: v.string(),
-    }),
-    keywordOptimization: v.object({
-      missingKeywords: v.array(v.string()),
-      suggestion: v.string(),
-    }),
+    summaryRewrite: v.object({ suggestion: v.string(), example: v.string() }),
     quantifyAchievements: v.object({
       targetSection: v.string(),
       suggestion: v.string(),
       examplesToImprove: v.array(v.string()),
     }),
-    removeIrrelevant: v.object({
-      suggestion: v.string(),
-    }),
-  }),
-  suggestedInterviewQuestions: v.object({
-    title: v.string(),
-    questions: v.array(
+    removeIrrelevant: v.object({ suggestion: v.string() }),
+    // Optional block
+    keywordOptimization: v.optional(
       v.object({
-        question: v.string(),
-        reason: v.string(),
+        missingKeywords: v.array(v.string()),
+        suggestion: v.string(),
       }),
     ),
+  }),
+
+  // Optional top-level sections
+  detailedSkillAnalysis: v.optional(
+    v.object({
+      title: v.string(),
+      skills: v.array(SkillSchema),
+    }),
+  ),
+
+  experienceRelevanceAnalysis: v.optional(
+    v.object({
+      title: v.string(),
+      jobs: v.array(JobExpSchema),
+    }),
+  ),
+
+  suggestedInterviewQuestions: v.optional(
+    v.object({
+      title: v.string(),
+      questions: v.array(v.object({ question: v.string(), reason: v.string() })),
+    }),
+  ),
+
+  metadata: v.object({
+    isValidCv: v.boolean(),
+    isJobDescriptionPresent: v.boolean(),
+    isValidJobDescription: v.boolean(),
   }),
 });
 

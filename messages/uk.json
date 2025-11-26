@@ -83,7 +83,10 @@
     "cvReport": {
       "title": "Результат аналізу",
       "overall": {
+        "suitabilitySummary": "Короткий опис",
         "matchScore": "Оцінка відповідності",
+        "independentCvScore": "Загальна оцінка",
+        "independentTechCvScore": "Загальна оцінка",
         "fitAssessment": "Загальна оцінка відповідності",
         "candidateLevel": "Рівень кандидата",
         "jobTargetLevel": "Рівень вакансії",

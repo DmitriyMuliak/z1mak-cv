@@ -1,5 +1,5 @@
 import { AnalysisSchemaType } from '../schema/analysisSchema';
-import type { Paragraph as ParagraphType } from 'docx';
+import type { IParagraphOptions, Paragraph as ParagraphType } from 'docx';
 
 export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) => {
   const { saveAs } = await import('file-saver');
@@ -28,6 +28,7 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
     detailedSkillAnalysis: dsa,
     redFlagsAndConcerns: flags,
     actionableImprovementPlan: plan,
+    experienceRelevanceAnalysis: expRelevance,
     suggestedInterviewQuestions: questions,
   } = data;
 
@@ -43,6 +44,23 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
     });
   };
 
+  const createScoreBlock = (label: string, value: number) => {
+    return [
+      new Paragraph({ text: label, heading: HeadingLevel.HEADING_3 }),
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: `${value}/100`,
+            bold: true,
+            size: 48,
+            color: '2E75B6',
+          }),
+        ],
+        spacing: { after: 200 },
+      }),
+    ];
+  };
+
   const createProgressBarText = (percent: number) => {
     const totalBlocks = 15;
     const filledBlocks = Math.round((percent / 100) * totalBlocks);
@@ -51,7 +69,10 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
     return `${bar} ${percent}%`;
   };
 
-  const createSectionHeader = (text: string) => {
+  const createSectionHeader = (
+    text: string,
+    options: IParagraphOptions = {} as IParagraphOptions,
+  ) => {
     return new Paragraph({
       text: text,
       heading: HeadingLevel.HEADING_2,
@@ -59,6 +80,7 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
       border: {
         bottom: { style: BorderStyle.SINGLE, size: 6, space: 1, color: 'auto' },
       },
+      ...options,
     });
   };
 
@@ -77,6 +99,57 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
       verticalAlign: VerticalAlign.TOP,
     });
   };
+
+  // --- Main Logic ---
+
+  const overallMatchScore =
+    oa.matchScore !== undefined ? createScoreBlock('Match Score', oa.matchScore) : [];
+  const overallIndependentCvScore =
+    oa.independentCvScore !== undefined
+      ? createScoreBlock('Match Score', oa.independentCvScore)
+      : [];
+  const overallIndependentTechCvScore =
+    oa.independentTechCvScore !== undefined
+      ? createScoreBlock('Match Score', oa.independentTechCvScore)
+      : [];
+
+  const jobTargetLevel =
+    oa.jobTargetLevel !== undefined ? [createLabelValue('Target Level', oa.jobTargetLevel)] : [];
+  const levelMatch =
+    oa.levelMatch !== undefined
+      ? [createLabelValue('Level Match', oa.levelMatch ? 'Yes' : 'No')]
+      : [];
+  const educationMatch =
+    oa.educationMatch !== undefined
+      ? [createLabelValue('Education Match', oa.educationMatch ? 'Yes' : 'No')]
+      : [];
+  const jobHoppingFlag =
+    oa.jobHoppingFlag !== undefined
+      ? [createLabelValue('Job Hopping', oa.jobHoppingFlag ? 'Yes' : 'No')]
+      : [];
+
+  const requiredYearsInJob =
+    qm.requiredYearsInJob !== undefined
+      ? [createLabelValue('Job Hopping', qm.requiredYearsInJob)]
+      : [];
+
+  const isPlanKeywordOptimization = !!plan.keywordOptimization;
+  const planKeywordOptimization = plan.keywordOptimization
+    ? [
+        new Paragraph({ text: '• Missing Keywords', heading: HeadingLevel.TITLE }),
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: plan.keywordOptimization.missingKeywords.join(', ') || 'None',
+              color: '000000',
+              bold: false,
+              italics: false,
+            }),
+          ],
+          spacing: { after: 300 },
+        }),
+      ]
+    : [];
 
   const doc = new Document({
     styles: {
@@ -117,7 +190,7 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
                 alignment: AlignmentType.CENTER,
                 children: [
                   new TextRun({
-                    text: 'Powered by DM AI CV Analyzer',
+                    text: 'Powered by AI CV Analyzer',
                     color: 'AAAAAA',
                     size: 18,
                   }),
@@ -150,18 +223,9 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
                 children: [
                   createCell(
                     [
-                      new Paragraph({ text: 'Match Score', heading: HeadingLevel.HEADING_3 }),
-                      new Paragraph({
-                        children: [
-                          new TextRun({
-                            text: `${oa.matchScore}/100`,
-                            bold: true,
-                            size: 48,
-                            color: '2E75B6',
-                          }),
-                        ],
-                        spacing: { after: 200 },
-                      }),
+                      ...overallMatchScore,
+                      ...overallIndependentCvScore,
+                      ...overallIndependentTechCvScore,
                       new Paragraph({ text: oa.suitabilitySummary }),
                     ],
                     50,
@@ -174,10 +238,10 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
                         heading: HeadingLevel.HEADING_3,
                       }),
                       createLabelValue('Candidate Level', oa.candidateLevel),
-                      createLabelValue('Target Level', oa.jobTargetLevel),
-                      createLabelValue('Level Match', oa.levelMatch ? 'Yes' : 'No'),
-                      createLabelValue('Education Match', oa.educationMatch ? 'Yes' : 'No'),
-                      createLabelValue('Job Hopping', oa.jobHoppingFlag ? 'Yes' : 'No'),
+                      ...jobTargetLevel,
+                      ...levelMatch,
+                      ...educationMatch,
+                      ...jobHoppingFlag,
                     ],
                     50,
                   ),
@@ -201,14 +265,14 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
                       new Paragraph({ text: 'Experience', heading: HeadingLevel.HEADING_3 }),
                       createLabelValue('Total Years', qm.totalYearsInCV),
                       createLabelValue('Relevant Years', qm.relevantYearsInCV),
-                      createLabelValue('Required Years', qm.requiredYearsInJob),
+                      ...requiredYearsInJob,
                     ],
                     40,
                   ),
 
                   createCell(
                     [
-                      new Paragraph({ text: 'Scores', heading: HeadingLevel.HEADING_3 }),
+                      new Paragraph({ text: 'Skills coverage', heading: HeadingLevel.HEADING_3 }),
                       new Paragraph({
                         children: [new TextRun({ text: 'Key Skills: ', bold: true })],
                         spacing: { after: 50 },
@@ -262,74 +326,160 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
           }),
 
           // === 3. DETAILED SKILLS ===
-          createSectionHeader(dsa.title),
+          ...(dsa
+            ? [
+                createSectionHeader('Skills Analysis', { keepNext: true }),
 
-          new Table({
-            width: { size: 100, type: WidthType.PERCENTAGE },
-            layout: TableLayoutType.FIXED,
-            columnWidths: [2500, 2000, 1500, 4000],
-            rows: [
-              new TableRow({
-                tableHeader: true,
-                height: { value: 400, rule: HeightRule.ATLEAST },
-                children: ['Skill', 'Type/Status', 'Score', 'Evidence'].map(
-                  (text) =>
-                    new TableCell({
-                      width: { size: 25, type: WidthType.PERCENTAGE },
-                      shading: { fill: 'E7E6E6', type: ShadingType.CLEAR, color: 'auto' },
-                      children: [new Paragraph({ children: [new TextRun({ text, bold: true })] })],
-                      verticalAlign: VerticalAlign.CENTER,
-                      margins: { top: 100, bottom: 100, left: 100, right: 100 },
-                    }),
-                ),
-              }),
-              ...dsa.skills.map(
-                (skill) =>
-                  new TableRow({
-                    children: [
-                      createCell(
-                        [
-                          new Paragraph({
-                            children: [new TextRun({ text: skill.skill, bold: true })],
-                          }),
-                        ],
-                        25,
-                      ),
-                      createCell(
-                        [
-                          new Paragraph({
-                            children: [new TextRun({ text: skill.type, size: 20 })],
-                          }),
-                          new Paragraph({
+                new Table({
+                  width: { size: 100, type: WidthType.PERCENTAGE },
+                  layout: TableLayoutType.FIXED,
+                  columnWidths: [2500, 2000, 1500, 4000],
+                  rows: [
+                    new TableRow({
+                      tableHeader: true,
+                      cantSplit: false,
+                      height: { value: 400, rule: HeightRule.ATLEAST },
+                      children: ['Skill', 'Type/Status', 'Score', 'Evidence'].map(
+                        (text) =>
+                          new TableCell({
+                            width: { size: 25, type: WidthType.PERCENTAGE },
+                            shading: { fill: 'E7E6E6', type: ShadingType.CLEAR, color: 'auto' },
                             children: [
-                              new TextRun({
-                                text: skill.status,
-                                italics: true,
-                                size: 18,
-                                color: '666666',
-                              }),
+                              new Paragraph({ children: [new TextRun({ text, bold: true })] }),
                             ],
+                            verticalAlign: VerticalAlign.CENTER,
+                            margins: { top: 100, bottom: 100, left: 100, right: 100 },
                           }),
-                        ],
-                        20,
                       ),
-                      createCell([new Paragraph(`${skill.confidenceScore}/10`)], 15),
-                      createCell(
-                        [
-                          new Paragraph({
-                            children: [new TextRun({ text: skill.evidenceFromCV, size: 20 })],
-                          }),
-                        ],
-                        40,
-                      ),
-                    ],
-                  }),
-              ),
-            ],
-          }),
+                    }),
+                    ...dsa.skills.map(
+                      (skill) =>
+                        new TableRow({
+                          cantSplit: false,
+                          children: [
+                            createCell(
+                              [
+                                new Paragraph({
+                                  children: [new TextRun({ text: skill.skill, bold: true })],
+                                }),
+                              ],
+                              25,
+                            ),
+                            createCell(
+                              [
+                                new Paragraph({
+                                  children: [new TextRun({ text: skill.type, size: 20 })],
+                                }),
+                                new Paragraph({
+                                  children: [
+                                    new TextRun({
+                                      text: skill.status,
+                                      italics: true,
+                                      size: 18,
+                                      color: '666666',
+                                    }),
+                                  ],
+                                }),
+                              ],
+                              20,
+                            ),
+                            createCell([new Paragraph(`${skill.confidenceScore}/10`)], 15),
+                            createCell(
+                              [
+                                new Paragraph({
+                                  children: [
+                                    new TextRun({
+                                      text: skill.evidenceFromCV,
+                                      size: 20,
+                                    }),
+                                  ],
+                                }),
+                              ],
+                              40,
+                            ),
+                          ],
+                        }),
+                    ),
+                  ],
+                }),
+              ]
+            : []),
 
-          // === 4. RED_ FLAGS ===
-          createSectionHeader(flags.title),
+          // === 4. EXPERIENCE RELEVANCE ===
+          ...(expRelevance
+            ? [
+                createSectionHeader('Experience Relevance'),
+
+                new Table({
+                  width: { size: 100, type: WidthType.PERCENTAGE },
+                  layout: TableLayoutType.FIXED,
+                  columnWidths: [2500, 2000, 1500, 4000],
+                  rows: [
+                    new TableRow({
+                      tableHeader: true,
+                      height: { value: 400, rule: HeightRule.ATLEAST },
+                      children: ['Job title', 'Company', 'Score', 'Comment'].map(
+                        (text) =>
+                          new TableCell({
+                            width: { size: 25, type: WidthType.PERCENTAGE },
+                            shading: { fill: 'E7E6E6', type: ShadingType.CLEAR, color: 'auto' },
+                            children: [
+                              new Paragraph({ children: [new TextRun({ text, bold: true })] }),
+                            ],
+                            verticalAlign: VerticalAlign.CENTER,
+                            margins: { top: 100, bottom: 100, left: 100, right: 100 },
+                          }),
+                      ),
+                    }),
+                    ...expRelevance.jobs.map(
+                      (job) =>
+                        new TableRow({
+                          children: [
+                            createCell(
+                              [
+                                new Paragraph({
+                                  children: [new TextRun({ text: job.jobTitle, bold: true })],
+                                }),
+                              ],
+                              25,
+                            ),
+                            createCell(
+                              [
+                                new Paragraph({
+                                  children: [new TextRun({ text: job.company, size: 20 })],
+                                }),
+                                new Paragraph({
+                                  children: [
+                                    new TextRun({
+                                      text: job.period,
+                                      italics: true,
+                                      size: 18,
+                                      color: '666666',
+                                    }),
+                                  ],
+                                }),
+                              ],
+                              20,
+                            ),
+                            createCell([new Paragraph(`${job.relevanceToRoleScore}/10`)], 15),
+                            createCell(
+                              [
+                                new Paragraph({
+                                  children: [new TextRun({ text: job.comment, size: 20 })],
+                                }),
+                              ],
+                              40,
+                            ),
+                          ],
+                        }),
+                    ),
+                  ],
+                }),
+              ]
+            : []),
+
+          // === 5. RED_ FLAGS ===
+          createSectionHeader('Red Flags and Concerns'),
 
           ...flags.flags.flatMap((flag) => {
             return [
@@ -363,10 +513,10 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
             ];
           }),
 
-          // === 5. IMPROVEMENT PLAN ===
+          // === 6. IMPROVEMENT PLAN ===
           createSectionHeader(plan.title),
 
-          new Paragraph({ text: '1. Summary Rewrite', heading: HeadingLevel.TITLE }),
+          new Paragraph({ text: '• Summary Rewrite', heading: HeadingLevel.TITLE }),
           new Paragraph({
             children: [
               new TextRun({
@@ -394,22 +544,11 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
 
           createMarginBlock(),
 
-          new Paragraph({ text: '2. Missing Keywords', heading: HeadingLevel.TITLE }),
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: plan.keywordOptimization.missingKeywords.join(', ') || 'None',
-                color: '000000',
-                bold: false,
-                italics: false,
-              }),
-            ],
-            spacing: { after: 300 },
-          }),
+          ...planKeywordOptimization,
 
-          createMarginBlock(),
+          ...(isPlanKeywordOptimization ? [createMarginBlock()] : []),
 
-          new Paragraph({ text: '3. Quantify Achievements', heading: HeadingLevel.TITLE }),
+          new Paragraph({ text: '• Quantify Achievements', heading: HeadingLevel.TITLE }),
           new Paragraph({ text: plan.quantifyAchievements.suggestion, spacing: { after: 100 } }),
           ...plan.quantifyAchievements.examplesToImprove.map(
             (ex) =>
@@ -428,44 +567,48 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
               }),
           ),
 
-          // === 6. INTERVIEW QUESTIONS ===
-          createSectionHeader(questions.title),
-          ...questions.questions.flatMap((q, index) => {
-            return [
-              // Question
-              new Paragraph({
-                heading: HeadingLevel.TITLE,
-                children: [
-                  new TextRun({
-                    text: `${index + 1}. ${q.question}`,
-                    size: 22,
-                    color: '000000',
-                    bold: false,
-                  }),
-                ],
-              }),
-              new Paragraph({
-                children: [
-                  // Description
-                  new TextRun({
-                    text: `Why ask: `,
-                    color: '000000',
-                    size: 22,
-                  }),
-                  new TextRun({
-                    text: `${q.reason}`,
-                    color: '000000',
-                    size: 22,
-                    bold: false,
-                  }),
-                ],
+          // === 7. INTERVIEW QUESTIONS ===
+          ...(questions
+            ? [
+                createSectionHeader('Improvement Plan'),
+                ...questions.questions.flatMap((q, index) => {
+                  return [
+                    // Question
+                    new Paragraph({
+                      heading: HeadingLevel.TITLE,
+                      children: [
+                        new TextRun({
+                          text: `${index + 1}. ${q.question}`,
+                          size: 22,
+                          color: '000000',
+                          bold: false,
+                        }),
+                      ],
+                    }),
+                    new Paragraph({
+                      children: [
+                        // Description
+                        new TextRun({
+                          text: `Why ask: `,
+                          color: '000000',
+                          size: 22,
+                        }),
+                        new TextRun({
+                          text: `${q.reason}`,
+                          color: '000000',
+                          size: 22,
+                          bold: false,
+                        }),
+                      ],
 
-                spacing: { before: 100, after: 200 },
-                indent: { left: 720 },
-              }),
-              createMarginBlock(),
-            ];
-          }),
+                      spacing: { before: 100, after: 200 },
+                      indent: { left: 720 },
+                    }),
+                    createMarginBlock(),
+                  ];
+                }),
+              ]
+            : []),
         ],
       },
     ],

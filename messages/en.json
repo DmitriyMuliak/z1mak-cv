@@ -83,7 +83,10 @@
     "cvReport": {
       "title": "Analysis Result",
       "overall": {
+        "suitabilitySummary": "Short description",
         "matchScore": "Match score",
+        "independentCvScore": "Overall Score",
+        "independentTechCvScore": "Overall Score",
         "fitAssessment": "Overall Fit Assessment",
         "candidateLevel": "Candidate level",
         "jobTargetLevel": "Job target level",
@@ -100,11 +103,11 @@
         "requiredYears": "Required years:"
       },
       "skills": {
-        "title": "Skill coverage",
-        "keyCoverage": "Key skill coverage",
+        "title": "Skills coverage",
+        "keyCoverage": "Key skills coverage",
         "stackRecency": "Stack recency",
-        "softMatch": "Soft skill match",
-        "analysisTitle": "Skill Analysis"
+        "softMatch": "Soft skills match",
+        "analysisTitle": "Skills Analysis"
       },
       "export": {
         "title": "Export",
@@ -118,7 +121,7 @@
         "title": "Red Flags and Concerns"
       },
       "improvement": {
-        "title": "Actionable Improvement Plan",
+        "title": "Improvement Plan",
         "summaryRewrite": "Summary rewrite",
         "keywordOptimization": "Keyword optimization",
         "missing": "Missing:",

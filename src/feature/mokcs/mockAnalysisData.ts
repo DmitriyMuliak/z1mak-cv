@@ -4,6 +4,8 @@ export const mockAnalysisData: AnalysisSchemaType = {
   analysisTimestamp: '2024-07-26T10:00:00Z',
   overallAnalysis: {
     matchScore: 85,
+    independentCvScore: 80,
+    independentTechCvScore: 90,
     candidateLevel: 'Senior',
     jobTargetLevel: 'Senior',
     levelMatch: true,
@@ -305,4 +307,239 @@ export const mockAnalysisData: AnalysisSchemaType = {
       },
     ],
   },
+  metadata: {
+    isValidCv: true,
+    isValidJobDescription: true,
+    isValidJobDescription: true,
+  },
 };
+
+export const mockEmptyAnalysisData = {
+  analysisTimestamp: '2024-04-10T10:00:00Z',
+  overallAnalysis: {
+    matchScore: 0.0,
+    candidateLevel: 'Junior',
+    suitabilitySummary:
+      'Резюме містить лише випадковий набір символів і не містить жодної релевантної інформації про досвід роботи, навички чи освіту кандидата. Відповідно, кандидат абсолютно не відповідає жодним вимогам вакансії.',
+    jobTargetLevel: 'Senior',
+    levelMatch: false,
+    educationMatch: false,
+    jobHoppingFlag: false,
+  },
+  quantitativeMetrics: {
+    totalYearsInCV: 0.0,
+    relevantYearsInCV: 0.0,
+    requiredYearsInJob: 0.0,
+    keySkillCoveragePercent: 0.0,
+    stackRecencyScore: 0.0,
+    softSkillsScore: 0.0,
+  },
+  redFlagsAndConcerns: {
+    title: 'Червоні прапорці та занепокоєння',
+    flags: [
+      {
+        concern: 'Неповна інформація в резюме',
+        details:
+          "Резюме містить лише випадковий набір символів ('adsadsad'), що унеможливлює будь-який аналіз досвіду, навичок чи освіти кандидата.",
+        severity: 'High',
+      },
+      {
+        concern: 'Невідповідність вакансії',
+        details: "Наданий текст резюме не має жодного відношення до вимог вакансії ('asdsad').",
+        severity: 'High',
+      },
+    ],
+  },
+  actionableImprovementPlan: {
+    title: 'План дій для покращення',
+    summaryRewrite: {
+      suggestion:
+        'Необхідно надати повне та структуроване резюме, що описує досвід роботи, навички, освіту та досягнення кандидата.',
+      example:
+        "Наприклад: 'Досвідчений Senior Backend Developer з 8+ роками досвіду у розробці масштабованих веб-додатків на Node.js. Глибокі знання SQL, NoSQL баз даних (PostgreSQL, MongoDB), хмарних технологій (AWS, Docker, Kubernetes) та досвід роботи з CI/CD.'",
+    },
+    quantifyAchievements: {
+      targetSection: 'Досвід роботи',
+      suggestion:
+        "Надати конкретні приклади досягнень з кількісними показниками (наприклад, 'зменшив час завантаження на 30%', 'збільшив конверсію на 15%').",
+      examplesToImprove: [
+        "Надати опис обов'язків та досягнень для кожної попередньої посади.",
+        'Використовувати дієслова дії та цифри для опису результатів роботи.',
+      ],
+    },
+    removeIrrelevant: {
+      suggestion:
+        'Видалити будь-який нерелевантний або випадковий текст, який не стосується професійного досвіду.',
+    },
+    keywordOptimization: {
+      missingKeywords: [
+        'Node.js',
+        'Express.js',
+        'RESTful APIs',
+        'Microservices',
+        'AWS',
+        'Docker',
+        'Kubernetes',
+        'PostgreSQL',
+        'MongoDB',
+        'Git',
+        'CI/CD',
+        'Agile',
+        'Scrum',
+        'Problem-solving',
+        'Teamwork',
+        'Communication',
+      ],
+      suggestion:
+        "Додати ключові слова, що відповідають вимогам вакансії, особливо щодо технологічного стеку (Node.js, Express.js, бази даних, хмарні сервіси, інструменти розробки) та м'яких навичок.",
+    },
+  },
+  detailedSkillAnalysis: {
+    title: 'Детальний аналіз навичок',
+    skills: [
+      {
+        skill: 'Node.js',
+        type: 'Required',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+      {
+        skill: 'Express.js',
+        type: 'Required',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+      {
+        skill: 'RESTful APIs',
+        type: 'Required',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+      {
+        skill: 'Microservices',
+        type: 'Required',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+      {
+        skill: 'AWS',
+        type: 'Required',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+      {
+        skill: 'Docker',
+        type: 'Required',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+      {
+        skill: 'Kubernetes',
+        type: 'Required',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+      {
+        skill: 'PostgreSQL',
+        type: 'Required',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+      {
+        skill: 'MongoDB',
+        type: 'Required',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+      {
+        skill: 'Git',
+        type: 'Required',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+      {
+        skill: 'CI/CD',
+        type: 'Required',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+      {
+        skill: 'Agile',
+        type: 'Required',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+      {
+        skill: 'Scrum',
+        type: 'Required',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+      {
+        skill: 'Problem-solving',
+        type: 'Desired',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+      {
+        skill: 'Teamwork',
+        type: 'Desired',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+      {
+        skill: 'Communication',
+        type: 'Desired',
+        status: 'Missing',
+        evidenceFromCV: 'N/A',
+        confidenceScore: 0.0,
+      },
+    ],
+  },
+  suggestedInterviewQuestions: {
+    title: 'Рекомендовані запитання для співбесіди',
+    questions: [
+      {
+        question:
+          'Будь ласка, розкажіть про свій досвід роботи з Node.js та якими фреймворками ви користувалися?',
+        reason: 'Перевірити наявність базових знань у ключовій технології.',
+      },
+      {
+        question:
+          'Які бази даних ви використовували у своїх попередніх проектах і чому ви обирали саме їх?',
+        reason: 'Оцінити досвід роботи з базами даних, згаданими у вакансії.',
+      },
+      {
+        question:
+          'Чи маєте ви досвід роботи з хмарними платформами, такими як AWS, та інструментами контейнеризації, як Docker?',
+        reason: "З'ясувати досвід роботи з інфраструктурними технологіями.",
+      },
+      {
+        question:
+          'Опишіть проект, де ви працювали в команді за методологією Agile/Scrum. Якою була ваша роль та внесок?',
+        reason:
+          'Перевірити розуміння та досвід роботи в командному середовищі за гнучкими методологіями.',
+      },
+    ],
+  },
+  experienceRelevanceAnalysis: {
+    title: 'Аналіз релевантності досвіду',
+    jobs: [],
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+} as any;

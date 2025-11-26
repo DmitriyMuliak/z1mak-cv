@@ -1,4 +1,3 @@
-// components/HistoryList.tsx
 import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useCvStore } from '../store/useCvStore';

@@ -1,12 +1,25 @@
-import { Mode } from '@/feature/store/useCvStore';
-import { Schema, Type } from '@google/genai';
+import { Type } from '@google/genai';
 
-const PROPERTY_DEFINITIONS = {
+// #EnumInArrays (maxItems, maxLength, .etc)
+// Enum in Array can produce 400 INVALID_ARGUMENT "constraint that has too many states")
+// Google Gemini (Controlled Generation) try to build (Finite State Machine) a lot of variants (more than it can handle)
+export const amountPlaceholder = '[amount]';
+export const PROPERTY_DEFINITIONS = {
   overallAnalysis: {
     matchScore: {
       type: Type.NUMBER,
       description:
         'Number from 0 to 100. Assessment of how well the CV matches the vacancy. 0 - no match, 100 - perfect candidate.',
+    },
+    independentCvScore: {
+      type: Type.NUMBER,
+      description:
+        'Number 0-100. Evaluate the overall quality of the CV structure and content, independent of the vacancy. Focus on: formatting, readability, use of Action Verbs, quantification of results (numbers/metrics), and clarity. 0 = poor/unusable, 100 = perfect, market-ready CV.',
+    },
+    independentTechCvScore: {
+      type: Type.NUMBER,
+      description:
+        "Number 0-100. Assessment of the resume's strength based on global recruitment standards. Factors: strong impact statements (STAR method), measurable achievements, absence of 'water', and modern layout. High score means the candidate sells themselves effectively.",
     },
     candidateLevel: {
       type: Type.STRING,
@@ -26,6 +39,7 @@ const PROPERTY_DEFINITIONS = {
     },
     suitabilitySummary: {
       type: Type.STRING,
+      // maxLength: '420',
       description:
         'Short (3-4 sentences) summary: why the candidate fits or does not fit. Be honest.',
     },
@@ -75,23 +89,30 @@ const PROPERTY_DEFINITIONS = {
       title: { type: Type.STRING },
       skills: {
         type: Type.ARRAY,
-        maxItems: '10',
+        description: `List up to ${amountPlaceholder} key skills found in the CV. Prioritize skills that are most relevant to the vacancy/role. Order by importance from high to low. STRICTLY: Do not include skills that are not explicitly mentioned in the CV text.`,
+        // maxItems: '10',
         items: {
           type: Type.OBJECT,
           properties: {
             skill: { type: Type.STRING, description: "Skill name (e.g., 'Node.js')" },
             type: {
               type: Type.STRING,
+              // #EnumInArrays
               format: 'enum',
               enum: ['Required', 'Desired'],
-              description: "'Required' or 'Desired'",
+              // description: "'Required' or 'Desired'",
             },
             status: {
               type: Type.STRING,
+              // #EnumInArrays
               format: 'enum',
               enum: ['Strongly Present', 'Mentioned', 'Inferred', 'Missing'],
+              // description: "'Strongly Present' or 'Mentioned' or 'Inferred' or 'Missing'",
             },
-            evidenceFromCV: { type: Type.STRING, description: "Short quote or 'N/A'" },
+            evidenceFromCV: {
+              type: Type.STRING,
+              description: "Short quote: only places of work or 'N/A'",
+            },
             confidenceScore: { type: Type.NUMBER, description: 'Number 0-10' },
           },
           required: ['skill', 'type', 'status', 'evidenceFromCV', 'confidenceScore'],
@@ -100,13 +121,14 @@ const PROPERTY_DEFINITIONS = {
     },
     required: ['title', 'skills'],
   },
+
   experienceRelevanceAnalysis: {
     type: Type.OBJECT,
     properties: {
       title: { type: Type.STRING },
       jobs: {
         type: Type.ARRAY,
-        maxItems: '10',
+        description: `Select up to ${amountPlaceholder} most recent and relevant positions. Prioritize experience that matches the vacancy requirements. Order by relevance (most relevant first).`,
         items: {
           type: Type.OBJECT,
           properties: {
@@ -114,7 +136,11 @@ const PROPERTY_DEFINITIONS = {
             company: { type: Type.STRING },
             period: { type: Type.STRING },
             relevanceToRoleScore: { type: Type.NUMBER, description: 'Number 0-10' },
-            comment: { type: Type.STRING },
+            comment: {
+              type: Type.STRING,
+              description:
+                'Concise justification (1-2 sentences). Explain specific matches (tech stack, scale, domain) or why this experience is not relevant.',
+            },
           },
           required: ['jobTitle', 'company', 'period', 'relevanceToRoleScore', 'comment'],
         },
@@ -128,13 +154,19 @@ const PROPERTY_DEFINITIONS = {
       title: { type: Type.STRING },
       flags: {
         type: Type.ARRAY,
-        maxItems: '10',
+        // maxItems: '10',
         items: {
           type: Type.OBJECT,
           properties: {
             concern: { type: Type.STRING },
             details: { type: Type.STRING },
-            severity: { type: Type.STRING, format: 'enum', enum: ['Low', 'Medium', 'High'] },
+            severity: {
+              type: Type.STRING,
+              // #EnumInArrays
+              format: 'enum',
+              enum: ['Low', 'Medium', 'High'],
+              // description: "'Low' or 'Medium' or 'High'",
+            },
           },
           required: ['concern', 'details', 'severity'],
         },
@@ -148,7 +180,7 @@ const PROPERTY_DEFINITIONS = {
       title: { type: Type.STRING },
       questions: {
         type: Type.ARRAY,
-        maxItems: '10',
+        // maxItems: '10',
         items: {
           type: Type.OBJECT,
           properties: {
@@ -161,7 +193,6 @@ const PROPERTY_DEFINITIONS = {
     },
     required: ['title', 'questions'],
   },
-  // Components for Improvement Plan
   improvementComponents: {
     summaryRewrite: {
       type: Type.OBJECT,
@@ -191,131 +222,24 @@ const PROPERTY_DEFINITIONS = {
       required: ['suggestion'],
     },
   },
-};
-
-const buildOverallAnalysis = (isByJob: boolean, isDeep: boolean): Schema => {
-  const props: Record<string, Schema> = {
-    matchScore: PROPERTY_DEFINITIONS.overallAnalysis.matchScore,
-    candidateLevel: PROPERTY_DEFINITIONS.overallAnalysis.candidateLevel,
-    suitabilitySummary: PROPERTY_DEFINITIONS.overallAnalysis.suitabilitySummary,
-  };
-
-  const required = ['matchScore', 'candidateLevel', 'suitabilitySummary'];
-
-  if (isByJob) {
-    props.jobTargetLevel = PROPERTY_DEFINITIONS.overallAnalysis.jobTargetLevel;
-    props.levelMatch = PROPERTY_DEFINITIONS.overallAnalysis.levelMatch;
-
-    required.push('jobTargetLevel', 'levelMatch');
-
-    if (isDeep) {
-      props.educationMatch = PROPERTY_DEFINITIONS.overallAnalysis.educationMatch;
-      props.jobHoppingFlag = PROPERTY_DEFINITIONS.overallAnalysis.jobHoppingFlag;
-
-      required.push('educationMatch', 'jobHoppingFlag');
-    }
-  } else {
-    // General mode logic: jobHoppingFlag is present here
-    props.jobHoppingFlag = PROPERTY_DEFINITIONS.overallAnalysis.jobHoppingFlag;
-    required.push('jobHoppingFlag');
-  }
-
-  return {
+  metadata: {
     type: Type.OBJECT,
-    properties: props,
-    required: required,
-  };
+    properties: {
+      isValidCv: {
+        type: Type.BOOLEAN,
+        description:
+          'True if the CV text appears to be a valid resume containing professional experience or skills. False if it is empty, contains only random characters, or is clearly not a CV.',
+      },
+      isValidJobDescription: {
+        type: Type.BOOLEAN,
+        description:
+          'True if the text describes a job role with requirements. False if it contains random characters, is too short to be meaningful  or is clearly not a Job Description.',
+      },
+      isJobDescriptionPresent: {
+        type: Type.BOOLEAN,
+        description: 'True if job description was provided.',
+      },
+    },
+    required: ['isValidCv', 'isValidJobDescription', 'isJobDescriptionPresent'],
+  },
 };
-
-const buildQuantitativeMetrics = (isByJob: boolean, isDeep: boolean): Schema => {
-  const props: Record<string, Schema> = {
-    totalYearsInCV: PROPERTY_DEFINITIONS.quantitativeMetrics.totalYearsInCV,
-    relevantYearsInCV: PROPERTY_DEFINITIONS.quantitativeMetrics.relevantYearsInCV,
-    requiredYearsInJob: PROPERTY_DEFINITIONS.quantitativeMetrics.requiredYearsInJob,
-    keySkillCoveragePercent: PROPERTY_DEFINITIONS.quantitativeMetrics.keySkillCoveragePercent,
-  };
-
-  const required = [
-    'totalYearsInCV',
-    'relevantYearsInCV',
-    'requiredYearsInJob',
-    'keySkillCoveragePercent',
-  ];
-
-  const isShouldAddDetailedMetrics = isByJob && isDeep;
-
-  if (isShouldAddDetailedMetrics) {
-    props.stackRecencyScore = PROPERTY_DEFINITIONS.quantitativeMetrics.stackRecencyScore;
-    props.softSkillsScore = PROPERTY_DEFINITIONS.quantitativeMetrics.softSkillsScore;
-
-    required.push('stackRecencyScore', 'softSkillsScore');
-  }
-
-  return {
-    type: Type.OBJECT,
-    properties: props,
-    required: required,
-  };
-};
-
-const buildImprovementPlan = (isByJob: boolean): Schema => {
-  const props: Record<string, Schema> = {
-    title: { type: Type.STRING },
-    summaryRewrite: PROPERTY_DEFINITIONS.improvementComponents.summaryRewrite as Schema,
-    quantifyAchievements: PROPERTY_DEFINITIONS.improvementComponents.quantifyAchievements as Schema,
-    removeIrrelevant: PROPERTY_DEFINITIONS.improvementComponents.removeIrrelevant as Schema,
-  };
-
-  const required = ['title', 'summaryRewrite', 'quantifyAchievements', 'removeIrrelevant'];
-
-  if (isByJob) {
-    props.keywordOptimization = PROPERTY_DEFINITIONS.improvementComponents
-      .keywordOptimization as Schema;
-    required.push('keywordOptimization');
-  }
-
-  return {
-    type: Type.OBJECT,
-    properties: props,
-    required: required,
-  };
-};
-
-export const getCvAnalysisSchema = (mode: Mode): Schema => {
-  const isByJob = mode.evaluationMode === 'byJob';
-  const isDeep = mode.depth === 'deep';
-
-  const properties: Record<string, Schema> = {
-    analysisTimestamp: { type: Type.STRING, description: 'Current ISO date and time' },
-    overallAnalysis: buildOverallAnalysis(isByJob, isDeep),
-    quantitativeMetrics: buildQuantitativeMetrics(isByJob, isDeep),
-    redFlagsAndConcerns: PROPERTY_DEFINITIONS.redFlagsAndConcerns as Schema,
-    actionableImprovementPlan: buildImprovementPlan(isByJob),
-  };
-
-  const isHardMode = isByJob && isDeep;
-
-  if (isHardMode) {
-    properties.detailedSkillAnalysis = PROPERTY_DEFINITIONS.detailedSkillAnalysis as Schema;
-    properties.suggestedInterviewQuestions =
-      PROPERTY_DEFINITIONS.suggestedInterviewQuestions as Schema;
-  }
-
-  if (isByJob) {
-    properties.experienceRelevanceAnalysis =
-      PROPERTY_DEFINITIONS.experienceRelevanceAnalysis as Schema;
-  }
-  const required = Object.keys(properties);
-
-  return {
-    type: Type.OBJECT,
-    properties,
-    required,
-  };
-};
-
-export const cvAnalysisSchema = getCvAnalysisSchema({
-  evaluationMode: 'byJob',
-  domain: 'it',
-  depth: 'deep',
-});
