@@ -1,5 +1,5 @@
 import { produce } from 'immer';
-import { Mode } from '@/feature/store/useCvStore';
+import { Mode } from '@/features/store/useCvStore';
 import { Schema, Type } from '@google/genai';
 import { PROPERTY_DEFINITIONS, amountPlaceholder } from './propertyDefinitions';
 import { AnalysisSchemaType } from '../schema/analysisSchema';
@@ -150,12 +150,13 @@ export class SchemaService {
   private buildQuantitativeMetrics(): Schema {
     const props: Record<string, Schema> = {
       totalYearsInCV: PROPERTY_DEFINITIONS.quantitativeMetrics.totalYearsInCV,
-      relevantYearsInCV: PROPERTY_DEFINITIONS.quantitativeMetrics.relevantYearsInCV,
-      keySkillCoveragePercent: PROPERTY_DEFINITIONS.quantitativeMetrics.keySkillCoveragePercent,
     };
     const required = Object.keys(props);
 
     if (this.isByJob) {
+      props.relevantYearsInCV = PROPERTY_DEFINITIONS.quantitativeMetrics.relevantYearsInCV;
+      props.keySkillCoveragePercent =
+        PROPERTY_DEFINITIONS.quantitativeMetrics.keySkillCoveragePercent;
       props.requiredYearsInJob = PROPERTY_DEFINITIONS.quantitativeMetrics.requiredYearsInJob;
       required.push('requiredYearsInJob');
     }

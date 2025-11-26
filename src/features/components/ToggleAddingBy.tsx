@@ -25,7 +25,7 @@ export const ToggleAddingBy: React.FC<Props> = (props) => {
       <ToggleGroupItem
         value="file"
         aria-label="Toggle star"
-        className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500"
+        className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500 transition-colors"
         // className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500 data-[state=on]:*:[svg]:stroke-yellow-500"
       >
         <FileText />
@@ -35,7 +35,7 @@ export const ToggleAddingBy: React.FC<Props> = (props) => {
       <ToggleGroupItem
         value="text"
         aria-label="Toggle heart"
-        className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:stroke-blue-500"
+        className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:stroke-blue-500 transition-colors"
       >
         <TextInitial />
         {t('textTitle')}

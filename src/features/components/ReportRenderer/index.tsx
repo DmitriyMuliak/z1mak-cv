@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { Mode, useCvStore } from '@/feature/store/useCvStore';
+import { Mode, useCvStore } from '@/features/store/useCvStore';
 import { AnalysisSchemaType } from '../../schema/analysisSchema';
 import { Header } from './components/Header';
 import { Skills } from './components/Skills';

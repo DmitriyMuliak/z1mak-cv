@@ -24,7 +24,7 @@ export const Experience: React.FC<Props> = ({ data }) => {
       <CardContent>
         <div className="space-y-3">
           {expData.jobs.map((j, i) => (
-            <div key={i} className="p-3 border rounded">
+            <div key={i} className="p-3 border rounded hover:bg-muted/50 transition-colors">
               <div className="flex justify-between">
                 <div>
                   <div className="font-medium">

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { AnalysisSchemaType } from '@/feature/schema/analysisSchema';
-import { generateAndDownloadDocxReport } from '@/feature/utils/generateReportHtml';
+import { AnalysisSchemaType } from '@/features/schema/analysisSchema';
+import { generateAndDownloadDocxReport } from '@/features/utils/generateReportHtml';
 import { downloadJson } from '@/utils/downloadFiles/downloadJson';
 import { useTranslations } from 'next-intl';
 

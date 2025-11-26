@@ -1,14 +1,16 @@
 import { publicPrEnv } from '@/utils/processEnv/public';
 import { GoogleGenAI, HarmCategory, HarmBlockThreshold } from '@google/genai';
-import { Mode } from '@/feature/store/useCvStore';
-import { SchemaService } from '@/feature/services/SchemaService';
+import { Mode } from '@/features/store/useCvStore';
+import { SchemaService } from '@/features/services/SchemaService';
 import { devLogger } from '@/lib/devLogger';
 
 // https://ai.google.dev/gemini-api/docs/models
+// Rate Limits - https://ai.google.dev/gemini-api/docs/rate-limits?authuser=3
 const geminiModels = {
   pro3: 'gemini-3-pro-preview',
   pro2dot5: 'gemini-2.5-pro',
   flash: 'gemini-2.5-flash',
+  flashPreview: 'gemini-2.5-flash-preview-09-2025',
   flashLite: 'gemini-2.5-flash-lite',
 };
 
@@ -40,11 +42,11 @@ export const callGeminiAi = async ({
 
   // TODO: handle
   // 1- ApiError: {"error":{"code":503,"message":"The model is overloaded. Please try again later.","status":"UNAVAILABLE"}}
-  // 2- 429 Too Many Requests
+  // 2- 429 Too Many Requests {"code":429,"message":"You exceeded your current quota, please check your plan and billing
 
   try {
     const result = await client.models.generateContent({
-      model: geminiModels.flash,
+      model: geminiModels.flashPreview,
       contents: [
         {
           role: 'user',

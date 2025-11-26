@@ -1,11 +1,10 @@
-// components/RealtimeJobListener.tsx
 'use client';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { useEffect } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const RealtimeJobListener: React.FC<{
   jobId: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onResult: (r: any) => void;
   onStatus?: (s: string) => void;
 }> = ({ jobId, onResult, onStatus }) => {

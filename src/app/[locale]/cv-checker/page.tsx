@@ -1,4 +1,4 @@
-import { CvCheckerStartFlow } from '@/feature/CvCheckerStartFlow';
+import { CvCheckerStartFlow } from '@/features/CvCheckerStartFlow';
 import { Link } from '@/i18n/navigation';
 
 export default async function CVCheckerPage() {

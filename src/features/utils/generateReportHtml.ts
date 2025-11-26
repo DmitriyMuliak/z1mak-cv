@@ -133,14 +133,20 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
       ? [createLabelValue('Job Hopping', qm.requiredYearsInJob)]
       : [];
 
-  const isPlanKeywordOptimization = !!plan.keywordOptimization;
-  const planKeywordOptimization = plan.keywordOptimization
+  const relevantYearsInCV =
+    qm.relevantYearsInCV !== undefined
+      ? [createLabelValue('Relevant Years', qm.relevantYearsInCV)]
+      : [];
+
+  const isPlan = !!plan;
+  const isPlanKeywordOptimization = isPlan && plan.keywordOptimization !== undefined;
+  const planKeywordOptimization = isPlanKeywordOptimization
     ? [
         new Paragraph({ text: '• Missing Keywords', heading: HeadingLevel.TITLE }),
         new Paragraph({
           children: [
             new TextRun({
-              text: plan.keywordOptimization.missingKeywords.join(', ') || 'None',
+              text: plan.keywordOptimization!.missingKeywords.join(', ') || 'None',
               color: '000000',
               bold: false,
               italics: false,
@@ -264,62 +270,81 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
                     [
                       new Paragraph({ text: 'Experience', heading: HeadingLevel.HEADING_3 }),
                       createLabelValue('Total Years', qm.totalYearsInCV),
-                      createLabelValue('Relevant Years', qm.relevantYearsInCV),
+                      ...relevantYearsInCV,
                       ...requiredYearsInJob,
                     ],
                     40,
                   ),
 
-                  createCell(
-                    [
-                      new Paragraph({ text: 'Skills coverage', heading: HeadingLevel.HEADING_3 }),
-                      new Paragraph({
-                        children: [new TextRun({ text: 'Key Skills: ', bold: true })],
-                        spacing: { after: 50 },
-                      }),
-                      new Paragraph({
-                        children: [
-                          new TextRun({
-                            text: createProgressBarText(qm.keySkillCoveragePercent),
-                            font: 'Courier New',
-                          }),
-                        ],
-                        spacing: { after: 150 },
-                      }),
+                  ...(qm.keySkillCoveragePercent !== undefined ||
+                  qm.stackRecencyScore !== undefined ||
+                  qm.softSkillsScore !== undefined
+                    ? [
+                        createCell(
+                          [
+                            new Paragraph({
+                              text: 'Skills coverage',
+                              heading: HeadingLevel.HEADING_3,
+                            }),
+                            ...(qm.keySkillCoveragePercent !== undefined
+                              ? [
+                                  new Paragraph({
+                                    children: [new TextRun({ text: 'Key Skills: ', bold: true })],
+                                    spacing: { after: 50 },
+                                  }),
+                                  new Paragraph({
+                                    children: [
+                                      new TextRun({
+                                        text: createProgressBarText(qm.keySkillCoveragePercent),
+                                        font: 'Courier New',
+                                      }),
+                                    ],
+                                    spacing: { after: 150 },
+                                  }),
+                                ]
+                              : []),
 
-                      new Paragraph({
-                        children: [new TextRun({ text: 'Stack Recency: ', bold: true })],
-                        spacing: { after: 50 },
-                      }),
-                      new Paragraph({
-                        children: [
-                          new TextRun({
-                            text: createProgressBarText(
-                              data.quantitativeMetrics?.stackRecencyScore || 0,
-                            ),
-                            font: 'Courier New',
-                          }),
-                        ],
-                        spacing: { after: 150 },
-                      }),
+                            ...(qm.stackRecencyScore !== undefined
+                              ? [
+                                  new Paragraph({
+                                    children: [
+                                      new TextRun({ text: 'Stack Recency: ', bold: true }),
+                                    ],
+                                    spacing: { after: 50 },
+                                  }),
+                                  new Paragraph({
+                                    children: [
+                                      new TextRun({
+                                        text: createProgressBarText(qm.stackRecencyScore),
+                                        font: 'Courier New',
+                                      }),
+                                    ],
+                                    spacing: { after: 150 },
+                                  }),
+                                ]
+                              : []),
 
-                      new Paragraph({
-                        children: [new TextRun({ text: 'Soft Skills: ', bold: true })],
-                        spacing: { after: 50 },
-                      }),
-                      new Paragraph({
-                        children: [
-                          new TextRun({
-                            text: createProgressBarText(
-                              data.quantitativeMetrics?.softSkillsScore || 0,
-                            ),
-                            font: 'Courier New',
-                          }),
-                        ],
-                      }),
-                    ],
-                    60,
-                  ),
+                            ...(qm.softSkillsScore !== undefined
+                              ? [
+                                  new Paragraph({
+                                    children: [new TextRun({ text: 'Soft Skills: ', bold: true })],
+                                    spacing: { after: 50 },
+                                  }),
+                                  new Paragraph({
+                                    children: [
+                                      new TextRun({
+                                        text: createProgressBarText(qm.softSkillsScore),
+                                        font: 'Courier New',
+                                      }),
+                                    ],
+                                  }),
+                                ]
+                              : []),
+                          ],
+                          60,
+                        ),
+                      ]
+                    : []),
                 ],
               }),
             ],
@@ -514,58 +539,65 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
           }),
 
           // === 6. IMPROVEMENT PLAN ===
-          createSectionHeader(plan.title),
+          ...(isPlan
+            ? [
+                createSectionHeader(plan.title),
 
-          new Paragraph({ text: '• Summary Rewrite', heading: HeadingLevel.TITLE }),
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: plan.summaryRewrite.suggestion,
-                size: 22,
-                bold: false,
-                color: '000000',
-              }),
-            ],
-            spacing: { after: 100 },
-          }),
-          new Paragraph({
-            children: [
-              new TextRun({
-                text: `"${plan.summaryRewrite.example}"`,
-                italics: false,
-                bold: false,
-                color: '000000',
-                size: 22,
-              }),
-            ],
-            indent: { left: 720 },
-            spacing: { after: 300 },
-          }),
+                new Paragraph({ text: '• Summary Rewrite', heading: HeadingLevel.TITLE }),
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: plan.summaryRewrite.suggestion,
+                      size: 22,
+                      bold: false,
+                      color: '000000',
+                    }),
+                  ],
+                  spacing: { after: 100 },
+                }),
+                new Paragraph({
+                  children: [
+                    new TextRun({
+                      text: `"${plan.summaryRewrite.example}"`,
+                      italics: false,
+                      bold: false,
+                      color: '000000',
+                      size: 22,
+                    }),
+                  ],
+                  indent: { left: 720 },
+                  spacing: { after: 300 },
+                }),
 
-          createMarginBlock(),
+                createMarginBlock(),
 
-          ...planKeywordOptimization,
+                ...planKeywordOptimization,
 
-          ...(isPlanKeywordOptimization ? [createMarginBlock()] : []),
+                ...(isPlanKeywordOptimization ? [createMarginBlock()] : []),
 
-          new Paragraph({ text: '• Quantify Achievements', heading: HeadingLevel.TITLE }),
-          new Paragraph({ text: plan.quantifyAchievements.suggestion, spacing: { after: 100 } }),
-          ...plan.quantifyAchievements.examplesToImprove.map(
-            (ex) =>
-              new Paragraph({
-                children: [
-                  new TextRun({
-                    text: `• "${ex}"`,
-                    italics: false,
-                    bold: false,
-                    color: '000000',
-                    size: 22,
-                  }),
-                ],
-                indent: { left: 720 },
-                spacing: { after: 100 },
-              }),
-          ),
+                new Paragraph({ text: '• Quantify Achievements', heading: HeadingLevel.TITLE }),
+                new Paragraph({
+                  text: plan.quantifyAchievements.suggestion,
+                  spacing: { after: 100 },
+                }),
+                ...plan.quantifyAchievements.examplesToImprove.map(
+                  (ex) =>
+                    new Paragraph({
+                      children: [
+                        new TextRun({
+                          text: `• "${ex}"`,
+                          italics: false,
+                          bold: false,
+                          color: '000000',
+                          size: 22,
+                        }),
+                      ],
+                      indent: { left: 720 },
+                      spacing: { after: 100 },
+                    }),
+                ),
+              ]
+            : []),
 
           // === 7. INTERVIEW QUESTIONS ===
           ...(questions

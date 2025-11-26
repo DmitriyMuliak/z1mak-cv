@@ -1,4 +1,4 @@
-import { ReportRenderer } from '@/feature/components/ReportRenderer';
+import { ReportRenderer } from '@/features/components/ReportRenderer';
 // import { mockAnalysisData, mockEmptyAnalysisData } from '@/feature/mokcs/mockAnalysisData';
 
 export default async function CVCheckerAnalysis() {

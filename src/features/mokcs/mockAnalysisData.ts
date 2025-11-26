@@ -310,7 +310,7 @@ export const mockAnalysisData: AnalysisSchemaType = {
   metadata: {
     isValidCv: true,
     isValidJobDescription: true,
-    isValidJobDescription: true,
+    isJobDescriptionPresent: true,
   },
 };
 

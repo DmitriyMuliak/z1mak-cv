@@ -24,8 +24,9 @@ const FlagSchema = v.object({
 
 const QuantitativeMetricsSchema = v.object({
   totalYearsInCV: v.number(),
-  relevantYearsInCV: v.number(),
-  keySkillCoveragePercent: v.number(),
+  // Optional fields
+  relevantYearsInCV: v.optional(v.number()),
+  keySkillCoveragePercent: v.optional(v.number()),
   stackRecencyScore: v.optional(v.number()),
   softSkillsScore: v.optional(v.number()),
   requiredYearsInJob: v.optional(v.number()),
@@ -54,25 +55,28 @@ export const AnalysisSchema = v.object({
     flags: v.array(FlagSchema),
   }),
 
-  actionableImprovementPlan: v.object({
-    title: v.string(),
-    summaryRewrite: v.object({ suggestion: v.string(), example: v.string() }),
-    quantifyAchievements: v.object({
-      targetSection: v.string(),
-      suggestion: v.string(),
-      examplesToImprove: v.array(v.string()),
-    }),
-    removeIrrelevant: v.object({ suggestion: v.string() }),
-    // Optional block
-    keywordOptimization: v.optional(
-      v.object({
-        missingKeywords: v.array(v.string()),
-        suggestion: v.string(),
-      }),
-    ),
-  }),
-
   // Optional top-level sections
+
+  actionableImprovementPlan: v.optional(
+    v.object({
+      title: v.string(),
+      summaryRewrite: v.object({ suggestion: v.string(), example: v.string() }),
+      quantifyAchievements: v.object({
+        targetSection: v.string(),
+        suggestion: v.string(),
+        examplesToImprove: v.array(v.string()),
+      }),
+      removeIrrelevant: v.object({ suggestion: v.string() }),
+      // Optional block
+      keywordOptimization: v.optional(
+        v.object({
+          missingKeywords: v.array(v.string()),
+          suggestion: v.string(),
+        }),
+      ),
+    }),
+  ),
+
   detailedSkillAnalysis: v.optional(
     v.object({
       title: v.string(),
