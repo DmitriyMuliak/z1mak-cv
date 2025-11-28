@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { AnimatedPhoto } from '@/components/AnimatedPhoto';
 import { cn } from '@/lib/utils';
+// import { Temp } from './temp';
 
 type PageProps = { params: { locale: string } };
 
@@ -36,6 +37,7 @@ export default async function AboutPage(props: PageProps) {
           'sm:w-1/2 h-[250px] sm:h-[350px] md:h-auto lg:max-h-[600px] flex flex-col justify-center items-center',
         )}
       >
+        {/* <Temp /> */}
         <AnimatedPhoto />
       </div>
     </div>

@@ -34,3 +34,15 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+TODO:
+1 - setup front store + add utils (debugger, immer);
+2 - change background + error colors
+3 - cleanup code
+4 - add tests for main flow and logic
+5 - add pipeline
+6 - clean up code
+7 - add nestJs (fly.io) + create DB handle results.
+8 - add queue (bullMq) > call DB > change models logic
+9 - move call from front-end to route.
+10 - add check status

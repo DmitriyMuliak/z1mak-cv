@@ -3,14 +3,12 @@
   "prettier.prettierPath": "./node_modules/prettier/index.mjs",
   "editor.formatOnSave": true,
   "editor.bracketPairColorization.enabled": true,
-  "editor.guides.bracketPairs":"active",
+  "editor.guides.bracketPairs": "active",
   "files.associations": {
     "*.css": "tailwindcss",
     "*.scss": "tailwindcss"
   },
-  "deno.enablePaths": [
-    "supabase/functions"
-  ],
+  "deno.enablePaths": ["supabase/functions"],
   "deno.lint": true,
   "deno.unstable": [
     "bare-node-builtins",
@@ -27,11 +25,6 @@
     "http",
     "net"
   ],
-  "cSpell.words": [
-    "grecaptcha",
-    "marsidev",
-    "recaptcha",
-    "supabase",
-    "turbopack"
-  ]
+  "cSpell.words": ["grecaptcha", "marsidev", "recaptcha", "supabase", "turbopack"],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
