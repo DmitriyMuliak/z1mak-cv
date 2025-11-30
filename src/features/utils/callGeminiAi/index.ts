@@ -46,7 +46,7 @@ export const callGeminiAi = async ({
 
   try {
     const result = await client.models.generateContent({
-      model: geminiModels.flashPreview,
+      model: geminiModels.flashLite,
       contents: [
         {
           role: 'user',
@@ -227,7 +227,6 @@ const getImmediateInstruction = (mode: Mode, locale: string) => {
       lines.push(builder.add(`Focus on experience relevance and soft skills requirements.`));
     }
 
-    // Schema sync: keywordOptimization exists only in byJob
     lines.push(
       builder.add(
         `For "missingKeywords", look for actual discrepancies between the Job Description and the CV.`,

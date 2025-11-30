@@ -13,9 +13,11 @@ export const Metrics: React.FC<{ data: AnalysisSchemaType }> = ({ data }) => {
         <div>
           {t('metrics.totalYears')} <strong>{qm.totalYearsInCV}</strong>
         </div>
-        <div>
-          {t('metrics.relevantYears')} <strong>{qm.relevantYearsInCV}</strong>
-        </div>
+        {qm.relevantYearsInCV !== undefined && (
+          <div>
+            {t('metrics.relevantYears')} <strong>{qm.relevantYearsInCV}</strong>
+          </div>
+        )}
         {qm.requiredYearsInJob !== undefined && (
           <div>
             {t('metrics.requiredYears')} <strong>{qm.requiredYearsInJob}</strong>

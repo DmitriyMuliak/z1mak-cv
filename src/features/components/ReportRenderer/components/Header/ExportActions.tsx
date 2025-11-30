@@ -2,10 +2,11 @@ import { Button } from '@/components/ui/button';
 import { AnalysisSchemaType } from '@/features/schema/analysisSchema';
 import { generateAndDownloadDocxReport } from '@/features/utils/generateReportHtml';
 import { downloadJson } from '@/utils/downloadFiles/downloadJson';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 export const ExportActions: React.FC<{ data: AnalysisSchemaType }> = ({ data }) => {
-  const t = useTranslations('pages.cvReport.export');
+  const t = useTranslations('pages.cvReport');
+  const locale = useLocale();
 
   return (
     <div className="grid h-full">
@@ -13,12 +14,12 @@ export const ExportActions: React.FC<{ data: AnalysisSchemaType }> = ({ data }) 
       <div className="grid gap-2 items-end">
         <div>
           <Button className="w-full" onClick={() => downloadJson(data, 'cv-report')}>
-            {t('downloadJson')}
+            {t('export.downloadJson')}
           </Button>
         </div>
         <div>
-          <Button className="w-full" onClick={() => generateAndDownloadDocxReport(data)}>
-            {t('downloadDoc')}
+          <Button className="w-full" onClick={() => generateAndDownloadDocxReport(data, locale, t)}>
+            {t('export.downloadDoc')}
           </Button>
         </div>
       </div>

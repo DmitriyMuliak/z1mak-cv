@@ -89,8 +89,8 @@ export const PROPERTY_DEFINITIONS = {
       title: { type: Type.STRING },
       skills: {
         type: Type.ARRAY,
-        description: `List up to ${amountPlaceholder} key skills found in the CV. Prioritize skills that are most relevant to the vacancy/role. Order by importance from high to low. STRICTLY: Do not include skills that are not explicitly mentioned in the CV text.`,
-        // maxItems: '10',
+        description: `List of key skills found in the CV. Prioritize skills that are most relevant to the vacancy/role. Order by importance from high to low. STRICTLY: Do not include skills that are not explicitly mentioned in the CV text.`,
+        maxItems: `${amountPlaceholder}`,
         items: {
           type: Type.OBJECT,
           properties: {
@@ -98,20 +98,21 @@ export const PROPERTY_DEFINITIONS = {
             type: {
               type: Type.STRING,
               // #EnumInArrays
-              format: 'enum',
-              enum: ['Required', 'Desired'],
-              // description: "'Required' or 'Desired'",
+              // format: 'enum',
+              // enum: ['Required', 'Desired'],
+              description: "'Required' or 'Desired'",
             },
             status: {
               type: Type.STRING,
               // #EnumInArrays
-              format: 'enum',
-              enum: ['Strongly Present', 'Mentioned', 'Inferred', 'Missing'],
-              // description: "'Strongly Present' or 'Mentioned' or 'Inferred' or 'Missing'",
+              // format: 'enum',
+              // enum: ['Strongly Present', 'Mentioned', 'Inferred', 'Missing'],
+              description: "'Strongly Present' or 'Mentioned' or 'Inferred' or 'Missing'",
             },
             evidenceFromCV: {
               type: Type.STRING,
-              description: "Short quote: only places of work or 'N/A'",
+              description:
+                "STRICTLY: A comma-separated list of Company Names where the skill was demonstrated, or 'N/A'.",
             },
             confidenceScore: { type: Type.NUMBER, description: 'Number 0-10' },
           },
@@ -128,7 +129,8 @@ export const PROPERTY_DEFINITIONS = {
       title: { type: Type.STRING },
       jobs: {
         type: Type.ARRAY,
-        description: `Select up to ${amountPlaceholder} most recent and relevant positions. Prioritize experience that matches the vacancy requirements. Order by relevance (most relevant first).`,
+        description: `Select the most recent and relevant positions. Prioritize experience that matches the vacancy requirements. Order by relevance (most relevant first).`,
+        maxItems: `${amountPlaceholder}`,
         items: {
           type: Type.OBJECT,
           properties: {
@@ -154,7 +156,7 @@ export const PROPERTY_DEFINITIONS = {
       title: { type: Type.STRING },
       flags: {
         type: Type.ARRAY,
-        // maxItems: '10',
+        maxItems: '5',
         items: {
           type: Type.OBJECT,
           properties: {
@@ -163,9 +165,9 @@ export const PROPERTY_DEFINITIONS = {
             severity: {
               type: Type.STRING,
               // #EnumInArrays
-              format: 'enum',
-              enum: ['Low', 'Medium', 'High'],
-              // description: "'Low' or 'Medium' or 'High'",
+              // format: 'enum',
+              // enum: ['Low', 'Medium', 'High'],
+              description: "'Low' or 'Medium' or 'High'",
             },
           },
           required: ['concern', 'details', 'severity'],
@@ -180,7 +182,8 @@ export const PROPERTY_DEFINITIONS = {
       title: { type: Type.STRING },
       questions: {
         type: Type.ARRAY,
-        // maxItems: '10',
+        description: `STRICT LIMIT: Provide a MAXIMUM of 5 questions. Focus on areas of concern, gaps, or opportunities for deeper understanding of the candidate's fit for the role.`,
+        maxItems: '5',
         items: {
           type: Type.OBJECT,
           properties: {
@@ -202,7 +205,11 @@ export const PROPERTY_DEFINITIONS = {
     keywordOptimization: {
       type: Type.OBJECT,
       properties: {
-        missingKeywords: { type: Type.ARRAY, items: { type: Type.STRING } },
+        missingKeywords: {
+          type: Type.ARRAY,
+          description: `STRICT LIMIT: List a MAXIMUM of 10 missing keywords.`,
+          items: { type: Type.STRING },
+        },
         suggestion: { type: Type.STRING },
       },
       required: ['missingKeywords', 'suggestion'],

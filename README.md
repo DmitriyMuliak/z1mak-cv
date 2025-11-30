@@ -38,28 +38,18 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 TODO:
 
 <!-- 1 - setup front store + add utils (debugger, immer); -->
+<!-- 2 - remove or keep only day - text: `Generated on: ${new Date(data.analysisTimestamp)}`, -->
+3 - change URL Configuration in Supabase to production.
+4 - change background + error colors
+5 - add tests for main flow and logic
+6 - add CI/CD pipeline to Github
+7 - clean up code
+8 - add nestJs (fly.io) + create DB handle results.
+9 - add queue (bullMq) > call DB > change models logic
+10 - move call from front-end to route.
+11 - add check status
+12 - add ENV Variables to Versel and Supabase.
 
-// remove or keep only day - text: `Generated on: ${new Date(data.analysisTimestamp)}`,
-2 - change background + error colors
-3 - add tests for main flow and logic
-4 - add pipeline
-5 - clean up code
-6 - add nestJs (fly.io) + create DB handle results.
-7 - add queue (bullMq) > call DB > change models logic
-8 - move call from front-end to route.
-9 - add check status
-
-asd
-
-asd
-
-ads
-
-ads
-ads
-ads
-ads
-ads
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
@@ -96,17 +86,3 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-TODO:
-
-<!-- 1 - setup front store + add utils (debugger, immer); -->
-
-// remove or keep only day - text: `Generated on: ${new Date(data.analysisTimestamp)}`,
-2 - change background + error colors
-3 - add tests for main flow and logic
-4 - add pipeline
-5 - clean up code
-6 - add nestJs (fly.io) + create DB handle results.
-7 - add queue (bullMq) > call DB > change models logic
-8 - move call from front-end to route.
-9 - add check status

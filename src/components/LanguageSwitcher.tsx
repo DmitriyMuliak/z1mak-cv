@@ -28,7 +28,7 @@ export function LanguageSwitcher() {
         </SelectTrigger>
         <SelectContent className="frosted-card !rounded-[10px]">
           {routing.locales.map((l) => (
-            <SelectItem key={l} value={l}>
+            <SelectItem key={l} value={l} className="cursor-pointer">
               {l === 'en' ? 'English' : 'Українська'}
             </SelectItem>
           ))}

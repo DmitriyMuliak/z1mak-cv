@@ -61,9 +61,9 @@ export class SchemaService {
       const updatedDefinitions = produce(PROPERTY_DEFINITIONS, (draft) => {
         const skills = draft.detailedSkillAnalysis.properties.skills;
         if (this.isDeep) {
-          skills.description = skills.description.replace(amountPlaceholder, '7');
+          skills.maxItems = skills.maxItems.replace(amountPlaceholder, '7');
         } else {
-          skills.description = skills.description.replace(amountPlaceholder, '4');
+          skills.maxItems = skills.maxItems.replace(amountPlaceholder, '4');
         }
       });
       properties.detailedSkillAnalysis = updatedDefinitions.detailedSkillAnalysis as Schema;
@@ -78,9 +78,9 @@ export class SchemaService {
       const updatedDefinitions = produce(PROPERTY_DEFINITIONS, (draft) => {
         const jobsProp = draft.experienceRelevanceAnalysis.properties.jobs;
         if (this.isDeep) {
-          jobsProp.description = jobsProp.description.replace(amountPlaceholder, '5');
+          jobsProp.maxItems = jobsProp.maxItems.replace(amountPlaceholder, '5');
         } else {
-          jobsProp.description = jobsProp.description.replace(amountPlaceholder, '3');
+          jobsProp.maxItems = jobsProp.maxItems.replace(amountPlaceholder, '3');
         }
       });
       properties.experienceRelevanceAnalysis =

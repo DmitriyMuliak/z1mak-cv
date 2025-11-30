@@ -1,7 +1,15 @@
 import { AnalysisSchemaType } from '../schema/analysisSchema';
+import { getFullLocale } from '@/i18n/getFullLocale';
 import type { IParagraphOptions, Paragraph as ParagraphType } from 'docx';
+import type { MessagesBase, NamespacedRelativeMessageKeys } from '@/types/translations';
 
-export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) => {
+type ReportKeys = NamespacedRelativeMessageKeys<MessagesBase, 'pages.cvReport'>;
+
+export const generateAndDownloadDocxReport = async (
+  data: AnalysisSchemaType,
+  locale: string,
+  t: (key: ReportKeys) => string,
+) => {
   const { saveAs } = await import('file-saver');
   const {
     Document,
@@ -102,47 +110,59 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
 
   // --- Main Logic ---
 
+  const generatedAtDate = new Date(data.analysisTimestamp).toLocaleString(getFullLocale(locale), {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  const T_YES = t('overall.yes');
+  const T_NO = t('overall.no');
+  const T_TITLE = t('title');
+
   const overallMatchScore =
-    oa.matchScore !== undefined ? createScoreBlock('Match Score', oa.matchScore) : [];
+    oa.matchScore !== undefined ? createScoreBlock(t('overall.matchScore'), oa.matchScore) : [];
   const overallIndependentCvScore =
     oa.independentCvScore !== undefined
-      ? createScoreBlock('Match Score', oa.independentCvScore)
+      ? createScoreBlock(t('overall.independentCvScore'), oa.independentCvScore)
       : [];
   const overallIndependentTechCvScore =
     oa.independentTechCvScore !== undefined
-      ? createScoreBlock('Match Score', oa.independentTechCvScore)
+      ? createScoreBlock(t('overall.independentTechCvScore'), oa.independentTechCvScore)
       : [];
 
   const jobTargetLevel =
-    oa.jobTargetLevel !== undefined ? [createLabelValue('Target Level', oa.jobTargetLevel)] : [];
+    oa.jobTargetLevel !== undefined
+      ? [createLabelValue(t('overall.jobTargetLevel'), oa.jobTargetLevel)]
+      : [];
   const levelMatch =
     oa.levelMatch !== undefined
-      ? [createLabelValue('Level Match', oa.levelMatch ? 'Yes' : 'No')]
+      ? [createLabelValue(t('overall.levelMatch'), oa.levelMatch ? T_YES : T_NO)]
       : [];
   const educationMatch =
     oa.educationMatch !== undefined
-      ? [createLabelValue('Education Match', oa.educationMatch ? 'Yes' : 'No')]
+      ? [createLabelValue(t('overall.educationMatch'), oa.educationMatch ? T_YES : T_NO)]
       : [];
   const jobHoppingFlag =
     oa.jobHoppingFlag !== undefined
-      ? [createLabelValue('Job Hopping', oa.jobHoppingFlag ? 'Yes' : 'No')]
+      ? [createLabelValue(t('overall.jobHoppingFlag'), oa.jobHoppingFlag ? T_YES : T_NO)]
       : [];
 
   const requiredYearsInJob =
     qm.requiredYearsInJob !== undefined
-      ? [createLabelValue('Job Hopping', qm.requiredYearsInJob)]
+      ? [createLabelValue(t('metrics.requiredYears'), qm.requiredYearsInJob)]
       : [];
 
   const relevantYearsInCV =
     qm.relevantYearsInCV !== undefined
-      ? [createLabelValue('Relevant Years', qm.relevantYearsInCV)]
+      ? [createLabelValue(t('metrics.relevantYears'), qm.relevantYearsInCV)]
       : [];
 
   const isPlan = !!plan;
   const isPlanKeywordOptimization = isPlan && plan.keywordOptimization !== undefined;
   const planKeywordOptimization = isPlanKeywordOptimization
     ? [
-        new Paragraph({ text: '• Missing Keywords', heading: HeadingLevel.TITLE }),
+        new Paragraph({ text: t('improvement.missing'), heading: HeadingLevel.TITLE }),
         new Paragraph({
           children: [
             new TextRun({
@@ -208,12 +228,12 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
         children: [
           // === HEADER ===
           new Paragraph({
-            text: 'CV Analysis Report',
+            text: T_TITLE,
             heading: HeadingLevel.HEADING_1,
             alignment: AlignmentType.CENTER,
           }),
           new Paragraph({
-            text: `Generated on: ${new Date(data.analysisTimestamp).toLocaleString()}`,
+            text: `${t('generatedOnTitle')}: ${generatedAtDate}`,
             alignment: AlignmentType.CENTER,
             spacing: { after: 400 },
             style: 'Subtitle',
@@ -240,10 +260,10 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
                   createCell(
                     [
                       new Paragraph({
-                        text: 'Overall Assessment',
+                        text: t('overall.fitAssessment'),
                         heading: HeadingLevel.HEADING_3,
                       }),
-                      createLabelValue('Candidate Level', oa.candidateLevel),
+                      createLabelValue(t('overall.candidateLevel'), oa.candidateLevel),
                       ...jobTargetLevel,
                       ...levelMatch,
                       ...educationMatch,
@@ -257,7 +277,7 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
           }),
 
           // === 2. METRICS TABLE ===
-          createSectionHeader('Quantitative Metrics'),
+          createSectionHeader(t('metrics.title')),
 
           new Table({
             width: { size: 100, type: WidthType.PERCENTAGE },
@@ -268,8 +288,11 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
                 children: [
                   createCell(
                     [
-                      new Paragraph({ text: 'Experience', heading: HeadingLevel.HEADING_3 }),
-                      createLabelValue('Total Years', qm.totalYearsInCV),
+                      new Paragraph({
+                        text: t('experience.title'),
+                        heading: HeadingLevel.HEADING_3,
+                      }),
+                      createLabelValue(t('metrics.totalYears'), qm.totalYearsInCV),
                       ...relevantYearsInCV,
                       ...requiredYearsInJob,
                     ],
@@ -283,13 +306,18 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
                         createCell(
                           [
                             new Paragraph({
-                              text: 'Skills coverage',
+                              text: t('skills.title'),
                               heading: HeadingLevel.HEADING_3,
                             }),
                             ...(qm.keySkillCoveragePercent !== undefined
                               ? [
                                   new Paragraph({
-                                    children: [new TextRun({ text: 'Key Skills: ', bold: true })],
+                                    children: [
+                                      new TextRun({
+                                        text: `${t('skills.keyCoverage')}: `,
+                                        bold: true,
+                                      }),
+                                    ],
                                     spacing: { after: 50 },
                                   }),
                                   new Paragraph({
@@ -308,7 +336,10 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
                               ? [
                                   new Paragraph({
                                     children: [
-                                      new TextRun({ text: 'Stack Recency: ', bold: true }),
+                                      new TextRun({
+                                        text: `${t('skills.stackRecency')}: `,
+                                        bold: true,
+                                      }),
                                     ],
                                     spacing: { after: 50 },
                                   }),
@@ -327,7 +358,12 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
                             ...(qm.softSkillsScore !== undefined
                               ? [
                                   new Paragraph({
-                                    children: [new TextRun({ text: 'Soft Skills: ', bold: true })],
+                                    children: [
+                                      new TextRun({
+                                        text: `${t('skills.softMatch')}: `,
+                                        bold: true,
+                                      }),
+                                    ],
                                     spacing: { after: 50 },
                                   }),
                                   new Paragraph({
@@ -353,7 +389,7 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
           // === 3. DETAILED SKILLS ===
           ...(dsa
             ? [
-                createSectionHeader('Skills Analysis', { keepNext: true }),
+                createSectionHeader(t('skills.analysisTitle'), { keepNext: true }),
 
                 new Table({
                   width: { size: 100, type: WidthType.PERCENTAGE },
@@ -433,7 +469,7 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
           // === 4. EXPERIENCE RELEVANCE ===
           ...(expRelevance
             ? [
-                createSectionHeader('Experience Relevance'),
+                createSectionHeader(t('experience.title')),
 
                 new Table({
                   width: { size: 100, type: WidthType.PERCENTAGE },
@@ -504,7 +540,7 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
             : []),
 
           // === 5. RED_ FLAGS ===
-          createSectionHeader('Red Flags and Concerns'),
+          createSectionHeader(t('redFlags.title')),
 
           ...flags.flags.flatMap((flag) => {
             return [
@@ -541,9 +577,12 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
           // === 6. IMPROVEMENT PLAN ===
           ...(isPlan
             ? [
-                createSectionHeader(plan.title),
+                createSectionHeader(t('improvement.title')),
 
-                new Paragraph({ text: '• Summary Rewrite', heading: HeadingLevel.TITLE }),
+                new Paragraph({
+                  text: `• ${t('improvement.summaryRewrite')}`,
+                  heading: HeadingLevel.TITLE,
+                }),
                 new Paragraph({
                   children: [
                     new TextRun({
@@ -565,7 +604,7 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
                       size: 22,
                     }),
                   ],
-                  indent: { left: 720 },
+                  indent: { left: 360 },
                   spacing: { after: 300 },
                 }),
 
@@ -575,7 +614,10 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
 
                 ...(isPlanKeywordOptimization ? [createMarginBlock()] : []),
 
-                new Paragraph({ text: '• Quantify Achievements', heading: HeadingLevel.TITLE }),
+                new Paragraph({
+                  text: `• ${t('improvement.quantifyAchievements')}`,
+                  heading: HeadingLevel.TITLE,
+                }),
                 new Paragraph({
                   text: plan.quantifyAchievements.suggestion,
                   spacing: { after: 100 },
@@ -592,7 +634,7 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
                           size: 22,
                         }),
                       ],
-                      indent: { left: 720 },
+                      indent: { left: 360 },
                       spacing: { after: 100 },
                     }),
                 ),
@@ -602,7 +644,7 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
           // === 7. INTERVIEW QUESTIONS ===
           ...(questions
             ? [
-                createSectionHeader('Improvement Plan'),
+                createSectionHeader(t('questions.title')),
                 ...questions.questions.flatMap((q, index) => {
                   return [
                     // Question
@@ -634,7 +676,7 @@ export const generateAndDownloadDocxReport = async (data: AnalysisSchemaType) =>
                       ],
 
                       spacing: { before: 100, after: 200 },
-                      indent: { left: 720 },
+                      indent: { left: 360 },
                     }),
                     createMarginBlock(),
                   ];

@@ -82,6 +82,7 @@
     },
     "cvReport": {
       "title": "Analysis Result",
+      "generatedOnTitle": "Generated on",
       "overall": {
         "suitabilitySummary": "Short description",
         "matchScore": "Match score",

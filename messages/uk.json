@@ -82,6 +82,7 @@
     },
     "cvReport": {
       "title": "Результат аналізу",
+      "generatedOnTitle": "Згенеровано",
       "overall": {
         "suitabilitySummary": "Короткий опис",
         "matchScore": "Оцінка відповідності",
