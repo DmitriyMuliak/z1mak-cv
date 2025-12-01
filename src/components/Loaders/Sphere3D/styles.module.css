@@ -8,14 +8,17 @@
   left: calc(50% - 200px);
   animation: girar 8s linear infinite;
 }
-.container .loader, .container .loader .sphere, .container .loader .item {
+.container .loader,
+.container .loader .sphere,
+.container .loader .item {
   width: 400px;
   height: 400px;
   position: absolute;
   transform-style: preserve-3d;
   perspective: 10000px;
 }
-.container .loader .sphere, .container .loader .item {
+.container .loader .sphere,
+.container .loader .item {
   top: 0;
   left: 0;
 }
