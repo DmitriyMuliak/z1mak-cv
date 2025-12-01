@@ -43,77 +43,6 @@ export class SchemaService {
     return this.isDeep;
   }
 
-  public getGenAiSchema(): Schema {
-    const properties: Record<string, Schema> = {
-      analysisTimestamp: { type: Type.STRING, description: 'Current ISO date and time' },
-      overallAnalysis: this.buildOverallAnalysis(),
-      quantitativeMetrics: this.buildQuantitativeMetrics(),
-      redFlagsAndConcerns: PROPERTY_DEFINITIONS.redFlagsAndConcerns as Schema,
-      metadata: PROPERTY_DEFINITIONS.metadata as Schema,
-    };
-
-    if (this.includeImprovements) {
-      properties.actionableImprovementPlan = this.buildImprovementPlan();
-    }
-
-    // Conditional Top-Level Sections
-    if (this.includeSkills) {
-      const updatedDefinitions = produce(PROPERTY_DEFINITIONS, (draft) => {
-        const skills = draft.detailedSkillAnalysis.properties.skills;
-        if (this.isDeep) {
-          skills.maxItems = skills.maxItems.replace(amountPlaceholder, '7');
-        } else {
-          skills.maxItems = skills.maxItems.replace(amountPlaceholder, '4');
-        }
-      });
-      properties.detailedSkillAnalysis = updatedDefinitions.detailedSkillAnalysis as Schema;
-    }
-
-    if (this.includeQuestions) {
-      properties.suggestedInterviewQuestions =
-        PROPERTY_DEFINITIONS.suggestedInterviewQuestions as Schema;
-    }
-
-    if (this.includeExperience) {
-      const updatedDefinitions = produce(PROPERTY_DEFINITIONS, (draft) => {
-        const jobsProp = draft.experienceRelevanceAnalysis.properties.jobs;
-        if (this.isDeep) {
-          jobsProp.maxItems = jobsProp.maxItems.replace(amountPlaceholder, '5');
-        } else {
-          jobsProp.maxItems = jobsProp.maxItems.replace(amountPlaceholder, '3');
-        }
-      });
-      properties.experienceRelevanceAnalysis =
-        updatedDefinitions.experienceRelevanceAnalysis as Schema;
-    }
-
-    return {
-      type: Type.OBJECT,
-      properties,
-      required: Object.keys(properties),
-    };
-  }
-
-  public getUiSections(report?: AnalysisSchemaType | null): UiSectionKey[] {
-    const activeSections = new Set<UiSectionKey>();
-
-    if (report && !report.metadata.isValidCv) {
-      activeSections.add('header');
-      activeSections.add('redFlags');
-      return UI_SECTION_ORDER.filter((section) => activeSections.has(section));
-    }
-
-    activeSections.add('header');
-    activeSections.add('redFlags');
-
-    if (this.includeSkills) activeSections.add('skills');
-    if (this.includeExperience) activeSections.add('experience');
-    if (this.includeImprovements) activeSections.add('improvements');
-    if (this.includeQuestions) activeSections.add('questions');
-
-    return UI_SECTION_ORDER.filter((section) => activeSections.has(section));
-  }
-
   private buildOverallAnalysis(): Schema {
     const props: Record<string, Schema> = {
       candidateLevel: PROPERTY_DEFINITIONS.overallAnalysis.candidateLevel,
@@ -187,6 +116,77 @@ export class SchemaService {
     }
 
     return { type: Type.OBJECT, properties: props, required };
+  }
+
+  public getGenAiSchema(): Schema {
+    const properties: Record<string, Schema> = {
+      analysisTimestamp: { type: Type.STRING, description: 'Current ISO date and time' },
+      overallAnalysis: this.buildOverallAnalysis(),
+      quantitativeMetrics: this.buildQuantitativeMetrics(),
+      redFlagsAndConcerns: PROPERTY_DEFINITIONS.redFlagsAndConcerns as Schema,
+      metadata: PROPERTY_DEFINITIONS.metadata as Schema,
+    };
+
+    if (this.includeImprovements) {
+      properties.actionableImprovementPlan = this.buildImprovementPlan();
+    }
+
+    // Conditional Top-Level Sections
+    if (this.includeSkills) {
+      const updatedDefinitions = produce(PROPERTY_DEFINITIONS, (draft) => {
+        const skills = draft.detailedSkillAnalysis.properties.skills;
+        if (this.isDeep) {
+          skills.maxItems = skills.maxItems.replace(amountPlaceholder, '7');
+        } else {
+          skills.maxItems = skills.maxItems.replace(amountPlaceholder, '4');
+        }
+      });
+      properties.detailedSkillAnalysis = updatedDefinitions.detailedSkillAnalysis as Schema;
+    }
+
+    if (this.includeQuestions) {
+      properties.suggestedInterviewQuestions =
+        PROPERTY_DEFINITIONS.suggestedInterviewQuestions as Schema;
+    }
+
+    if (this.includeExperience) {
+      const updatedDefinitions = produce(PROPERTY_DEFINITIONS, (draft) => {
+        const jobsProp = draft.experienceRelevanceAnalysis.properties.jobs;
+        if (this.isDeep) {
+          jobsProp.maxItems = jobsProp.maxItems.replace(amountPlaceholder, '5');
+        } else {
+          jobsProp.maxItems = jobsProp.maxItems.replace(amountPlaceholder, '3');
+        }
+      });
+      properties.experienceRelevanceAnalysis =
+        updatedDefinitions.experienceRelevanceAnalysis as Schema;
+    }
+
+    return {
+      type: Type.OBJECT,
+      properties,
+      required: Object.keys(properties),
+    };
+  }
+
+  public getUiSections(report?: AnalysisSchemaType | null): UiSectionKey[] {
+    const activeSections = new Set<UiSectionKey>();
+
+    if (report && !report.metadata.isValidCv) {
+      activeSections.add('header');
+      activeSections.add('redFlags');
+      return UI_SECTION_ORDER.filter((section) => activeSections.has(section));
+    }
+
+    activeSections.add('header');
+    activeSections.add('redFlags');
+
+    if (this.includeSkills) activeSections.add('skills');
+    if (this.includeExperience) activeSections.add('experience');
+    if (this.includeImprovements) activeSections.add('improvements');
+    if (this.includeQuestions) activeSections.add('questions');
+
+    return UI_SECTION_ORDER.filter((section) => activeSections.has(section));
   }
 }
 

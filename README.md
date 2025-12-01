@@ -39,6 +39,7 @@ TODO:
 
 <!-- 1 - setup front store + add utils (debugger, immer); -->
 <!-- 2 - remove or keep only day - text: `Generated on: ${new Date(data.analysisTimestamp)}`, -->
+
 3 - change URL Configuration in Supabase to production.
 4 - change background + error colors
 5 - add tests for main flow and logic

@@ -66,11 +66,7 @@
 
 :root {
   --color-info-background: rgba(255, 255, 255, 0.05); /*bg-info-background*/
-  --root-bg-base: radial-gradient(
-    circle,
-    #93A5CF 0%,
-    #E4EfE9 100%
-  );
+  --root-bg-base: radial-gradient(circle, #93a5cf 0%, #e4efe9 100%);
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
@@ -187,7 +183,7 @@
   );
 }
 
-.dark  .global-background-item-0 {
+.dark .global-background-item-0 {
   background: radial-gradient(circle, #1184b1 0%, #222e36 50%, #1b3540 100%);
 }
 
