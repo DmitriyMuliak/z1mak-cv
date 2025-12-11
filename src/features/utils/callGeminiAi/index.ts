@@ -46,7 +46,7 @@ export const callGeminiAi = async ({
 
   try {
     const result = await client.models.generateContent({
-      model: geminiModels.flashLite,
+      model: geminiModels.flash,
       contents: [
         {
           role: 'user',
@@ -54,11 +54,11 @@ export const callGeminiAi = async ({
         },
       ],
       config: {
-        systemInstruction: promptSettings.systemInstructions,
-        temperature: 0, // Deterministic for data extraction
         responseMimeType: 'application/json',
         responseSchema: responseSchema,
         safetySettings,
+        systemInstruction: promptSettings.systemInstructions,
+        temperature: 0, // Deterministic for data extraction
       },
     });
 

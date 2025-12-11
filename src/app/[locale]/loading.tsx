@@ -7,3 +7,9 @@ export default async function Loader() {
     </div>
   );
 }
+
+// TODO: add to loader
+// position: fixed;
+// top: 50%;
+// left: 50%;
+// transform: translate(-50%, -50%);

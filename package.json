@@ -42,7 +42,7 @@
     "framer-motion": "^12.23.22",
     "immer": "^11.0.0",
     "lucide-react": "^0.544.0",
-    "next": "15.5.6",
+    "next": "^15.5.7",
     "next-intl": "^4.3.9",
     "next-mdx-remote": "^5.0.0",
     "next-themes": "^0.4.6",
