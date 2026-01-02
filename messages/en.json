@@ -170,6 +170,16 @@
       "description": "Confirm your new password by entering it in both fields."
     }
   },
+  "components": {
+    "historyModal": {
+      "trigger": "Analysis history",
+      "title": "Analysis history",
+      "description": "Click to check previous analysis.",
+      "noHistory": "No history found.",
+      "loading": "Loading history...",
+      "cancel": "Cancel"
+    }
+  },
   "validator": {
     "invalid_type": "Invalid type. Expected {{expected}}, received {{received}}.",
     "too_small": "Value is too small. Minimum is {{min}}.",

@@ -1,7 +1,7 @@
 import { envType } from '@/utils/envType';
 import { TextAreaCss, TextAreaDiv, TextAreaJs } from '../Textarea';
 import { ServerFormUseAction } from '../FullServerSideForm/ServerFormUseAction';
-import { ServerForm } from '../FullServerSideForm/ServerForm';
+import { ServerForm } from '../FullServerSideForm/serverForm';
 import { SphereLoader } from '../Loaders/Sphere';
 import { Sphere3DLoader } from '../Loaders/Sphere3D';
 import { TwoLineCircle } from '../Loaders/TwoLineCircle';
