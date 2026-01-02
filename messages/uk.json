@@ -83,6 +83,12 @@
     "cvReport": {
       "title": "Результат аналізу",
       "generatedOnTitle": "Згенеровано",
+      "loadingTitle": {
+        "loading": "Завантаження звіту",
+        "queued": "Звіт у черзі",
+        "in_progress": "Звіт генерується",
+        "failed": "Не вдалося згенерувати звіт. Будь ласка, спробуйте пізніше."
+      },
       "overall": {
         "suitabilitySummary": "Короткий опис",
         "matchScore": "Оцінка відповідності",
@@ -230,7 +236,8 @@
   },
   "common": {
     "formButtonSendTitle": "Надіслати",
-    "formButtonSendSuccessTitle": "Успішно надіслано"
+    "formButtonSendSuccessTitle": "Успішно надіслано",
+    "tryAgainButtonTitle": "Спробувати знову"
   },
   "examples": {
     "pluralTranslationExample": "{count, plural, one {# товар} few {# товари} many {# товарів} other {# товару}}"

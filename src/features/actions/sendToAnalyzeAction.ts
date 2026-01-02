@@ -2,16 +2,17 @@ import { parseFile } from '../parsers/parseFile';
 import { AddDescriptionBy, Mode } from '../store/useCvStore';
 import { SendToAnalyzeFEType } from '../schema/form/toAnalyzeSchemaFE';
 import { ResultReturn } from '@/actions/utils';
+import { analyzeResume } from '@/actions/sendToAnalyze';
 
 interface SendToAnalyzeActionState {
-  evaluationMode: Mode['evaluationMode'];
+  locale: string;
+  mode: Mode;
   addCvBy: AddDescriptionBy;
   addJobBy: AddDescriptionBy;
 }
 
 type AnalyzeSuccessData = {
-  cvText: string;
-  jobText: string;
+  jobId: string;
 };
 
 export const sendToAnalyzeAction = async (
@@ -19,7 +20,7 @@ export const sendToAnalyzeAction = async (
   stateOptional?: SendToAnalyzeActionState,
 ): Promise<ResultReturn<AnalyzeSuccessData>> => {
   const state = stateOptional as SendToAnalyzeActionState;
-  const shouldProcessJob = state.evaluationMode === 'byJob';
+  const shouldProcessJob = state.mode.evaluationMode === 'byJob';
 
   const [cvResult, jobResult] = await Promise.all([
     extractContent(state.addCvBy, data.cvText, data.cvFile),
@@ -61,12 +62,16 @@ export const sendToAnalyzeAction = async (
 
   // call gemini
 
+  const response = await analyzeResume({
+    mode: state.mode,
+    locale: state.locale,
+    cvDescription: cvResult.data,
+    ...(jobResult.data ? { jobDescription: jobResult.data } : {}),
+  });
+
   return {
     success: true,
-    data: {
-      cvText: cvResult.data,
-      jobText: jobResult.data,
-    },
+    data: response,
   };
 };
 

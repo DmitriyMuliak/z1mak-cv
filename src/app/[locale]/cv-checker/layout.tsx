@@ -6,7 +6,7 @@ interface Props {
 
 export default async function CVCheckerLayout({ children }: Props) {
   return (
-    <div className="p-8">
+    <div className="sm:p-6 md:p-8">
       {/* <Breadcrumbs /> */}
       {children}
     </div>

@@ -1,24 +1,19 @@
+import { paths } from '@/consts/routes';
 import { ReportRenderer } from '@/features/components/ReportRenderer';
-// import { mockAnalysisData, mockEmptyAnalysisData } from '@/feature/mokcs/mockAnalysisData';
+import { redirect } from '@/i18n/navigation';
 
-export default async function CVCheckerAnalysis() {
-  // For demo assume userId from session (in prod use auth)
-  // const userId = 'user-demo-1';
+type Props = {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ jobId?: string }>;
+};
 
-  // const { newJobMode, currentJobId, jobs, updateJob, setJobs, setNewJobMode } = useCvStore();
-  // const [report, setAnalysis] = useState<AnalysisSchemaType | null>(mockAnalysisData);
+export default async function CVCheckerAnalysis(props: Props) {
+  const [{ locale }, { jobId }] = await Promise.all([props.params, props.searchParams]);
 
-  // subscribe to realtime updates for this user's jobs -> useEffect (.on('postgres_changes',{}, () =>))
+  if (!jobId) {
+    redirect({ href: paths.cvChecker, locale });
+  }
 
-  // const activeJob = jobs.find((j) => j.id === currentJobId) ?? null;
-  // SendToAnalyzeSchemaFE
-
-  // const supabase = await createServerClient();
-  // const [claims, session, user] = await Promise.all([
-  //   supabase.auth.getClaims(),
-  //   supabase.auth.getSession(),
-  //   supabase.auth.getUser(),
-  // ]);
   return (
     <>
       <ReportRenderer />

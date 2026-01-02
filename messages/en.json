@@ -83,6 +83,12 @@
     "cvReport": {
       "title": "Analysis Result",
       "generatedOnTitle": "Generated on",
+      "loadingTitle": {
+        "loading": "Loading report",
+        "queued": "Report is queued",
+        "in_progress": "Report is generating",
+        "failed": "Failed to generate the report. Please try again later."
+      },
       "overall": {
         "suitabilitySummary": "Short description",
         "matchScore": "Match score",
@@ -230,7 +236,8 @@
   },
   "common": {
     "formButtonSendTitle": "Send",
-    "formButtonSendSuccessTitle": "Successfully Sent"
+    "formButtonSendSuccessTitle": "Successfully Sent",
+    "tryAgainButtonTitle": "Try Again"
   },
   "examples": {
     "pluralTranslationExample": "{count, plural, one {# product} other {# products}}"

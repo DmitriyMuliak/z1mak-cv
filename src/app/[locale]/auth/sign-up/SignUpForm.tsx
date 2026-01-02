@@ -25,7 +25,6 @@ import { useRouter } from '@/i18n/navigation';
 
 const getAdditionalFEData = () => getRedirectFromUrl();
 
-// Todo: use form factory with action creators and use server actions
 export function SignUpForm({ className, ...props }: React.ComponentProps<'div'>) {
   const t = useTranslations('pages.signUp');
   const tf = useTranslations('fields');

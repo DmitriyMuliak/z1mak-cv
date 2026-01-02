@@ -155,6 +155,16 @@
   }
 }
 
+@utility min-h-full-screen {
+  min-height: calc(100vh - 140px);
+  margin-top: 140px;
+
+  @media (min-width: 1024px) {
+    min-height: calc(100vh - 166px);
+    margin-top: 166px;
+  }
+}
+
 /* Global background styles because css modules had a "flash/blink effect" issue */
 .global-background-container {
   position: fixed;

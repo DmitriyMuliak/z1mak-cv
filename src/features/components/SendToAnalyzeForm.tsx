@@ -3,20 +3,18 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocale, useTranslations } from 'next-intl';
-import { Form } from '@/components/ui/form'; // Adjust paths
+import { useRouter } from '@/i18n/navigation';
+import { Form } from '@/components/ui/form';
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
 import { createBaseOnSubmitHandler } from '@/components/Forms/utils';
 import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
 import { GlobalFormErrorMessage } from '@/components/Forms/fields/GlobalFormErrorMessage';
 import { SubmitActionButton } from '@/components/Forms/buttons/SubmitActionButton';
+import { paths } from '@/consts/routes';
 import { SectionInput } from './SectionInput';
-import { AddDescriptionBy, Mode, useCvStore } from '../store/useCvStore';
+import { AddDescriptionBy, Mode } from '../store/useCvStore';
 import { SendToAnalyzeFEType, getSendToAnalyzeSchema } from '../schema/form/toAnalyzeSchemaFE';
 import { sendToAnalyzeAction } from '../actions/sendToAnalyzeAction';
-import { callGeminiAi } from '../utils/callGeminiAi/index';
-import { AnalysisSchemaType } from '../schema/analysisSchema';
-import { useRouter } from '@/i18n/navigation';
-import { paths } from '@/consts/routes';
 
 interface Props {
   mode: Mode;
@@ -28,7 +26,6 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
   const tv = useTranslations('validator');
   const tp = useTranslations('pages.cvChecker');
   const locale = useLocale();
-  const { setLastReport } = useCvStore();
   const router = useRouter();
 
   const [addCvBy, setAddCvBy] = useState<AddDescriptionBy>('file');
@@ -77,28 +74,13 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
   const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
 
   const onSuccessCb = async (out: Awaited<ReturnType<typeof sendToAnalyzeAction>>) => {
-    console.log('data', out);
-    const resp = await callGeminiAi({
-      cvDescription: out.data?.cvText as string,
-      jobDescription: out.data?.jobText as string,
-      mode,
-      locale,
-    });
-    setLastReport(JSON.parse(resp || '') as unknown as AnalysisSchemaType);
-
-    console.log('resp', resp);
-    // console.log(resp);
-
-    if (out.success) {
-      console.log('success log');
-    }
-
-    router.push(paths.cvReport);
+    router.push(paths.cvReport + `?jobId=${out.data?.jobId}`);
   };
 
   const handleSubmitCb = createBaseOnSubmitHandler(sendToAnalyzeAction, form, onSuccessCb, {
     getAdditionalFEData: () => ({
-      evaluationMode,
+      locale,
+      mode,
       addCvBy,
       addJobBy,
     }),

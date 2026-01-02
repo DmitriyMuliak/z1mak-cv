@@ -36,7 +36,6 @@ import { TurnstileCaptchaField } from '@/components/Forms/fields/TurnstileCaptch
 
 const getAdditionalFEData = () => getStateWithRedirectFromUrl();
 
-// Todo: use form factory with action creators and use server actions
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
   const router = useRouter();
   const t = useTranslations('pages.login');

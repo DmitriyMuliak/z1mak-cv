@@ -1,13 +1,17 @@
-export const ApiRoutes = {
-  // USERS: '/users',
-  // USER_BY_ID: (id: string | number) => `/users/${id}`,
+import { privatePrEnv } from '@/utils/processEnv/private';
 
-  // AUTH_LOGIN: '/auth/login',
-  // AUTH_LOGOUT: '/auth/logout',
+export const ApiRoutes = {
+  CV_ANALYSER: {
+    baseUrl: privatePrEnv.CV_ANALYSER_BASE_URL,
+    analyze: '/resume/analyze',
+    status: (jobId: string) => `/resume/${encodeURIComponent(jobId)}/status`,
+    result: (jobId: string) => `/resume/${encodeURIComponent(jobId)}/result`,
+    recent: (userId: string) => `/resume/user/${encodeURIComponent(userId)}/recent`,
+  },
 
   RECAPTCHA_VERIFY: {
-    url: '/recaptcha/api/siteverify',
     baseUrl: 'https://www.google.com',
+    url: '/recaptcha/api/siteverify',
   },
 } as const;
 

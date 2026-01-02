@@ -8,3 +8,7 @@ export const apiService = new ApiService({
 export const apiGoogleCaptcha = new ApiService({
   baseUrl: ApiRoutes.RECAPTCHA_VERIFY.baseUrl,
 });
+
+export const apiCvAnalyser = new ApiService({
+  baseUrl: ApiRoutes.CV_ANALYSER.baseUrl,
+});
