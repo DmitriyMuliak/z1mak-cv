@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -35,10 +35,11 @@ interface HistoryTag extends BaseInfoResponse {
 }
 
 export function HistoryModal() {
-  const t = useTranslations('components.historyModal');
   const [isLoading, setIsLoading] = React.useState(true);
   const [open, setOpen] = React.useState(false);
   const [tags, setTags] = React.useState<HistoryTag[]>([]);
+  const locale = useLocale();
+  const t = useTranslations('components.historyModal');
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
   useEffect(() => {
@@ -49,7 +50,7 @@ export function HistoryModal() {
         setTags(
           list.map((item) => ({
             ...item,
-            createdAt: formatToUserDate(item.createdAt),
+            createdAt: formatToUserDate(item.createdAt, { locale }),
             link: `${paths.cvReport}?jobId=${item.id}`,
           })),
         );
@@ -58,7 +59,7 @@ export function HistoryModal() {
       }
     }
     if (open) fetchData();
-  }, [open]);
+  }, [open, locale]);
 
   const renderContent = () => (
     <>
