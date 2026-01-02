@@ -1,4 +1,26 @@
-export function formDataToObject(formData: FormData): Record<string, unknown> {
+export function formDataToObject(formData: FormData) {
+  const object: Record<string | number, unknown> = {};
+
+  for (const [key, value] of formData.entries()) {
+    // if prop with this name already exist - convert it to array
+    if (key in object) {
+      if (!Array.isArray(object[key])) {
+        object[key] = [object[key]];
+      }
+      (object[key] as [unknown]).push(value);
+    } else {
+      object[key] = value;
+    }
+  }
+
+  return object;
+}
+
+/*
+  For array keys need be named like: propName[];
+  Example: formData.append('files[0]', file, file.name);
+*/
+export function formDataToObjectWithIndexedArrays(formData: FormData): Record<string, unknown> {
   const obj: Record<string, unknown> = {};
 
   for (const [rawKey, value] of formData.entries()) {

@@ -1,9 +1,11 @@
+'use client';
+
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { sendContactServerAction } from './serverAction';
-import { useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom'; // use client for this
 
-export default function Form() {
+export function ServerForm() {
   const formStatus = useFormStatus();
 
   return (

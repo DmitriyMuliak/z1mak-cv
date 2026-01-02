@@ -1,9 +1,9 @@
-import { TranslationFn } from '@/types/translations';
+import { TranslationValidatorFn } from '@/types/translations';
 import { CustomKeyPrefix, OptionsPrefix } from './consts';
 import { parseCustomKey } from './parseCustomKey';
 import { parseTempCustomMessage } from './parseTempCustomMessage';
 
-export const resolveMessage = (message: string, t: TranslationFn) => {
+export const resolveMessage = (message: string, t: TranslationValidatorFn) => {
   if (!message.startsWith(CustomKeyPrefix)) {
     return message;
   }

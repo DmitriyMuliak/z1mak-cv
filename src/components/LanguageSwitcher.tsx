@@ -23,12 +23,12 @@ export function LanguageSwitcher() {
   return (
     <div className="absolute top-[20px] lg:top-[72px] right-0 text-white">
       <Select onValueChange={changeLanguage} defaultValue={locale}>
-        <SelectTrigger className="w-[120px] cursor-pointer frosted-card">
-          <SelectValue placeholder="Language" />
+        <SelectTrigger className="min-w-[124px] cursor-pointer frosted-card [&_svg:not([class*='text-'])]:text-white [&_svg:not([class*='text-'])]:opacity-100">
+          <SelectValue placeholder="Language" className="ring-background" />
         </SelectTrigger>
-        <SelectContent className=" m-0 p-0">
+        <SelectContent className="frosted-card !rounded-[10px]">
           {routing.locales.map((l) => (
-            <SelectItem key={l} value={l}>
+            <SelectItem key={l} value={l} className="cursor-pointer">
               {l === 'en' ? 'English' : 'Українська'}
             </SelectItem>
           ))}

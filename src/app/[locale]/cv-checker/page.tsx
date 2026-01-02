@@ -1,11 +1,9 @@
-export default function CVCheckerPage() {
+import { CvCheckerStartFlow } from '@/features/CvCheckerStartFlow';
+
+export default async function CVCheckerPage() {
   return (
-    <div className="p-8">
-      <h2 className="text-3xl font-semibold mb-4">CV Checker</h2>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sit amet eros vel leo
-        tempor.
-      </p>
-    </div>
+    <>
+      <CvCheckerStartFlow />
+    </>
   );
 }

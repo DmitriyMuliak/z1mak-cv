@@ -24,3 +24,15 @@ import { twMerge } from 'tailwind-merge';
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+// You can define your simple merge logic
+// import { extendTailwindMerge } from "tailwind-merge";
+
+// const customTwMerge = extendTailwindMerge({
+//   extend: {
+//     classGroups: {
+//       'border-color': ["frosted-card"],
+//       'backdrop-blur':["frosted-card"],
+//     },
+//   },
+// });

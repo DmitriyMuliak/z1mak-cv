@@ -1,11 +1,12 @@
-export default function SkillsPage() {
-  return (
-    <div className="p-8">
-      <h2 className="text-3xl font-semibold mb-4">Skills</h2>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sit amet eros vel leo
-        tempor.
-      </p>
-    </div>
-  );
+import { getLocale } from 'next-intl/server';
+import { getMdxContent } from '@/lib/getMdxContent';
+
+export default async function SkillsPage() {
+  const locale = await getLocale();
+  // Also we can use Component approach
+  // import { MDXRemote } from 'next-mdx-remote/rsc';
+  // import SkillsPageContent from './skills.mdx';
+  const { content } = await getMdxContent('skills', locale);
+
+  return <div className="md:p-8">{content}</div>;
 }

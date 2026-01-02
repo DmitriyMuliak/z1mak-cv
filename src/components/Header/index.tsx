@@ -1,31 +1,31 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Link, usePathname } from '@/navigation';
-import { paths } from '@/i18n/routing';
-import styles from './styles.module.css';
-import { useOptimistic, useEffect, startTransition, useState } from 'react';
-import { cn } from '@/lib/utils';
+import { usePathname } from '@/navigation';
+import { useEffect, useState } from 'react';
 import { Hamburger, SquareX } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
+import { paths } from '@/consts/routes';
+import { Link } from '@/navigation';
+import styles from './styles.module.css';
 
 export const Header = () => {
   const [isClosed, setIsClosed] = useState(true);
   const realPathname = usePathname();
-  const [optimisticPathname, setOptimisticPathname] = useOptimistic(realPathname);
   const t = useTranslations('header.menu');
 
+  useEffect(() => {
+    if (!isClosed) setIsClosed(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [realPathname]);
+
   const links = [
-    { href: paths.about, label: t('aboutTitle') },
+    { href: paths.home, label: t('aboutTitle') },
     { href: paths.skills, label: t('skillsTitle') },
     { href: paths.contact, label: t('contactTitle') },
     { href: paths.cvChecker, label: t('cvCheckerTitle') },
   ];
-
-  useEffect(() => {
-    startTransition(() => {
-      setOptimisticPathname(realPathname);
-    });
-  }, [realPathname, setOptimisticPathname]);
 
   return (
     <header className={cn(styles.header)}>
@@ -37,21 +37,11 @@ export const Header = () => {
           <SquareX size={30} />
         </button>
         {links.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className={styles.navLink}
-            onClick={() => {
-              window.dispatchEvent(new CustomEvent('locationChangeCustom', { detail: link.href }));
-              startTransition(() => {
-                setOptimisticPathname(link.href);
-              });
-            }}
-          >
+          <Link key={link.href} href={link.href} className={styles.navLink}>
             <span
               className={cn(
                 styles.linkText,
-                optimisticPathname === link.href ? styles.linkTextActive : '',
+                realPathname.startsWith(link.href) ? styles.linkTextActive : '',
               )}
             >
               {link.label}

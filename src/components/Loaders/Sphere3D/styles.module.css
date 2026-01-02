@@ -1,0 +1,67 @@
+.container {
+  position: absolute;
+  inset: 0;
+  zoom: 0.5;
+}
+.container .loader {
+  top: calc(50% - 200px);
+  left: calc(50% - 200px);
+  animation: girar 8s linear infinite;
+}
+.container .loader,
+.container .loader .sphere,
+.container .loader .item {
+  width: 400px;
+  height: 400px;
+  position: absolute;
+  transform-style: preserve-3d;
+  perspective: 10000px;
+}
+.container .loader .sphere,
+.container .loader .item {
+  top: 0;
+  left: 0;
+}
+.container .loader .sphere {
+  transform: rotate(calc(var(--rot) * 20deg));
+}
+.container .loader .sphere.sphere1 {
+  --bg: #f008;
+}
+.container .loader .sphere.sphere2 {
+  --bg: #f0f8;
+}
+.container .loader .sphere.sphere3 {
+  --bg: #ff08;
+}
+.container .loader .sphere.sphere4 {
+  --bg: #0f08;
+}
+.container .loader .sphere.sphere5 {
+  --bg: #0ff8;
+}
+.container .loader .sphere.sphere6 {
+  --bg: #00f8;
+}
+.container .loader .sphere.sphere7 {
+  --bg: #dc1ddf88;
+}
+.container .loader .sphere.sphere8 {
+  --bg: #ffa50088;
+}
+.container .loader .sphere.sphere8 {
+  --bg: #e5b2ca88;
+}
+.container .loader .item {
+  border-radius: 50%;
+  background: var(--bg);
+  transform: rotateY(calc(var(--rot-y) * 40deg));
+}
+@keyframes girar {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+  100% {
+    transform: rotateX(360deg) rotateY(360deg);
+  }
+}

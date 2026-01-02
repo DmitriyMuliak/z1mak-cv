@@ -1,6 +1,6 @@
 import { ValidatorKeys } from '@/types/translations';
 import { ValidatorPlaceholders } from './consts';
-import { createTempCustomMessage } from './createTempCustomMessage';
+import { createCustomKey, createTempCustomMessage } from './createTempCustomMessage';
 import type { BaseIssue } from 'valibot';
 type Writable<T> = {
   -readonly [P in keyof T]: T[P];
@@ -24,3 +24,11 @@ export const createMessageHandler =
   <T>(issue: BaseIssue<T>) => {
     return createTempCustomMessage(key, extractPlaceholdersFromIssue(issue));
   };
+
+export const createSimpleMessageHandler =
+  (key: ValidatorKeys) =>
+  <T>(_issue: BaseIssue<T>) => {
+    return createCustomKey(key);
+  };
+
+export const createSimpleMessage = (key: ValidatorKeys) => createCustomKey(key);

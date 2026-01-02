@@ -1,0 +1,10 @@
+export { JavascriptIcon } from '@/components/icons/JavascriptIcon';
+export { TypeScriptIcon } from '@/components/icons/TypeScriptIcon';
+export { ReactIcon } from '@/components/icons/ReactIcon';
+export { NextIcon } from '@/components/icons/NextIcon';
+export { NodeJsIcon } from '@/components/icons/NodeJsIcon';
+export { PostgresSQLIcon } from '@/components/icons/PostgresSQLIcon';
+export { WebpackIcon } from '@/components/icons/WebpackIcon';
+export { JestIcon } from '@/components/icons/JestIcon';
+export { GithubIcon } from '@/components/icons/GithubIcon';
+export { DockerIcon } from '@/components/icons/DockerIcon';

@@ -1,56 +1,46 @@
 'use client';
 
 import { useForm, useFieldArray } from 'react-hook-form';
+import { CheckIcon, RefreshCw } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { TextField } from '@/components/Forms/fields/TextField';
 import { TextareaField } from '@/components/Forms/fields/TextareaField';
 import { FileDropzoneField } from '@/components/Forms/fields/FileDropzoneField';
 import { sendContactAction } from '@/actions/sendContact';
-import { ContactSchema, ContactSchemaType } from '@/schema/contactSchema';
-import { useTranslations } from 'next-intl';
+import { ContactSchemaFE, ContactSchemaFEType } from '@/schema/contactSchema/contactSchemaFE';
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
+import { contactFileTypes } from '@/schema/contactSchema/consts';
+import { createOnSubmitHandler } from '@/components/Forms/utils';
+import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
+import { RecaptchaField } from '@/components/Forms/fields/Recapthca';
+import { GlobalFormErrorMessage } from '@/components/Forms/fields/GlobalFormErrorMessage';
+
+type TData = Awaited<ReturnType<typeof sendContactAction>>;
+const onSuccessCb = (data: TData) => data;
 
 export function ContactForm() {
-  const t = useTranslations('fields');
+  const tf = useTranslations('fields');
   const tc = useTranslations('common');
-  const ts = useTranslations('validator');
-  const form = useForm<ContactSchemaType>({
-    resolver: localizedValibotResolver(ContactSchema, ts),
+  const tv = useTranslations('validator');
+  const form = useForm<ContactSchemaFEType>({
+    resolver: localizedValibotResolver(ContactSchemaFE, tv),
     mode: 'onBlur',
-    defaultValues: { name: '', email: '', message: '', files: [] },
+    defaultValues: { name: '', email: '', message: '', files: [], recaptchaToken: null },
   });
-
-  const { fields, replace } = useFieldArray({ name: 'files', control: form.control });
-
-  const onSubmit = form.handleSubmit(async (data) => {
-    const formData = new FormData();
-    const { files, ...rest } = data;
-
-    Object.entries(rest).forEach(([key, value]) => formData.append(key, value as string));
-
-    files?.forEach((item) => {
-      if (item?.file instanceof File) {
-        formData.append('files', item.file);
-      }
-    });
-
-    // Files can be added to array from FormData on the server or parser
-    // const filesArray: File[] = [];
-    // for (const [key, value] of formData.entries()) {
-    //   if (key === 'files' && value instanceof File) filesArray.push(value);
-    // }
-
-    const res = await sendContactAction(formData);
-
-    if (res.errors) {
-      Object.entries(res.errors).forEach(([field, messages]) =>
-        form.setError(field as keyof ContactSchemaType, { message: messages.join(', ') }),
-      );
-    }
-
-    if (res.success) form.reset();
+  const { fields, replace, remove, prepend } = useFieldArray({
+    name: 'files',
+    control: form.control,
   });
+  const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
+  const isSubmitting = form.formState.isSubmitting;
+  const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
+  const showSuccessLoader = delayedIsLoading && isSuccess;
+
+  const handleSubmitCb = createOnSubmitHandler(sendContactAction, form, onSuccessCb);
+  const onSubmit = form.handleSubmit(handleSubmitCb);
+  const isFormInvalid = Object.keys(form.formState.errors).length > 0;
 
   return (
     <Form {...form}>
@@ -58,33 +48,52 @@ export function ContactForm() {
         <TextField
           control={form.control}
           name="name"
-          label={t('name.label')}
-          placeholder={t('name.placeholder')}
+          label={tf('name.label')}
+          placeholder={tf('name.placeholder')}
         />
         <TextField
           control={form.control}
           name="email"
-          label={t('email.label')}
-          placeholder={t('email.placeholder')}
+          label={tf('email.label')}
+          placeholder={tf('email.placeholder')}
           type="email"
         />
         <TextareaField
           control={form.control}
           name="message"
-          label={t('message.label')}
-          placeholder={t('message.placeholder')}
+          label={tf('message.label')}
+          placeholder={tf('message.placeholder')}
         />
         <FileDropzoneField
           control={form.control}
           name="files"
           replace={replace}
+          remove={remove}
+          prepend={prepend}
           setError={form.setError}
           clearErrors={form.clearErrors}
+          validateTrigger={form.trigger}
+          isSingleFile
           files={fields}
+          multiple={false}
+          accept={contactFileTypes}
         />
-        <Button type="submit" className="!mt-0 w-full">
-          {tc('formButtonSendTitle')}
+        <RecaptchaField
+          control={form.control}
+          name="recaptchaToken"
+          clearErrors={form.clearErrors}
+          visible={fields.length > 0}
+        />
+        <Button
+          disabled={isSubmitting || isFormInvalid} // !form.formState.isValid - works differently than isFormInvalid
+          type="submit"
+          className={`!mt-0 w-full transition-colors duration-300 ${showSuccessLoader ? 'bg-green-500 hover:bg-green-500' : ''}`}
+        >
+          {showSuccessLoader ? tc('formButtonSendSuccessTitle') : tc('formButtonSendTitle')}
+          {showSuccessLoader ? <CheckIcon className="w-5 h-5 mr-2" /> : null}
+          {isSubmitting ? <RefreshCw className="w-5 h-5 mr-2 animate-spin" /> : null}
         </Button>
+        <GlobalFormErrorMessage />
       </form>
     </Form>
   );

@@ -29,12 +29,155 @@
   },
   "pages": {
     "about": {
-      "title": "Hey! I'm Dima",
+      "title": "Hi, my\n​name is <name>Dima</name>",
       "description1": "A software engineer from Lviv, Ukraine",
       "description2": "Curious to know more about me?\nLet’s go to the skills page 🙂"
     },
-        "contact": {
+    "contact": {
       "title": "Message me"
+    },
+    "cvChecker": {
+      "title": "",
+      "description": "",
+      "modeBar": {
+        "evaluation": {
+          "title": "Mode:",
+          "items": {
+            "general": "General",
+            "byJob": "Comparative"
+          }
+        },
+        "domain": {
+          "title": "Industry:",
+          "items": {
+            "it": "IT",
+            "general": "General"
+          }
+        },
+        "depth": {
+          "title": "Analysis:",
+          "items": {
+            "standard": "Standard",
+            "deep": "In-depth"
+          }
+        }
+      },
+      "cvForm": {
+        "title": "Add your CV/Resume:",
+        "textAreaPlaceholder": "Paste or type your resume text"
+      },
+      "jobForm": {
+        "title": "Add Job Description:",
+        "textAreaPlaceholder": "Paste or type the job description"
+      },
+      "common": {
+        "fileTitle": "File",
+        "textTitle": "Text",
+        "orTitle": "or"
+      },
+      "breadCrumbs": {
+        "cvChecker": "CV Checker",
+        "report": "Analysis Report"
+      }
+    },
+    "cvReport": {
+      "title": "Analysis Result",
+      "generatedOnTitle": "Generated on",
+      "loadingTitle": {
+        "loading": "Loading report",
+        "queued": "Report is queued",
+        "in_progress": "Report is generating",
+        "failed": "Failed to generate the report. Please try again later."
+      },
+      "overall": {
+        "suitabilitySummary": "Short description",
+        "matchScore": "Match score",
+        "independentCvScore": "Overall Score",
+        "independentTechCvScore": "Overall Score",
+        "fitAssessment": "Overall Fit Assessment",
+        "candidateLevel": "Candidate level",
+        "jobTargetLevel": "Job target level",
+        "levelMatch": "Level match",
+        "educationMatch": "Education match",
+        "jobHoppingFlag": "Job hopping flag",
+        "yes": "Yes",
+        "no": "No"
+      },
+      "metrics": {
+        "title": "Quantitative metrics",
+        "totalYears": "Total years:",
+        "relevantYears": "Relevant years:",
+        "requiredYears": "Required years:"
+      },
+      "skills": {
+        "title": "Skills coverage",
+        "keyCoverage": "Key skills coverage",
+        "stackRecency": "Stack recency",
+        "softMatch": "Soft skills match",
+        "analysisTitle": "Skills Analysis"
+      },
+      "export": {
+        "title": "Export",
+        "downloadJson": "Download JSON",
+        "downloadDoc": "Download DOC"
+      },
+      "experience": {
+        "title": "Experience Relevance"
+      },
+      "redFlags": {
+        "title": "Red Flags and Concerns"
+      },
+      "improvement": {
+        "title": "Improvement Plan",
+        "summaryRewrite": "Summary rewrite",
+        "keywordOptimization": "Keyword optimization",
+        "missing": "Missing:",
+        "quantifyAchievements": "Quantify achievements"
+      },
+      "questions": {
+        "title": "Suggested Interview Questions"
+      }
+    },
+    "login": {
+      "title": "Welcome back",
+      "oAuthTitle": "Login with your Google account",
+      "googleBtnTitle": "Login with Google",
+      "otherAuthWayTitle": "Or continue with",
+      "forgotPasswordTitle": "Forgot your password?",
+      "dontHaveAccountTitle": "Don't have an account?",
+      "signUpTitle": "Sign up",
+      "loginTitle": "Login",
+      "termsAndPrivacyTitle": "By clicking continue, you agree to our",
+      "termsAndPrivacySeparatorTitle": "and",
+      "termsOfServiceTitle": "Terms of Service",
+      "privacyPolicyTitle": "Privacy Policy"
+    },
+    "signUp": {
+      "title": "Registration",
+      "description": "You'll get a confirmation email. If you can't find it, check your spam folder.",
+      "signUpTitle": "Sign up",
+      "termsAndPrivacyTitle": "By clicking continue, you agree to our",
+      "termsAndPrivacySeparatorTitle": "and",
+      "termsOfServiceTitle": "Terms of Service",
+      "privacyPolicyTitle": "Privacy Policy"
+    },
+    "requestResetPassword": {
+      "title": "Reset Password",
+      "description": "A temporary link to reset your password will be sent to your email."
+    },
+    "setPassword": {
+      "title": "Set a New Password",
+      "description": "Confirm your new password by entering it in both fields."
+    }
+  },
+  "components": {
+    "historyModal": {
+      "trigger": "Analysis history",
+      "title": "Analysis history",
+      "description": "Click to check previous analysis.",
+      "noHistory": "No history found.",
+      "loading": "Loading history...",
+      "cancel": "Cancel"
     }
   },
   "validator": {
@@ -55,12 +198,21 @@
     "invalid_custom": "Invalid value.",
     "custom": "Invalid value.",
 
-    "specificNameKey": "Need to have min {expected} length",
-    "c_required": "This field is required.",
-    "c_min_length": "Custom min expected: {{min}}.",
     "file_too_large": "File is too large. Maximum {max} MB.",
     "file_invalid_type": "Invalid file type.",
-    "file_problem": "There is a problem with the file."
+    "file_problem": "There is a problem with the file.",
+    "file_upload_base_error": "Problems with file uploading, try later",
+
+    "specificNameKey": "Need to have min {expected} length",
+    "c_min_length": "The value must be at least {expected} characters long.",
+    "c_max_length": "The value must be not more than {expected} characters long.",
+    "c_required": "This field is required.",
+    "c_file_too_large": "File is too large. Maximum {expected} MB.",
+    "c_two_passwords_not_match": "The two passwords do not match.",
+
+    "captchaInvalid": "Captcha is invalid.",
+    "captchaRequired": "Please complete the captcha.",
+    "invalid_credentials": "The credentials were incorrect."
   },
   "fields": {
     "name": {
@@ -71,6 +223,14 @@
       "label": "Email*",
       "placeholder": "Enter your email"
     },
+    "password": {
+      "label": "Password*",
+      "placeholder": "Enter your password"
+    },
+    "confirmPassword": {
+      "label": "Confirm password*",
+      "placeholder": "Enter your password"
+    },
     "message": {
       "label": "Message*",
       "placeholder": "Enter your message"
@@ -78,12 +238,18 @@
     "file": {
       "addedFileTitle": "Added File",
       "mainAddFileTitle": "Drag 'n' drop file here, or click to select"
+    },
+    "captcha": {
+      "label": "Captcha*",
+      "placeholder": "Please complete the captcha"
     }
   },
   "common": {
-    "formButtonSendTitle": "Send"
+    "formButtonSendTitle": "Send",
+    "formButtonSendSuccessTitle": "Successfully Sent",
+    "tryAgainButtonTitle": "Try Again"
   },
   "examples": {
-    "pluralTranslationExample":"{count, plural, one {# product} other {# products}}"
+    "pluralTranslationExample": "{count, plural, one {# product} other {# products}}"
   }
 }

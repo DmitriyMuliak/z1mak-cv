@@ -1,0 +1,12 @@
+{
+  "PrivacyPolicy": {
+    "title": "Privacy Policy",
+    "section1": "1. Data Collected.\nThis service collects only the minimum necessary information for authentication, such as your name, email address, and profile picture. No additional personal data is collected.",
+    "section2": "2. Use of Data.\nThe data is used solely to identify you and provide access to the service. The data will not be sold, shared, or used for advertising.",
+    "section3": "3. Data Storage and Deletion.\nUser data is stored only for account management purposes. You may request account deletion at any time, and your associated data will be permanently deleted.",
+    "section4Intro": "4. Third-Party Services.",
+    "section4Item1": "Authentication is performed via Google OAuth and an external authentication service. The data transmitted is governed by the Google Privacy Policy and the services used for its (authentication) operation.",
+    "section4Item2": "Text processing is performed by a third-party AI provider. Their policies apply to the content you submit for report.",
+    "section5": "5. Cookies and Local Storage.\nCookies or local storage may be used only for technical purposes, such as maintaining your session."
+  }
+}
