@@ -1,13 +1,14 @@
 import { AnalysisSchemaType } from '../schema/analysisSchema';
-import { getFullLocale } from '@/i18n/getFullLocale';
+// import { getFullLocale } from '@/i18n/getFullLocale';
 import type { IParagraphOptions, Paragraph as ParagraphType } from 'docx';
 import type { MessagesBase, NamespacedRelativeMessageKeys } from '@/types/translations';
+// import { formatToUserDate } from '@/utils/date';
 
 type ReportKeys = NamespacedRelativeMessageKeys<MessagesBase, 'pages.cvReport'>;
 
 export const generateAndDownloadDocxReport = async (
   data: AnalysisSchemaType,
-  locale: string,
+  _locale: string,
   t: (key: ReportKeys) => string,
 ) => {
   const { saveAs } = await import('file-saver');
@@ -109,12 +110,10 @@ export const generateAndDownloadDocxReport = async (
   };
 
   // --- Main Logic ---
-
-  const generatedAtDate = new Date(data.analysisTimestamp).toLocaleString(getFullLocale(locale), {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  // formatToUserDate; --- add to state createdAt field (we already return it from API)
+  // const generatedAtDate = formatToUserDate(data.analysisTimestamp, {
+  //   locale: getFullLocale(locale),
+  // });
 
   const T_YES = t('overall.yes');
   const T_NO = t('overall.no');
@@ -232,12 +231,12 @@ export const generateAndDownloadDocxReport = async (
             heading: HeadingLevel.HEADING_1,
             alignment: AlignmentType.CENTER,
           }),
-          new Paragraph({
-            text: `${t('generatedOnTitle')}: ${generatedAtDate}`,
-            alignment: AlignmentType.CENTER,
-            spacing: { after: 400 },
-            style: 'Subtitle',
-          }),
+          // new Paragraph({
+          //   text: `${t('generatedOnTitle')}: ${generatedAtDate}`,
+          //   alignment: AlignmentType.CENTER,
+          //   spacing: { after: 400 },
+          //   style: 'Subtitle',
+          // }),
 
           // === 1. OVERALL ANALYSIS TABLE ===
           new Table({

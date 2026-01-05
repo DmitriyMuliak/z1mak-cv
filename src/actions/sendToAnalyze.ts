@@ -72,7 +72,7 @@ const getUserAuthData = async () => {
 
 export const analyzeResume = async (params: AnalyzePayload): Promise<AnalyzeResponse> => {
   const { userId, userRole } = await getUserAuthData();
-  console.log('User Auth Data:', { userId, userRole });
+
   const body = {
     payload: params,
     userId,
