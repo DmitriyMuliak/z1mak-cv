@@ -21,8 +21,7 @@ export async function signInOrUpWithGoogleAction(state: string | null = '') {
       redirectTo, // redirect to callback from email
       queryParams: {
         scope: 'openid email profile',
-        // access_type: 'offline', // якщо хочеш refresh_token від google
-        // prompt: 'consent',      // щоб гарантовано дав рефреш (інколи)`
+        // access_type: 'offline', // if need refresh_token from google
       },
     },
   });

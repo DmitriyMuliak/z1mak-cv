@@ -7,16 +7,20 @@
 // Additional Clearance Check - https://developers.cloudflare.com/cloudflare-challenges/concepts/clearance/
 
 import { publicPrEnv } from '@/utils/processEnv/public';
-import { CSSProperties, useRef } from 'react';
+import { CSSProperties, useImperativeHandle, useRef } from 'react';
 import { Turnstile, TurnstileInstance } from '@marsidev/react-turnstile';
 import { useTheme } from 'next-themes';
 import { useLocale } from 'next-intl';
 
+export interface TurnstileCaptchaRef {
+  reset: () => void;
+}
 interface CaptchaBoxProps {
   onVerify: (token: string | undefined) => void;
   actionName: string;
   containerClassName?: string;
   containerStyle?: CSSProperties;
+  ref?: React.Ref<TurnstileCaptchaRef>;
 }
 
 export function TurnstileCaptcha({
@@ -24,10 +28,17 @@ export function TurnstileCaptcha({
   actionName,
   containerClassName,
   containerStyle,
+  ref,
 }: CaptchaBoxProps) {
   const theme = useTheme();
   const language = useLocale();
   const captchaRef = useRef<TurnstileInstance | undefined>(undefined);
+
+  useImperativeHandle(ref, () => ({
+    reset: () => {
+      captchaRef.current?.reset();
+    },
+  }));
 
   const handleExpired = () => {
     onVerify(undefined);
