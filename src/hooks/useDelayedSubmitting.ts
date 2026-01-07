@@ -1,4 +1,3 @@
-// src/hooks/useDelayedLoading.ts
 import { useState, useEffect, useRef } from 'react';
 
 interface UseDelayedLoadingProps {

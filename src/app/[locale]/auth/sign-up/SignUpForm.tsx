@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Form } from '@/components/ui/form';
 import { defaultInputStyles, TextField } from '@/components/Forms/fields/TextField';
@@ -18,7 +18,7 @@ import { Field, FieldDescription, FieldGroup } from '@/components/ui/field';
 import { Link } from '@/navigation';
 import { paths } from '@/consts/routes';
 import { SubmitActionButton } from '@/components/Forms/buttons/SubmitActionButton';
-import { getRedirectFromUrl } from '@/utils/getRedirectFromUrl';
+import { getRedirectFromUrl, redirectedFromURLParamKey } from '@/utils/getRedirectFromUrl';
 import { devLogger } from '@/lib/devLogger';
 import { TurnstileCaptchaField } from '@/components/Forms/fields/TurnstileCaptcha';
 import { useRouter } from '@/i18n/navigation';
@@ -26,25 +26,31 @@ import { useRouter } from '@/i18n/navigation';
 const getAdditionalFEData = () => getRedirectFromUrl();
 
 export function SignUpForm({ className, ...props }: React.ComponentProps<'div'>) {
+  const router = useRouter();
   const t = useTranslations('pages.signUp');
   const tf = useTranslations('fields');
   const tc = useTranslations('common');
   const tv = useTranslations('validator');
+  const [redirectedFromState, setRedirectedFromState] = useState<string | null>(null);
   const form = useForm<SignUpSchemaBaseType>({
     resolver: localizedValibotResolver(SignUpSchemaBase, tv),
     mode: 'onBlur',
     defaultValues: { name: '', email: '', password: '' },
   });
-  const router = useRouter();
-
   const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
+
+  useEffect(() => {
+    const url = getRedirectFromUrl();
+    setRedirectedFromState(url ? `${redirectedFromURLParamKey}=${url}` : '');
+  }, []);
+
   const isSubmitting = form.formState.isSubmitting;
   const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
   const showSuccessLoader = delayedIsLoading && isSuccess;
 
   const onSuccessCb = (data: unknown) => {
     devLogger.log('onSuccessCb DATA', data);
-    router.push(paths.login);
+    router.push(paths.login + (redirectedFromState ? `?${redirectedFromState}` : ''));
   };
   const handleSubmitCb = createOnSubmitHandler(signUpWithEmailAction, form, onSuccessCb, {
     getAdditionalFEData,
