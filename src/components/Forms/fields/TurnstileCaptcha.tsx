@@ -1,6 +1,6 @@
 'use client';
 
-import { TurnstileCaptcha } from '@/components/TurnstileCaptcha';
+import { TurnstileCaptcha, TurnstileCaptchaRef } from '@/components/TurnstileCaptcha';
 import { FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form';
 import { CSSProperties } from 'react';
 import { Control, FieldValues, Path } from 'react-hook-form';
@@ -11,6 +11,7 @@ interface TurnstileCaptchaProps<T extends FieldValues> {
   formName: string;
   containerStyle?: CSSProperties;
   containerClassName?: string;
+  ref?: React.Ref<TurnstileCaptchaRef>;
 }
 
 export function TurnstileCaptchaField<T extends FieldValues>({
@@ -19,6 +20,7 @@ export function TurnstileCaptchaField<T extends FieldValues>({
   formName,
   containerStyle,
   containerClassName,
+  ref,
 }: TurnstileCaptchaProps<T>) {
   return (
     <div className="relative" data-form-field-id={name}>
@@ -33,6 +35,7 @@ export function TurnstileCaptchaField<T extends FieldValues>({
                 actionName={formName}
                 containerClassName={containerClassName}
                 containerStyle={containerStyle}
+                ref={ref}
               />
             </FormControl>
             <FormMessage className="text-red-700 dark:text-red-600" />

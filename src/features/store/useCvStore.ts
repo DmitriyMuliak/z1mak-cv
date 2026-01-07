@@ -32,7 +32,6 @@ interface CvState {
   setLastReport: (newLastReport: AnalysisSchemaType) => void;
 }
 
-// TODO: add base data structures + dev tools + immer
 export const useCvStore = create<CvState>((set) => ({
   lastReport: null,
   newJobMode: {

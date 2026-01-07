@@ -33,6 +33,7 @@ import { useRouter } from '@/i18n/navigation';
 import { Link } from '@/navigation';
 import { stripLocale } from '@/utils/stripLocale';
 import { TurnstileCaptchaField } from '@/components/Forms/fields/TurnstileCaptcha';
+import type { TurnstileCaptchaRef } from '@/components/TurnstileCaptcha';
 
 const getAdditionalFEData = () => getStateWithRedirectFromUrl();
 
@@ -42,6 +43,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
   const tf = useTranslations('fields');
   const tc = useTranslations('common');
   const tv = useTranslations('validator');
+  const captchaRef = React.useRef<TurnstileCaptchaRef>(null);
   const form = useForm<SignInSchemaBaseType>({
     resolver: localizedValibotResolver(SignInSchemaBase, tv),
     mode: 'onBlur',
@@ -58,7 +60,15 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
   const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
   const showSuccessLoader = delayedIsLoading && isSuccess;
 
-  const onSuccessCb = (result: Awaited<ReturnType<typeof signInWithEmailAction>>) => {
+  const onResult = (result: Awaited<ReturnType<typeof signInWithEmailAction>>) => {
+    // TODO: uncomment reset captcha on error and add to other auth forms
+    // if (!result.success && result?.errors?.captchaToken) {
+    //   setTimeout(() => {
+    //     if (captchaRef.current) {
+    //       captchaRef.current.reset();
+    //     }
+    //   }, 1000);
+    // }
     if (result.success && result.data) {
       const state = decodeURIComponent(result.data.redirectTo);
       const pathName = JSON.parse(state) as { redirectedFrom?: string } | null;
@@ -67,7 +77,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
       }
     }
   };
-  const handleSubmitCb = createOnSubmitHandler(signInWithEmailAction, form, onSuccessCb, {
+  const handleSubmitCb = createOnSubmitHandler(signInWithEmailAction, form, onResult, {
     getAdditionalFEData,
   });
   const onSubmit = form.handleSubmit(handleSubmitCb);
@@ -128,6 +138,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                   name="captchaToken"
                   formName="sign-in"
                   containerClassName="sm:-ml-[6px]"
+                  ref={captchaRef}
                 />
                 <Field>
                   <SubmitActionButton

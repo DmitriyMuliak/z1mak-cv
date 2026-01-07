@@ -48,8 +48,6 @@ export type BaseInfoResponse = {
   createdAt: string;
 };
 
-// TODO: send user jwt token to verify user identity directly in the queue service
-const _defaultBaseUrl = process.env.NEXT_PUBLIC_QUEUE_API_URL ?? 'http://localhost:4000';
 const internalApiKey = process.env.INTERNAL_API_KEY ?? 'not set';
 const authHeader = {
   'x-internal-api-key': internalApiKey,
@@ -71,8 +69,9 @@ const getUserAuthData = async () => {
 };
 
 export const analyzeResume = async (params: AnalyzePayload): Promise<AnalyzeResponse> => {
+  // TODO: send user jwt token to verify user identity directly in the queue service
   const { userId, userRole } = await getUserAuthData();
-  console.log('User Auth Data:', { userId, userRole });
+
   const body = {
     payload: params,
     userId,
@@ -112,14 +111,38 @@ export const getResumeResult = async (jobId: string): Promise<ResultResponse> =>
   return resp;
 };
 
-export const getResentResumeBaseInfo = async (): Promise<BaseInfoResponse[]> => {
-  const { userId } = await getUserAuthData();
-  const resp = await apiCvAnalyser.get<BaseInfoResponse[]>(
-    ApiRoutes.CV_ANALYSER.recent(userId),
-    undefined,
-    {
-      headers: authHeader,
-    },
-  );
-  return resp;
+export const getResentResumeBaseInfo = async (
+  pagination: { offset: number; limit: number } = { offset: 0, limit: 20 },
+): Promise<BaseInfoResponse[]> => {
+  // Call our API service - uncomment after migration to pass jwt token
+  // const { userId } = await getUserAuthData();
+  // const resp = await apiCvAnalyser.get<BaseInfoResponse[]>(
+  //   ApiRoutes.CV_ANALYSER.recent(userId),
+  //   undefined,
+  //   {
+  //     headers: authHeader,
+  //   },
+  // );
+
+  const supabase = await createServerClient();
+  const claims = await supabase.auth.getClaims();
+  const userId = claims?.data?.claims.sub;
+
+  const { data, error } = await supabase
+    .from('cv_analyzes')
+    .select('id, finished_at, created_at')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .range(pagination.offset, pagination.offset + pagination.limit - 1);
+
+  if (error) {
+    console.error('Supabase error:', error);
+    return [];
+  }
+
+  return data.map((row) => ({
+    id: row.id,
+    finishedAt: row.finished_at,
+    createdAt: row.created_at,
+  }));
 };

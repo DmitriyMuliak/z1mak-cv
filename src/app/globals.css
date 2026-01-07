@@ -224,12 +224,15 @@
 }
 
 .global-background-item-3 {
-  background: radial-gradient(circle, rgb(235 255 251 / 61%) 0%, #5a97ad 50%, #1f4b56 100%);
+  background: var(--root-bg-base);
 }
 
 .dark .global-background-item-3 {
-  background: radial-gradient(circle, rgb(15 114 94 / 61%) 0%, #0b303d 50%, #475559 100%);
+  background: var(--root-bg-base);
 }
+
+/* Add specific styles to light theme - ex. light:text-white */
+@custom-variant light (&:where(.light, .light *));
 
 /* 
 Syntax in Tailwind v4 for @custom-variant different between PostCSS-plugins with old style.
