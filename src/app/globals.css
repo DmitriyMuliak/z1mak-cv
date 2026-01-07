@@ -12,6 +12,9 @@
 /* @custom-variant dark (&:is(.dark *)); */
 @custom-variant dark (&:is(.dark &));
 
+/* Add specific styles to light theme - ex. className='light:text-white' */
+@custom-variant light (&:where(.light, .light *));
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -169,7 +172,7 @@
 .global-background-container {
   position: fixed;
   inset: 0;
-  z-index: -1; /* позаду всіх елементів */
+  z-index: -1;
 }
 
 .global-background-item {
@@ -185,42 +188,27 @@
 }
 
 .global-background-item-0 {
-  background: radial-gradient(
-    circle,
-    rgba(42, 123, 155, 1) 0%,
-    rgba(87, 199, 133, 1) 50%,
-    rgba(237, 221, 83, 1) 100%
-  );
+  background: radial-gradient(circle, #2a7b9b 0%, #57c785 50%, #eddd53 100%);
 }
 
 .dark .global-background-item-0 {
-  background: radial-gradient(circle, #1184b1 0%, #222e36 50%, #1b3540 100%);
+  background: radial-gradient(circle, #162e3d 0%, #333b66 60%, #1a1b26 100%);
 }
 
 .global-background-item-1 {
-  background: radial-gradient(
-    circle,
-    oklab(74.75500000000001% -0.12764 0.05959) 0%,
-    oklab(88.58500000000001% -0.03411 0.15152) 50%,
-    oklab(69.884% 0.12232 0.0944) 100%
-  );
+  background: radial-gradient(circle, #3db47a 0%, #eddd53 50%, #feb47b 100%);
 }
 
 .dark .global-background-item-1 {
-  background: radial-gradient(circle, #333b66 0%, #63608b 50%, lab(9 -2.39 -16.5) 100%);
+  background: radial-gradient(circle, #333b66 0%, #63608b 50%, #001c2f 100%);
 }
 
 .global-background-item-2 {
-  background: radial-gradient(
-    circle,
-    rgba(253, 29, 111, 0.61) 0%,
-    rgba(253, 115, 29, 1) 50%,
-    rgba(252, 176, 69, 1) 100%
-  );
+  background: radial-gradient(circle, #ff7e5f 0%, #feb47b 50%, #86a8e7 100%);
 }
 
 .dark .global-background-item-2 {
-  background: radial-gradient(circle, rgb(138 207 124 / 61%) 0%, #144540 50%, #0e332d 100%);
+  background: radial-gradient(circle, #333b66 0%, #326a9d 45%, #0a0c14 100%);
 }
 
 .global-background-item-3 {
@@ -230,9 +218,6 @@
 .dark .global-background-item-3 {
   background: var(--root-bg-base);
 }
-
-/* Add specific styles to light theme - ex. light:text-white */
-@custom-variant light (&:where(.light, .light *));
 
 /* 
 Syntax in Tailwind v4 for @custom-variant different between PostCSS-plugins with old style.
