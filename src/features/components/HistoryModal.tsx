@@ -77,10 +77,12 @@ export function HistoryModal() {
         <DialogTrigger asChild>
           <Button className="mb-8">{t('trigger')}</Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px] z-50">
+        <DialogContent className="sm:max-w-[425px] z-50 frosted-card">
           <DialogHeader>
-            <DialogTitle>{t('title')}</DialogTitle>
-            <DialogDescription>{t('description')}</DialogDescription>
+            <DialogTitle className="light:text-white">{t('title')}</DialogTitle>
+            <DialogDescription className="light:text-[#c7c7c7]">
+              {t('description')}
+            </DialogDescription>
           </DialogHeader>
           {renderContent()}
         </DialogContent>
@@ -93,12 +95,12 @@ export function HistoryModal() {
       <DrawerTrigger asChild>
         <Button className="mb-8">{t('trigger')}</Button>
       </DrawerTrigger>
-      <DrawerContent className="z-50">
+      <DrawerContent className="z-50 frosted-card [&_[data-slot=drawer-handle]]:bg-primary">
         <DrawerHeader className="text-left">
-          <DrawerTitle>{t('title')}</DrawerTitle>
-          <DrawerDescription>{t('description')}</DrawerDescription>
+          <DrawerTitle className="light:text-white">{t('title')}</DrawerTitle>
+          <DrawerDescription className="light:text-white">{t('description')}</DrawerDescription>
         </DrawerHeader>
-        {renderContent()}
+        <div className="p-4 pb-0">{renderContent()}</div>
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline">{t('cancel')}</Button>
@@ -119,7 +121,7 @@ function HistoryList({ tags, onItemClick }: { tags: HistoryTag[]; onItemClick: (
               <Link
                 href={tag.link}
                 onClick={onItemClick}
-                className="flex h-full w-full flex-row items-center gap-2 hover:opacity-70 transition-opacity"
+                className="flex h-full w-full flex-row items-center gap-2 hover:opacity-70 transition-opacity light:text-white"
               >
                 <FolderOpenDot className="w-4 h-4" /> {tag.createdAt}
               </Link>
