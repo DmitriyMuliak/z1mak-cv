@@ -160,11 +160,11 @@
 
 @utility min-h-full-screen {
   min-height: calc(100vh - 140px);
-  margin-top: 140px;
+  margin-top: 70px;
 
   @media (min-width: 1024px) {
     min-height: calc(100vh - 166px);
-    margin-top: 166px;
+    margin-top: 83px;
   }
 }
 

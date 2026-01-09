@@ -15,6 +15,9 @@ import { SchemaService, UiSectionKey } from '../../services/SchemaService';
 import { useResumePolling } from './hooks/useResumePolling';
 import { Button } from '@/components/ui/button';
 import { SphereLoader } from '@/components/Loaders/Sphere';
+import { useRouter } from '@/i18n/navigation';
+import { paths } from '@/consts/routes';
+import { formatResumeErrorMessage } from '@/utils/resumeErrors';
 
 const SECTION_COMPONENTS: Record<UiSectionKey, React.FC<{ data: AnalysisSchemaType }>> = {
   header: Header,
@@ -26,13 +29,23 @@ const SECTION_COMPONENTS: Record<UiSectionKey, React.FC<{ data: AnalysisSchemaTy
 };
 
 export const ReportRenderer: React.FC = () => {
+  const tAll = useTranslations();
   const tReport = useTranslations('pages.cvReport.loadingTitle');
   const tCommon = useTranslations('common');
   const { lastReport, setLastReport } = useCvStore();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const jobId = searchParams.get('jobId');
 
-  const { status, isProcessing, retry } = useResumePolling(jobId, setLastReport);
+  const { status, isProcessing, resumeError } = useResumePolling(jobId, setLastReport);
+
+  const resolvedErrorMessage = resumeError
+    ? formatResumeErrorMessage(
+        tAll as (key: string, values?: Record<string, unknown>) => string,
+        resumeError.code,
+        resumeError.message,
+      )
+    : tReport('failed');
 
   const activeSections = useMemo(() => {
     if (!lastReport) return [];
@@ -57,8 +70,8 @@ export const ReportRenderer: React.FC = () => {
     return (
       <div className="absolute inset-0 min-h-full-screen">
         <div className="grid h-full w-full place-items-center content-center gap-4">
-          <h3 className="text-md text-red-600">{tReport('failed')}</h3>
-          <Button onClick={retry} className="mt-2.5">
+          <h3 className="text-md text-red-600">{resolvedErrorMessage}</h3>
+          <Button onClick={() => router.replace({ pathname: paths.cvChecker })} className="mt-2.5">
             {tCommon('tryAgainButtonTitle')}
           </Button>
         </div>

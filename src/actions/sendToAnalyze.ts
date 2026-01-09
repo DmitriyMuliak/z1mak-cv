@@ -2,8 +2,11 @@
 
 import { apiCvAnalyser } from '@/api/server';
 import { ApiRoutes } from '@/api/server/apiRoutes';
+import { ApiError } from '@/api/apiService';
 import { AnalysisSchemaType } from '@/features/schema/analysisSchema';
 import { createServerClient } from '@/lib/supabase/server';
+import { extractResumeError, formatResumeErrorMessage } from '@/utils/resumeErrors';
+import { getTranslations } from 'next-intl/server';
 
 export type AnalyzeMode = {
   evaluationMode: 'general' | 'byJob';
@@ -28,16 +31,31 @@ export type AnalyzeResponse = {
   jobId: string;
 };
 
+export type ResumeErrorCode =
+  | 'QUEUE_FULL' // /resume/analyze: черга переповнена для моделі
+  | 'CONCURRENCY_LIMIT' // /resume/analyze: user concurrency з Lua
+  | 'USER_RPD_LIMIT' // /resume/analyze: user RPD з Lua
+  | 'MODEL_LIMIT' // /resume/analyze: усі моделі в chain по RPD
+  | 'NOT_FOUND'; // /resume/:id/result, /resume/:id/status
+
+export type ResumeErrorResponse = {
+  error: ResumeErrorCode;
+  message?: string; // використовується зараз лише для QUEUE_FULL
+};
+
 type JobStatus = 'queued' | 'in_progress' | 'completed' | 'failed';
 
 export type StatusResponse = {
   status: JobStatus;
+  error?: ResumeErrorCode;
+  message?: string;
 };
 
 export type ResultResponse = {
   status: JobStatus;
   data: AnalysisSchemaType | null;
-  error?: unknown;
+  error?: ResumeErrorCode;
+  message?: string;
   finishedAt: string;
   createdAt: string;
 };
@@ -68,6 +86,25 @@ const getUserAuthData = async () => {
   return { userId, userRole };
 };
 
+const resolveResumeErrorMessage = async (locale: string, error: unknown) => {
+  const resumeError = extractResumeError(error);
+
+  if (!resumeError) {
+    return 'Unexpected error, please try again later.';
+  }
+
+  try {
+    const t = await getTranslations({ locale });
+    return formatResumeErrorMessage(
+      t as unknown as (key: string, values?: Record<string, unknown>) => string,
+      resumeError.code,
+      resumeError.message,
+    );
+  } catch (_e) {
+    return resumeError.message || 'Unexpected error, please try again later.';
+  }
+};
+
 export const analyzeResume = async (params: AnalyzePayload): Promise<AnalyzeResponse> => {
   // TODO: send user jwt token to verify user identity directly in the queue service
   const { userId, userRole } = await getUserAuthData();
@@ -78,37 +115,39 @@ export const analyzeResume = async (params: AnalyzePayload): Promise<AnalyzeResp
     role: userRole,
   };
 
-  const resp = await apiCvAnalyser.post<AnalyzeResponse, AnalyzeRequest>(
-    ApiRoutes.CV_ANALYSER.analyze,
-    body,
-    {
-      headers: authHeader,
-    },
-  );
+  try {
+    return await apiCvAnalyser.post<AnalyzeResponse, AnalyzeRequest>(
+      ApiRoutes.CV_ANALYSER.analyze,
+      body,
+      {
+        headers: authHeader,
+      },
+    );
+  } catch (error) {
+    const localizedMessage = await resolveResumeErrorMessage(params.locale, error);
 
-  return resp;
+    if (error instanceof ApiError) {
+      throw new ApiError(localizedMessage, {
+        status: error.status,
+        body: error.body,
+        cause: error,
+      });
+    }
+
+    throw new Error(localizedMessage);
+  }
 };
 
 export const getResumeStatus = async (jobId: string): Promise<StatusResponse> => {
-  const resp = await apiCvAnalyser.get<StatusResponse>(
-    ApiRoutes.CV_ANALYSER.status(jobId),
-    undefined,
-    {
-      headers: authHeader,
-    },
-  );
-  return resp;
+  return apiCvAnalyser.get<StatusResponse>(ApiRoutes.CV_ANALYSER.status(jobId), undefined, {
+    headers: authHeader,
+  });
 };
 
 export const getResumeResult = async (jobId: string): Promise<ResultResponse> => {
-  const resp = await apiCvAnalyser.get<ResultResponse>(
-    ApiRoutes.CV_ANALYSER.result(jobId),
-    undefined,
-    {
-      headers: authHeader,
-    },
-  );
-  return resp;
+  return apiCvAnalyser.get<ResultResponse>(ApiRoutes.CV_ANALYSER.result(jobId), undefined, {
+    headers: authHeader,
+  });
 };
 
 export const getResentResumeBaseInfo = async (

@@ -1,8 +1,9 @@
+import { ResultReturn } from '@/actions/utils';
+import { analyzeResume } from '@/actions/sendToAnalyze';
+import { extractResumeError, formatResumeErrorMessage } from '@/utils/resumeErrors';
 import { parseFile } from '../parsers/parseFile';
 import { AddDescriptionBy, Mode } from '../store/useCvStore';
 import { SendToAnalyzeFEType } from '../schema/form/toAnalyzeSchemaFE';
-import { ResultReturn } from '@/actions/utils';
-import { analyzeResume } from '@/actions/sendToAnalyze';
 
 interface SendToAnalyzeActionState {
   locale: string;
@@ -60,19 +61,26 @@ export const sendToAnalyzeAction = async (
       errors: { [jobFieldName]: ['Seems like your Job file is empty'] },
     };
 
-  // call gemini
+  try {
+    const response = await analyzeResume({
+      mode: state.mode,
+      locale: state.locale,
+      cvDescription: cvResult.data,
+      ...(jobResult.data ? { jobDescription: jobResult.data } : {}),
+    });
 
-  const response = await analyzeResume({
-    mode: state.mode,
-    locale: state.locale,
-    cvDescription: cvResult.data,
-    ...(jobResult.data ? { jobDescription: jobResult.data } : {}),
-  });
-
-  return {
-    success: true,
-    data: response,
-  };
+    return {
+      success: true,
+      data: response,
+    };
+  } catch (error) {
+    console.error('Resume analyze request failed', error);
+    const errorMessage = buildResumeErrorMessage(error);
+    return {
+      success: false,
+      errors: { 'root.unexpected': [errorMessage] },
+    };
+  }
 };
 
 type ExtractionResult = {
@@ -123,4 +131,20 @@ const extractContent = async (
   }
 
   return { data: '', isEmpty: true, isError: false };
+};
+
+const FALLBACK_ERROR_MESSAGE = 'Unexpected error, please try again later.';
+
+const buildResumeErrorMessage = (error: unknown) => {
+  const resumeError = extractResumeError(error);
+
+  if (resumeError?.message) {
+    return resumeError.message;
+  }
+
+  if (resumeError?.code) {
+    return formatResumeErrorMessage((key: string) => key, resumeError.code, resumeError.message);
+  }
+
+  return FALLBACK_ERROR_MESSAGE;
 };

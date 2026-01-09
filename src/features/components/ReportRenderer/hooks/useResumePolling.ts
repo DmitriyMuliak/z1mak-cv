@@ -6,6 +6,7 @@ import {
   ResultResponse,
   StatusResponse,
 } from '@/actions/sendToAnalyze';
+import { extractResumeError } from '@/utils/resumeErrors';
 
 export const useResumePolling = (
   jobId: string | null,
@@ -42,11 +43,16 @@ export const useResumePolling = (
     };
   }, [isFinished, data?.status, jobId, onSuccess]);
 
+  const normalizedStatus = (data?.status || (error ? 'failed' : 'loading')) as
+    | StatusResponse['status']
+    | 'loading';
+
   return {
-    status: data?.status || 'loading',
+    status: normalizedStatus,
     error,
     isProcessing: !isFinished && !!jobId,
     retry: reset,
+    resumeError: pickResumeError(data, error),
   } as const;
 };
 
@@ -54,3 +60,17 @@ const validateStatus = (res: StatusResponse) => ({
   isComplete: res.status === 'completed',
   isFailed: res.status === 'failed',
 });
+
+const pickResumeError = (
+  data: StatusResponse | null,
+  error: Error | null,
+): { code?: StatusResponse['error']; message?: string } | null => {
+  if (data?.error) {
+    return { code: data.error, message: data.message };
+  }
+
+  const parsed = extractResumeError(error);
+  if (parsed) return parsed;
+
+  return null;
+};
