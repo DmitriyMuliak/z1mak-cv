@@ -173,7 +173,7 @@ export const getResentResumeBaseInfo = async (
 
   const { data, error } = await supabase
     .from('cv_analyzes')
-    .select('id, finished_at, created_at, status, sda')
+    .select('id, finished_at, created_at, status')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .range(pagination.offset, pagination.offset + pagination.limit - 1);
