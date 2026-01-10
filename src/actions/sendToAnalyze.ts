@@ -62,7 +62,7 @@ export type ResultResponse = {
 
 export type BaseInfoResponse = {
   id: string;
-  finishedAt: string;
+  finishedAt: string | null;
   createdAt: string;
 };
 
@@ -167,9 +167,13 @@ export const getResentResumeBaseInfo = async (
   const claims = await supabase.auth.getClaims();
   const userId = claims?.data?.claims.sub;
 
+  if (!userId) {
+    throw new Error('[userId] does not exist in auth claims');
+  }
+
   const { data, error } = await supabase
     .from('cv_analyzes')
-    .select('id, finished_at, created_at')
+    .select('id, finished_at, created_at, status, sda')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .range(pagination.offset, pagination.offset + pagination.limit - 1);

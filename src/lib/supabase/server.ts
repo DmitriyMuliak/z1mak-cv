@@ -2,6 +2,7 @@ import { createServerClient as createServerClientSupabase } from '@supabase/ssr'
 import { cookies } from 'next/headers';
 import { publicPrEnv } from '@/utils/processEnv/public';
 import { getServerClientCookiesOptions } from './utils/getServerClientCookiesOptions';
+import type { Database } from '@/types/database/database-gen';
 
 const NEXT_PUBLIC_SUPABASE_URL = publicPrEnv.NEXT_PUBLIC_SUPABASE_URL;
 const NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = publicPrEnv.NEXT_PUBLIC_SUPABASE_PUBLISHEBLE_KEY;
@@ -9,7 +10,7 @@ const NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = publicPrEnv.NEXT_PUBLIC_SUPABASE_PU
 export async function createServerClient() {
   const cookieStore = await cookies();
 
-  return createServerClientSupabase(
+  return createServerClientSupabase<Database>(
     NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {

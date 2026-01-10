@@ -16,8 +16,11 @@
     "tsc": "tsc",
     "fix-code": "npm run tsc && npm run lint-fix && npm run format-fix",
     "supabase": "supabase",
+    "supabase:link": "supabase link --project-ref",
     "supabase:start": "supabase start",
-    "supabase:stop": "supabase stop"
+    "supabase:stop": "supabase stop",
+    "supabase:pull:local": "supabase db pull --local",
+    "supabase:types:update": "supabase gen types typescript --linked > src/types/database-gen.types.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.701.0",
