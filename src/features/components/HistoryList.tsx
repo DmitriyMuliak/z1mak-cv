@@ -10,7 +10,7 @@ export const HistoryList: React.FC<{ userId: string }> = ({ userId }) => {
     let mounted = true;
     (async () => {
       const { data } = await supabaseBrowser
-        .from('cv_jobs')
+        .from('cv_analyzes')
         .select('*')
         .eq('user_id', userId)
         .in('status', ['completed', 'failed', 'processing'])

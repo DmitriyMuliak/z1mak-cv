@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { defaultInputStyles, TextField } from '@/components/Forms/fields/TextField';
@@ -9,7 +10,7 @@ import { signInWithEmailAction, signInOrUpWithGoogleAction } from '@/actions/aut
 import { SignInSchemaBase, SignInSchemaBaseType } from '@/schema/loginSchema';
 import { useTranslations } from 'next-intl';
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
-import { createOnSubmitHandler } from '@/components/Forms/utils';
+import { createOnSubmitHandler, resetCaptchaOnError } from '@/components/Forms/utils';
 import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
 import { GlobalFormErrorMessage } from '@/components/Forms/fields/GlobalFormErrorMessage';
 import { cn } from '@/lib/utils';
@@ -34,8 +35,10 @@ import { Link } from '@/navigation';
 import { stripLocale } from '@/utils/stripLocale';
 import { TurnstileCaptchaField } from '@/components/Forms/fields/TurnstileCaptcha';
 import type { TurnstileCaptchaRef } from '@/components/TurnstileCaptcha';
+import type { ValidationKeys } from '@/types/translations';
 
 const getAdditionalFEData = () => getStateWithRedirectFromUrl();
+const toastCaptchaId = 'toast-login-form-captcha';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
   const router = useRouter();
@@ -61,14 +64,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
   const showSuccessLoader = delayedIsLoading && isSuccess;
 
   const onResult = (result: Awaited<ReturnType<typeof signInWithEmailAction>>) => {
-    // TODO: uncomment reset captcha on error and add to other auth forms
-    // if (!result.success && result?.errors?.captchaToken) {
-    //   setTimeout(() => {
-    //     if (captchaRef.current) {
-    //       captchaRef.current.reset();
-    //     }
-    //   }, 1000);
-    // }
+    resetCaptchaOnError(result, captchaRef);
+    if (!result.success && result.metaError) {
+      toast.error(tv(result.metaError as ValidationKeys), { id: toastCaptchaId, duration: 2000 });
+    }
     if (result.success && result.data) {
       const state = decodeURIComponent(result.data.redirectTo);
       const pathName = JSON.parse(state) as { redirectedFrom?: string } | null;
@@ -77,11 +76,13 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
       }
     }
   };
+
   const handleSubmitCb = createOnSubmitHandler(signInWithEmailAction, form, onResult, {
     getAdditionalFEData,
   });
+
   const onSubmit = form.handleSubmit(handleSubmitCb);
-  const isFormInvalid = Object.keys(form.formState.errors).length > 0;
+  const isFormInvalid = Object.keys(form.formState.errors).length > 0; // form.formState.isValid;
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>

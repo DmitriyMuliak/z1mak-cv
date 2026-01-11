@@ -88,18 +88,11 @@ export class ApiService {
       });
 
       if (!response.ok) {
-        let errorData: Partial<Record<string, string>> = {};
+        const errorBody = await this.safeParseJson(response);
+        const errorMessage = this.extractErrorMessage(errorBody, response);
 
-        try {
-          errorData = await response.json();
-        } catch (_parseError) {
-          errorData.message = response.statusText;
-        }
-
-        const errorMessage = errorData?.message || `${response.status}`;
-
-        devLogger.error('API Error Data:', errorData);
-        throw new Error(errorMessage);
+        devLogger.error('API Error Data:', errorBody);
+        throw new ApiError(errorMessage, { status: response.status, body: errorBody });
       }
 
       if (response.status === 204) {
@@ -212,5 +205,41 @@ export class ApiService {
       }
     }
     return { handled: false };
+  }
+
+  private async safeParseJson(response: Response): Promise<unknown> {
+    try {
+      return await response.json();
+    } catch (_error) {
+      console.warn('[ApiService][safeParseJson] - parse error');
+      return undefined;
+    }
+  }
+
+  private extractErrorMessage(errorBody: unknown, response: Response): string {
+    const messageFromBody =
+      typeof errorBody === 'object' &&
+      errorBody !== null &&
+      'message' in errorBody &&
+      typeof (errorBody as { message?: unknown }).message === 'string'
+        ? (errorBody as { message: string }).message
+        : null;
+
+    return messageFromBody || response.statusText || String(response.status);
+  }
+}
+
+export class ApiError<T = unknown> extends Error {
+  public status: number;
+  public body?: T;
+
+  constructor(message: string, options: { status: number; body?: T; cause?: unknown }) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = options.status;
+    this.body = options.body;
+    if (options.cause) {
+      this.cause = options.cause;
+    }
   }
 }

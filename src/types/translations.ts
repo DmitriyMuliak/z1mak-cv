@@ -10,9 +10,10 @@ export type NamespacedRelativeMessageKeys<TObj extends object, TNamespace extend
       : never
     : never;
 
-export type ValidatorKeys = keyof MessagesBase['validator'];
+export type TranslationFn<T> = (key: T, params?: Record<string, string | number | Date>) => string;
 
-export type TranslationValidatorFn = (
-  key: ValidatorKeys,
-  params?: Record<string, string | number | Date>, // params?: Record<string, unknown>,
-) => string;
+/* Common types */
+export type ValidationKeys = NamespacedRelativeMessageKeys<MessagesBase, 'validator'>;
+export type TranslationValidatorFn = TranslationFn<
+  NamespacedRelativeMessageKeys<MessagesBase, 'validator'>
+>;

@@ -1,10 +1,16 @@
+import { toast } from 'sonner';
+import { ResultReturn } from '@/actions/utils';
+import { analyzeResume, ResumeErrorCode } from '@/actions/resume/resumeActions';
 import { parseFile } from '../parsers/parseFile';
 import { AddDescriptionBy, Mode } from '../store/useCvStore';
 import { SendToAnalyzeFEType } from '../schema/form/toAnalyzeSchemaFE';
-import { ResultReturn } from '@/actions/utils';
-import { analyzeResume } from '@/actions/sendToAnalyze';
+import { TranslationFn, NamespacedRelativeMessageKeys, MessagesBase } from '@/types/translations';
+import { DEFAULT_RESUME_ERROR_KEY, RESUME_ERROR_KEY_MAP } from '../consts/resumeErrors';
 
 interface SendToAnalyzeActionState {
+  translateErrorFn: TranslationFn<
+    NamespacedRelativeMessageKeys<MessagesBase, 'common.resumeErrors'>
+  >;
   locale: string;
   mode: Mode;
   addCvBy: AddDescriptionBy;
@@ -35,11 +41,11 @@ export const sendToAnalyzeAction = async (
   const jobFieldName = state.addJobBy === 'text' ? 'jobText' : 'jobFile';
 
   if (cvResult.isError) {
-    errors[cvFieldName] = [cvResult.error || 'Error processing CV'];
+    errors[cvFieldName] = [state.translateErrorFn(cvResult.error || 'cvProcessing')];
   }
 
   if (shouldProcessJob && jobResult.isError) {
-    errors[jobFieldName] = [jobResult.error || 'Error processing Job Description'];
+    errors[jobFieldName] = [state.translateErrorFn(jobResult.error || 'jobProcessing')];
   }
 
   if (Object.keys(errors).length > 0) {
@@ -52,15 +58,13 @@ export const sendToAnalyzeAction = async (
   if (cvResult.isEmpty)
     return {
       success: false,
-      errors: { [cvFieldName]: ['Seems like your CV file is empty'] },
+      errors: { [cvFieldName]: [state.translateErrorFn('cvFileEmpty')] },
     };
   if (shouldProcessJob && jobResult.isEmpty)
     return {
       success: false,
-      errors: { [jobFieldName]: ['Seems like your Job file is empty'] },
+      errors: { [jobFieldName]: [state.translateErrorFn('jobFileEmpty')] },
     };
-
-  // call gemini
 
   const response = await analyzeResume({
     mode: state.mode,
@@ -69,9 +73,18 @@ export const sendToAnalyzeAction = async (
     ...(jobResult.data ? { jobDescription: jobResult.data } : {}),
   });
 
+  if (response.success) {
+    return response;
+  }
+
+  toast.error(
+    state.translateErrorFn(
+      RESUME_ERROR_KEY_MAP[response.error.code as ResumeErrorCode] || DEFAULT_RESUME_ERROR_KEY,
+    ),
+  );
+
   return {
-    success: true,
-    data: response,
+    success: false,
   };
 };
 
@@ -79,7 +92,7 @@ type ExtractionResult = {
   data: string;
   isEmpty: boolean;
   isError: boolean;
-  error?: string;
+  error?: NamespacedRelativeMessageKeys<MessagesBase, 'common.resumeErrors'>;
 };
 
 const extractContent = async (
@@ -115,9 +128,9 @@ const extractContent = async (
       console.error('File parsing failed', error);
       return {
         data: '',
-        isEmpty: true,
+        isEmpty: false,
         isError: true,
-        error: 'File parsing failed',
+        error: 'fileParsing',
       };
     }
   }

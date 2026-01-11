@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState, PropsWithChildren } from 'react';
+import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useCvStore } from '@/features/store/useCvStore';
-import { AnalysisSchemaType } from '../../schema/analysisSchema';
 import { Header } from './components/Header';
 import { Skills } from './components/Skills';
 import { Experience } from './components/Experience';
@@ -15,6 +14,17 @@ import { SchemaService, UiSectionKey } from '../../services/SchemaService';
 import { useResumePolling } from './hooks/useResumePolling';
 import { Button } from '@/components/ui/button';
 import { SphereLoader } from '@/components/Loaders/Sphere';
+import { useRouter } from '@/i18n/navigation';
+import { paths } from '@/consts/routes';
+import { ResultResponse, ResumeErrorCode } from '@/actions/resume/resumeActions';
+import {
+  ServerActionResultSuccess,
+  ServerActionResultFailure,
+  AppError,
+} from '@/types/server-actions';
+import { DEFAULT_RESUME_ERROR_KEY, RESUME_ERROR_KEY_MAP } from '@/features/consts/resumeErrors';
+import { motion } from 'framer-motion';
+import type { AnalysisSchemaType } from '../../schema/analysisSchema';
 
 const SECTION_COMPONENTS: Record<UiSectionKey, React.FC<{ data: AnalysisSchemaType }>> = {
   header: Header,
@@ -25,55 +35,104 @@ const SECTION_COMPONENTS: Record<UiSectionKey, React.FC<{ data: AnalysisSchemaTy
   questions: InterviewQuestions,
 };
 
+const toastId = 'resume-error-toast';
+
 export const ReportRenderer: React.FC = () => {
+  const [report, setReport] = useState<AnalysisSchemaType>();
+  const router = useRouter();
+  const tError = useTranslations('common.resumeErrors');
   const tReport = useTranslations('pages.cvReport.loadingTitle');
   const tCommon = useTranslations('common');
-  const { lastReport, setLastReport } = useCvStore();
   const searchParams = useSearchParams();
   const jobId = searchParams.get('jobId');
 
-  const { status, isProcessing, retry } = useResumePolling(jobId, setLastReport);
+  const onSuccess = useCallback((result: ServerActionResultSuccess<ResultResponse>) => {
+    result.data.data && setReport(result.data.data);
+  }, []);
+
+  const onFailure = useCallback(
+    ({ error }: ServerActionResultFailure<AppError>) => {
+      const errorCode =
+        typeof error === 'object' && error && 'code' in error ? error.code : undefined;
+
+      toast.error(
+        tError(RESUME_ERROR_KEY_MAP[errorCode as ResumeErrorCode] || DEFAULT_RESUME_ERROR_KEY),
+        { id: toastId, duration: 2000 },
+      );
+    },
+    [tError],
+  );
+
+  const { status, isProcessing } = useResumePolling(jobId, {
+    onSuccess,
+    onFailure,
+    onPollingFailure: onFailure,
+  });
 
   const activeSections = useMemo(() => {
-    if (!lastReport) return [];
-    const service = new SchemaService(lastReport);
+    if (!report) return [];
+    const service = new SchemaService(report);
     return service.getUiSections();
-  }, [lastReport]);
+  }, [report]);
 
   if (isProcessing && loadingStatuses.has(status)) {
     return (
-      <div className="absolute inset-0 min-h-full-screen">
-        <div className="grid h-full w-full place-items-center content-center gap-4">
+      <AnimationContainer id={jobId}>
+        <Container>
           <SphereLoader />
           <h3 className="text-md font-semibold text-center">
             {tReport(status as LoadingStatus)}...
           </h3>
-        </div>
-      </div>
+        </Container>
+      </AnimationContainer>
     );
   }
 
   if (isProcessing === false && status === 'failed') {
     return (
-      <div className="absolute inset-0 min-h-full-screen">
-        <div className="grid h-full w-full place-items-center content-center gap-4">
+      <AnimationContainer id={jobId}>
+        <Container>
           <h3 className="text-md text-red-600">{tReport('failed')}</h3>
-          <Button onClick={retry} className="mt-2.5">
+          <Button onClick={() => router.replace({ pathname: paths.cvChecker })} className="mt-2.5">
             {tCommon('tryAgainButtonTitle')}
           </Button>
-        </div>
-      </div>
+        </Container>
+      </AnimationContainer>
     );
   }
 
-  if (!lastReport) return null;
+  if (!report) return null;
 
   return (
-    <div className="space-y-6">
-      {activeSections.map((sectionKey) => {
-        const Component = SECTION_COMPONENTS[sectionKey];
-        return <Component key={sectionKey} data={lastReport} />;
-      })}
+    <AnimationContainer id={jobId}>
+      <div className="space-y-6">
+        {activeSections.map((sectionKey) => {
+          const Component = SECTION_COMPONENTS[sectionKey];
+          return <Component key={sectionKey} data={report} />;
+        })}
+      </div>
+    </AnimationContainer>
+  );
+};
+
+const AnimationContainer = ({ children, id }: PropsWithChildren<{ id: string | null }>) => {
+  return (
+    <motion.div
+      key={id}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8 }}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+const Container = ({ children }: PropsWithChildren) => {
+  return (
+    <div className="absolute inset-0 min-h-full-screen">
+      <div className="grid h-full w-full place-items-center content-center gap-4">{children}</div>
     </div>
   );
 };

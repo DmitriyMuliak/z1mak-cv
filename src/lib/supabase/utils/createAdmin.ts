@@ -1,15 +1,19 @@
+import type { Database } from '@/types/database/database-gen';
 import { createClient } from '@supabase/supabase-js';
-const admin = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+const admin = createClient<Database>(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+);
 
-export async function createSuperAdmin(email: string, password: string, full_name: string) {
+export async function createSuperAdmin(email: string, password: string, _full_name: string) {
   const { data, error } = await admin.auth.admin.createUser({
     email,
     password,
     email_confirm: true,
   });
   if (error) throw error;
-  const id = data.user.id;
-  await admin.from('profiles').insert({ id, full_name, role: 'superAdmin' });
+  // const id = data.user.id;
+  // await admin.from('profiles').insert({ id, full_name, role: 'superAdmin' });
   return data;
 }
 

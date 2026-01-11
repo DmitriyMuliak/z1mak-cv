@@ -1,7 +1,7 @@
 import '../globals.css';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
-// import { AnimatePresence } from 'framer-motion';
+import { Toaster } from '@/components/ui/sonner';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { ThemeProvider } from '@/components/ThemeProvider';
@@ -13,6 +13,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Lamp } from '@/components/Lamp';
 import { cn } from '@/lib/utils';
 import styles from './layout.module.css';
+// import { AnimatePresence } from 'framer-motion';
 // import type { Metadata } from 'next';
 
 const geistSans = Geist({
@@ -71,6 +72,7 @@ export default async function LocaleLayout({ children, params }: Props) {
                 </div>
               </div>
             </div>
+            <Toaster position="top-right" richColors closeButton />
           </ThemeProvider>
           <BackgroundContainer />
         </NextIntlClientProvider>

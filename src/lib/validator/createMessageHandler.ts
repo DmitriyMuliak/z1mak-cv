@@ -1,4 +1,4 @@
-import { ValidatorKeys } from '@/types/translations';
+import { ValidationKeys } from '@/types/translations';
 import { ValidatorPlaceholders } from './consts';
 import { createCustomKey, createTempCustomMessage } from './createTempCustomMessage';
 import type { BaseIssue } from 'valibot';
@@ -20,15 +20,15 @@ const extractPlaceholdersFromIssue = <T>(issue: BaseIssue<T>): Partial<Writable<
 };
 
 export const createMessageHandler =
-  (key: ValidatorKeys) =>
+  (key: ValidationKeys) =>
   <T>(issue: BaseIssue<T>) => {
     return createTempCustomMessage(key, extractPlaceholdersFromIssue(issue));
   };
 
 export const createSimpleMessageHandler =
-  (key: ValidatorKeys) =>
+  (key: ValidationKeys) =>
   <T>(_issue: BaseIssue<T>) => {
     return createCustomKey(key);
   };
 
-export const createSimpleMessage = (key: ValidatorKeys) => createCustomKey(key);
+export const createSimpleMessage = (key: ValidationKeys) => createCustomKey(key);

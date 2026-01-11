@@ -247,7 +247,20 @@
   "common": {
     "formButtonSendTitle": "Send",
     "formButtonSendSuccessTitle": "Successfully Sent",
-    "tryAgainButtonTitle": "Try Again"
+    "tryAgainButtonTitle": "Try Again",
+    "resumeErrors": {
+      "queueFull": "The AI queue is full. Please try again in a moment.",
+      "concurrencyLimit": "You have reached the limit of parallel analyses. Please try again shortly.",
+      "userRpdLimit": "You've hit your daily analysis limit. Please try again tomorrow.",
+      "modelLimit": "Our models are busy right now. Please retry in a few minutes.",
+      "notFound": "This report was not found or has expired.",
+      "unknown": "Something went wrong. Please try again later.",
+      "cvFileEmpty": "Seems like your CV file is empty",
+      "jobFileEmpty": "Seems like your Job file is empty",
+      "fileParsing": "We couldn't read this file",
+      "cvProcessing": "Error processing CV description",
+      "jobProcessing": "Error processing Job description"
+    }
   },
   "examples": {
     "pluralTranslationExample": "{count, plural, one {# product} other {# products}}"

@@ -24,11 +24,12 @@ import {
 } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { BaseInfoResponse, getResentResumeBaseInfo } from '@/actions/sendToAnalyze';
+import { BaseInfoResponse, getResentResumeBaseInfo } from '@/actions/resume/resumeActions';
 import { Link } from '@/i18n/navigation';
 import { paths } from '@/consts/routes';
 import { formatToUserDate } from '@/utils/date';
 import { FolderOpenDot } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface HistoryTag extends BaseInfoResponse {
   link: string;
@@ -117,13 +118,16 @@ function HistoryList({ tags, onItemClick }: { tags: HistoryTag[]; onItemClick: (
       <div className="p-4">
         {tags.map((tag) => (
           <React.Fragment key={tag.id}>
-            <div className="text-sm">
+            <div className={cn('text-sm', tag.status === 'failed' && 'opacity-50')}>
               <Link
                 href={tag.link}
                 onClick={onItemClick}
                 className="flex h-full w-full flex-row items-center gap-2 hover:opacity-70 transition-opacity light:text-white"
               >
-                <FolderOpenDot className="w-4 h-4" /> {tag.createdAt}
+                <FolderOpenDot
+                  className={cn('w-4 h-4 ', tag.status === 'failed' && 'text-amber-700')}
+                />{' '}
+                {tag.createdAt}
               </Link>
             </div>
             <Separator className="my-2" />
