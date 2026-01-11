@@ -11,17 +11,22 @@ import * as v from 'valibot';
 // v.ObjectSchema<TEntries, undefined> || v.SchemaWithPipe<v.ObjectSchema<TEntries, undefined>, v.BaseIssue<unknown>>
 type AnySchema = v.BaseSchema<unknown, unknown, v.BaseIssue<unknown>>;
 
+type ResultReturnMetaError = Partial<Record<string, unknown>>;
 type ResultReturnError = Partial<Record<string, string[]>>; // Partial need for TS correctly infer super return type after couple of object returns with different keys
-export type SuccessData = Record<string, unknown>;
+export type SuccessData = Record<string, unknown> | void; // Data or void when we don't return anything from action
 export type ResultReturn<TData extends SuccessData | void = void> = {
   success: boolean;
-  errors?: ResultReturnError;
   data?: TData;
+  errors?: ResultReturnError;
+  metaErrors?: ResultReturnMetaError;
+  metaError?: string;
 };
 
 type OnSubmitReturn<TData extends SuccessData | void = void> = {
-  errors?: ResultReturnError;
   data?: TData;
+  errors?: ResultReturnError;
+  metaErrors?: ResultReturnMetaError;
+  metaError?: string;
 };
 
 type OnSubmit<TSchema extends AnySchema, TData extends SuccessData | void = void, TFE = unknown> = (
@@ -65,13 +70,13 @@ async function serverFormAction<
 
     const submitResult = await onSubmit(result.output, formData, additionalFEData);
 
-    if (submitResult?.errors) return { success: false, errors: submitResult.errors };
+    // 'errors' will be set as form errors, metaErrors and metaError will not affect form state
+    if (submitResult?.errors || submitResult?.metaErrors || submitResult?.metaError)
+      return { success: false, ...submitResult };
 
     return { success: true, data: submitResult?.data };
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    devLogger.error('Contact Form Unexpected error', error);
+  } catch (error: unknown) {
+    devLogger.error('Form Unexpected error', error);
     unstable_rethrow(error);
     return {
       success: false,

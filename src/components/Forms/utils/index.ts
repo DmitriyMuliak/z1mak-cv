@@ -6,6 +6,7 @@ import type {
   ResultReturn,
   CreateOnSubmitHandlerConfig,
 } from '@/actions/utils';
+import type { TurnstileCaptchaRef } from '@/components/TurnstileCaptcha';
 
 export const createOnSubmitHandler =
   <TFieldValues extends FieldValues, TData extends SuccessData | void = void, TFE = unknown>(
@@ -95,11 +96,29 @@ const handleActionResponse = <TFieldValues extends FieldValues, TData extends Su
 
   if (res.errors) {
     Object.entries(res.errors).forEach(([field, messages]) =>
-      form.setError(field as Path<TFieldValues>, { message: (messages as [string]).join(', ') }),
+      form.setError(field as Path<TFieldValues>, {
+        type: 'manual',
+        message: (messages as [string]).join(', '),
+      }),
     );
   }
 
   if (res.success) {
     form.reset();
   }
+};
+
+export const resetCaptchaOnError = (
+  result: ResultReturn<SuccessData>,
+  captchaRef: {
+    current: TurnstileCaptchaRef | null;
+  },
+) => {
+  const isFailed = !result.success;
+  const isHaveErrors = result?.errors || result?.metaErrors || result?.metaError;
+  if (isFailed && isHaveErrors) {
+    captchaRef.current && captchaRef.current.reset();
+  }
+  // Don't mark field in form
+  if (isFailed && result?.errors?.captchaToken) delete result.errors.captchaToken;
 };

@@ -20,11 +20,13 @@ const EnvSchema = v.object({
 const parsedEnv = v.safeParse(EnvSchema, process.env);
 
 if (!parsedEnv.success) {
-  // Can be used for debugging proposes
-  // console.error(
-  //   '❌ Have wrong environment variables:',
-  //   {issues: parsedEnv.issues, env: process.env},
-  // );
+  const messages = parsedEnv.issues.map((i) => i.message);
+  console.error('❌ Have wrong environment variables:', {
+    messages,
+    // Can be used for debugging proposes
+    // issues: parsedEnv.issues,
+    // env: process.env,
+  });
 
   throw new Error('Configuration Error: Invalid Private environment variables');
 }

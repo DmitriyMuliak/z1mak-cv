@@ -11,7 +11,7 @@ import {
 } from '@/schema/loginSchema';
 import { useTranslations } from 'next-intl';
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
-import { createOnSubmitHandler } from '@/components/Forms/utils';
+import { createOnSubmitHandler, resetCaptchaOnError } from '@/components/Forms/utils';
 import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
 import { GlobalFormErrorMessage } from '@/components/Forms/fields/GlobalFormErrorMessage';
 import { cn } from '@/lib/utils';
@@ -22,6 +22,7 @@ import { getStateWithRedirectFromUrl } from '@/utils/getRedirectFromUrl';
 import { useRouter } from '@/i18n/navigation';
 import { TurnstileCaptchaField } from '@/components/Forms/fields/TurnstileCaptcha';
 import { paths } from '@/consts/routes';
+import type { TurnstileCaptchaRef } from '@/components/TurnstileCaptcha';
 
 const getAdditionalFEData = () => getStateWithRedirectFromUrl();
 
@@ -35,6 +36,7 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentProps<
     mode: 'onBlur',
     defaultValues: { email: '' },
   });
+  const captchaRef = React.useRef<TurnstileCaptchaRef>(null);
   const router = useRouter();
 
   const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
@@ -42,11 +44,12 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentProps<
   const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
   const showSuccessLoader = delayedIsLoading && isSuccess;
 
-  const onSuccessCb = (_data: unknown) => {
-    router.replace(paths.home);
+  const onResult = (result: Awaited<ReturnType<typeof requestResetPasswordAction>>) => {
+    resetCaptchaOnError(result, captchaRef);
+    result.success && router.replace(paths.home);
   };
 
-  const handleSubmitCb = createOnSubmitHandler(requestResetPasswordAction, form, onSuccessCb, {
+  const handleSubmitCb = createOnSubmitHandler(requestResetPasswordAction, form, onResult, {
     getAdditionalFEData,
   });
   const onSubmit = form.handleSubmit(handleSubmitCb);
@@ -76,6 +79,7 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentProps<
                   name="captchaToken"
                   formName="reset-pass-request"
                   containerClassName="sm:-ml-[6px]"
+                  ref={captchaRef}
                 />
                 <Field>
                   <SubmitActionButton

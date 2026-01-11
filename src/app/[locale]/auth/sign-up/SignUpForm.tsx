@@ -8,7 +8,7 @@ import { signUpWithEmailAction } from '@/actions/auth/signUp';
 import { SignUpSchemaBase, SignUpSchemaBaseType } from '@/schema/loginSchema';
 import { useTranslations } from 'next-intl';
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
-import { createOnSubmitHandler } from '@/components/Forms/utils';
+import { createOnSubmitHandler, resetCaptchaOnError } from '@/components/Forms/utils';
 import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
 import { GlobalFormErrorMessage } from '@/components/Forms/fields/GlobalFormErrorMessage';
 import { cn } from '@/lib/utils';
@@ -19,9 +19,9 @@ import { Link } from '@/navigation';
 import { paths } from '@/consts/routes';
 import { SubmitActionButton } from '@/components/Forms/buttons/SubmitActionButton';
 import { getRedirectFromUrl, redirectedFromURLParamKey } from '@/utils/getRedirectFromUrl';
-import { devLogger } from '@/lib/devLogger';
 import { TurnstileCaptchaField } from '@/components/Forms/fields/TurnstileCaptcha';
 import { useRouter } from '@/i18n/navigation';
+import type { TurnstileCaptchaRef } from '@/components/TurnstileCaptcha';
 
 const getAdditionalFEData = () => getRedirectFromUrl();
 
@@ -37,6 +37,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<'div'>)
     mode: 'onBlur',
     defaultValues: { name: '', email: '', password: '' },
   });
+  const captchaRef = React.useRef<TurnstileCaptchaRef>(null);
   const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
 
   useEffect(() => {
@@ -48,9 +49,10 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<'div'>)
   const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
   const showSuccessLoader = delayedIsLoading && isSuccess;
 
-  const onSuccessCb = (data: unknown) => {
-    devLogger.log('onSuccessCb DATA', data);
-    router.push(paths.login + (redirectedFromState ? `?${redirectedFromState}` : ''));
+  const onSuccessCb = (result: Awaited<ReturnType<typeof signUpWithEmailAction>>) => {
+    resetCaptchaOnError(result, captchaRef);
+    result.success &&
+      router.push(paths.login + (redirectedFromState ? `?${redirectedFromState}` : ''));
   };
   const handleSubmitCb = createOnSubmitHandler(signUpWithEmailAction, form, onSuccessCb, {
     getAdditionalFEData,
@@ -97,6 +99,7 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<'div'>)
                   name="captchaToken"
                   formName="sign-up"
                   containerClassName="sm:-ml-[6px]"
+                  ref={captchaRef}
                 />
                 <Field>
                   <SubmitActionButton

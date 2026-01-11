@@ -25,6 +25,7 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
   const tc = useTranslations('common');
   const tv = useTranslations('validator');
   const tp = useTranslations('pages.cvChecker');
+  const tre = useTranslations('common.resumeErrors');
   const locale = useLocale();
   const router = useRouter();
 
@@ -79,6 +80,7 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
 
   const handleSubmitCb = createBaseOnSubmitHandler(sendToAnalyzeAction, form, onSuccessCb, {
     getAdditionalFEData: () => ({
+      translateErrorFn: tre,
       locale,
       mode,
       addCvBy,

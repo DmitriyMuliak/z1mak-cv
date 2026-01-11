@@ -49,12 +49,19 @@ export const signInWithEmailAction = createFormAction(
       const locale = await getLocale();
       const t = await getTranslations({ namespace: 'validator', locale });
       if (error.code === 'invalid_credentials') {
-        return { success: false, errors: { email: [''], password: [t('invalid_credentials')] } };
+        return {
+          success: false,
+          metaError: 'invalid_credentials',
+        };
       }
       if (error.code === 'captcha_failed') {
-        return { success: false, errors: { captchaToken: [t('captchaInvalid')] } };
+        return {
+          success: false,
+          metaError: 'captchaInvalid',
+          errors: { captchaToken: [t('captchaInvalid')] },
+        };
       }
-      return { success: false };
+      return { success: false, metaError: 'unknown' };
     }
 
     return {

@@ -2,11 +2,10 @@
 
 import { apiCvAnalyser } from '@/api/server';
 import { ApiRoutes } from '@/api/server/apiRoutes';
-import { ApiError } from '@/api/apiService';
 import { AnalysisSchemaType } from '@/features/schema/analysisSchema';
 import { createServerClient } from '@/lib/supabase/server';
-import { extractResumeError, formatResumeErrorMessage } from '@/utils/resumeErrors';
-import { getTranslations } from 'next-intl/server';
+import { ServerActionResult } from '@/types/server-actions';
+import { handleServerError } from '../handleServerError';
 
 export type AnalyzeMode = {
   evaluationMode: 'general' | 'byJob';
@@ -36,7 +35,8 @@ export type ResumeErrorCode =
   | 'CONCURRENCY_LIMIT' // /resume/analyze: user concurrency з Lua
   | 'USER_RPD_LIMIT' // /resume/analyze: user RPD з Lua
   | 'MODEL_LIMIT' // /resume/analyze: усі моделі в chain по RPD
-  | 'NOT_FOUND'; // /resume/:id/result, /resume/:id/status
+  | 'NOT_FOUND' // /resume/:id/result, /resume/:id/status
+  | 'PROVIDER_ERROR'; // /resume/status
 
 export type ResumeErrorResponse = {
   error: ResumeErrorCode;
@@ -64,6 +64,7 @@ export type BaseInfoResponse = {
   id: string;
   finishedAt: string | null;
   createdAt: string;
+  status: JobStatus;
 };
 
 const internalApiKey = process.env.INTERNAL_API_KEY ?? 'not set';
@@ -86,26 +87,9 @@ const getUserAuthData = async () => {
   return { userId, userRole };
 };
 
-const resolveResumeErrorMessage = async (locale: string, error: unknown) => {
-  const resumeError = extractResumeError(error);
-
-  if (!resumeError) {
-    return 'Unexpected error, please try again later.';
-  }
-
-  try {
-    const t = await getTranslations({ locale });
-    return formatResumeErrorMessage(
-      t as unknown as (key: string, values?: Record<string, unknown>) => string,
-      resumeError.code,
-      resumeError.message,
-    );
-  } catch (_e) {
-    return resumeError.message || 'Unexpected error, please try again later.';
-  }
-};
-
-export const analyzeResume = async (params: AnalyzePayload): Promise<AnalyzeResponse> => {
+export const analyzeResume = async (
+  params: AnalyzePayload,
+): Promise<ServerActionResult<AnalyzeResponse>> => {
   // TODO: send user jwt token to verify user identity directly in the queue service
   const { userId, userRole } = await getUserAuthData();
 
@@ -116,38 +100,52 @@ export const analyzeResume = async (params: AnalyzePayload): Promise<AnalyzeResp
   };
 
   try {
-    return await apiCvAnalyser.post<AnalyzeResponse, AnalyzeRequest>(
+    const data = await apiCvAnalyser.post<AnalyzeResponse, AnalyzeRequest>(
       ApiRoutes.CV_ANALYSER.analyze,
       body,
       {
         headers: authHeader,
       },
     );
+
+    return { success: true, data };
   } catch (error) {
-    const localizedMessage = await resolveResumeErrorMessage(params.locale, error);
-
-    if (error instanceof ApiError) {
-      throw new ApiError(localizedMessage, {
-        status: error.status,
-        body: error.body,
-        cause: error,
-      });
-    }
-
-    throw new Error(localizedMessage);
+    return handleServerError(error);
   }
 };
 
-export const getResumeStatus = async (jobId: string): Promise<StatusResponse> => {
-  return apiCvAnalyser.get<StatusResponse>(ApiRoutes.CV_ANALYSER.status(jobId), undefined, {
-    headers: authHeader,
-  });
+export const getResumeStatus = async (
+  jobId: string,
+): Promise<ServerActionResult<StatusResponse>> => {
+  try {
+    const data = await apiCvAnalyser.get<StatusResponse>(
+      ApiRoutes.CV_ANALYSER.status(jobId),
+      undefined,
+      {
+        headers: authHeader,
+      },
+    );
+    return { success: true, data };
+  } catch (error) {
+    return handleServerError(error);
+  }
 };
 
-export const getResumeResult = async (jobId: string): Promise<ResultResponse> => {
-  return apiCvAnalyser.get<ResultResponse>(ApiRoutes.CV_ANALYSER.result(jobId), undefined, {
-    headers: authHeader,
-  });
+export const getResumeResult = async (
+  jobId: string,
+): Promise<ServerActionResult<ResultResponse>> => {
+  try {
+    const data = await apiCvAnalyser.get<ResultResponse>(
+      ApiRoutes.CV_ANALYSER.result(jobId),
+      undefined,
+      {
+        headers: authHeader,
+      },
+    );
+    return { success: true, data };
+  } catch (error) {
+    return handleServerError(error);
+  }
 };
 
 export const getResentResumeBaseInfo = async (
@@ -187,5 +185,6 @@ export const getResentResumeBaseInfo = async (
     id: row.id,
     finishedAt: row.finished_at,
     createdAt: row.created_at,
+    status: row.status as JobStatus,
   }));
 };

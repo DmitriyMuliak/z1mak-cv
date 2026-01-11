@@ -211,6 +211,7 @@ export class ApiService {
     try {
       return await response.json();
     } catch (_error) {
+      console.warn('[ApiService][safeParseJson] - parse error');
       return undefined;
     }
   }
