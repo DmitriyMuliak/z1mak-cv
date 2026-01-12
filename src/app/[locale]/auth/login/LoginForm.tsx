@@ -137,7 +137,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
     const target = stripLocale(redirectedFrom);
     debug('router.replace target', target);
 
-    router.replace(target);
+    router.replace(redirectedFrom); // target
   };
   const handleSubmitCb = createOnSubmitHandler(signInWithEmailAction, form, onResult, {
     getAdditionalFEData,

@@ -1,6 +1,5 @@
 import { paths } from '@/consts/routes';
 import { isPublic } from '@/utils/matchPath';
-import { privatePrEnv } from '@/utils/processEnv/private';
 import { publicPrEnv } from '@/utils/processEnv/public';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
@@ -23,7 +22,7 @@ export async function updateSession(
 ) {
   const supabase = createServerClient(
     publicPrEnv.NEXT_PUBLIC_SUPABASE_URL,
-    privatePrEnv.SUPABASE_SERVICE_ROLE_KEY,
+    publicPrEnv.NEXT_PUBLIC_SUPABASE_PUBLISHEBLE_KEY,
     {
       cookies: {
         getAll() {
@@ -56,7 +55,8 @@ export async function updateSession(
   if (!user && !isPublic(request.nextUrl.pathname, publicPatterns)) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
-    url.pathname = paths.login;
+    const locale = request.nextUrl.pathname.split('/').filter(Boolean)[0];
+    url.pathname = `/${locale}${paths.login}`;
     url.searchParams.set('redirectedFrom', request.nextUrl.pathname);
     return NextResponse.redirect(url);
   }
