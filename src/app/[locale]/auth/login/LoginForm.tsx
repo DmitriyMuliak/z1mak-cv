@@ -68,7 +68,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
   const pathname = usePathname(); // ✅
 
   // ✅ helpers
-  const debug = (...args: unknown[]) => console.debug('[LoginRedirectDebug]', ...args);
+  const debug = (...args: unknown[]) => console.log('[LoginRedirectDebug]', ...args);
 
   useEffect(() => {
     debug('env', {
