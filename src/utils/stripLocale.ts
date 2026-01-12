@@ -1,4 +1,12 @@
+import { locales } from '@/consts/locales';
+
 export function stripLocale(path: string): string {
-  const clear = path.split('/').filter(Boolean).slice(1).join('/');
-  return clear ? `/${clear}` : '/';
+  const parts = path.split('/').filter(Boolean);
+
+  if (parts.length && locales.includes(parts[0])) {
+    const rest = parts.slice(1).join('/');
+    return rest ? `/${rest}` : '/';
+  }
+
+  return path.startsWith('/') ? path : `/${path}`;
 }
