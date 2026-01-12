@@ -39,16 +39,11 @@ export const signInWithEmailAction = createFormAction(
   SignInSchemaBase,
   async (dataForm, _formData, state) => {
     const supabase = await createServerClient();
-    console.log('[signInWithEmailAction] state:', state);
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email: dataForm.email,
       password: dataForm.password,
       options: { captchaToken: dataForm.captchaToken },
-    });
-    devLogger.log('[signInWithEmailAction] signIn result:', {
-      hasUser: !!data.user,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      error: error ? { message: error.message, code: (error as any).code } : null,
     });
 
     if (error) {

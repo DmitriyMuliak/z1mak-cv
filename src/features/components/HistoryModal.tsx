@@ -30,6 +30,7 @@ import { paths } from '@/consts/routes';
 import { formatToUserDate } from '@/utils/date';
 import { FolderOpenDot } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AnimationContainer } from '@/components/AnimatedContainer';
 
 interface HistoryTag extends BaseInfoResponse {
   link: string;
@@ -67,7 +68,9 @@ export function HistoryModal() {
       {isLoading ? <div className="animate-pulse rounded h-72">{t('loading')}</div> : null}
       {!isLoading && !tags.length ? <div className="p-2 h-72">{t('noHistory')}</div> : null}
       {!isLoading && tags.length ? (
-        <HistoryList tags={tags} onItemClick={() => setOpen(false)} />
+        <AnimationContainer id="tag-history-list">
+          <HistoryList tags={tags} onItemClick={() => setOpen(false)} />
+        </AnimationContainer>
       ) : null}
     </>
   );

@@ -22,7 +22,7 @@ export async function updateSession(
 ) {
   const supabase = createServerClient(
     publicPrEnv.NEXT_PUBLIC_SUPABASE_URL,
-    publicPrEnv.NEXT_PUBLIC_SUPABASE_PUBLISHEBLE_KEY,
+    publicPrEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {
       cookies: {
         getAll() {
@@ -51,24 +51,12 @@ export async function updateSession(
   // IMPORTANT: Don't remove getClaims()
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
-  console.log(
-    '[MW cookies]',
-    request.cookies.getAll().map((c) => c.name),
-  );
-  console.log('[MW]', {
-    hasCookie: request.headers.get('cookie')?.includes('sb-') ?? false,
-    cookies: request.cookies.getAll().map((c) => c.name),
-    hasClaims: !!data?.claims,
-    user,
-  });
-  console.log('[Middleware]:', { 'request.nextUrl.pathname': request.nextUrl.pathname });
+
   if (!user && !isPublic(request.nextUrl.pathname, publicPatterns)) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     const locale = request.nextUrl.pathname.split('/').filter(Boolean)[0];
-    console.log('[Middleware]:', { url: url, locale, user });
     url.pathname = `/${locale}${paths.login}`;
-    // url.pathname = paths.login;
     url.searchParams.set('redirectedFrom', request.nextUrl.pathname);
     return NextResponse.redirect(url);
   }

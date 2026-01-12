@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -30,19 +30,15 @@ import {
   getStateWithRedirectFromUrl,
   redirectedFromURLParamKey,
 } from '@/utils/getRedirectFromUrl';
-import { usePathname, useRouter } from '@/i18n/navigation';
 import { Link } from '@/navigation';
-import { stripLocale } from '@/utils/stripLocale';
 import { TurnstileCaptchaField } from '@/components/Forms/fields/TurnstileCaptcha';
 import type { TurnstileCaptchaRef } from '@/components/TurnstileCaptcha';
 import type { ValidationKeys } from '@/types/translations';
-import { useSearchParams } from 'next/navigation';
 
 const getAdditionalFEData = () => getStateWithRedirectFromUrl();
 const toastCaptchaId = 'toast-login-form-captcha';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
-  const router = useRouter();
   const t = useTranslations('pages.login');
   const tf = useTranslations('fields');
   const tc = useTranslations('common');
@@ -54,98 +50,36 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
     defaultValues: { email: '', password: '' },
   });
   const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
-  const [redirectedFromState, setRedirectedFromState] = useState<string | null>(null);
-  useEffect(() => {
-    const url = getRedirectFromUrl();
-    setRedirectedFromState(url ? `${redirectedFromURLParamKey}=${url}` : '');
-  }, []);
 
+  const urlWithRedirect = getRedirectFromUrl();
+  const redirectedFromState = urlWithRedirect
+    ? `${redirectedFromURLParamKey}=${urlWithRedirect}`
+    : '';
   const isSubmitting = form.formState.isSubmitting;
   const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
   const showSuccessLoader = delayedIsLoading && isSuccess;
 
-  const searchParams = useSearchParams(); // ✅
-  const pathname = usePathname(); // ✅
-
-  // ✅ helpers
-  const debug = (...args: unknown[]) => console.log('[LoginRedirectDebug]', ...args);
-
-  useEffect(() => {
-    debug('env', {
-      href: typeof window !== 'undefined' ? window.location.href : 'ssr',
-      pathname,
-      search: typeof window !== 'undefined' ? window.location.search : 'ssr',
-    });
-
-    // що реально в query?
-    debug('query.redirectedFrom', searchParams.get('redirectedFrom'));
-
-    // що повертає твоя утиліта
-    const url = getRedirectFromUrl();
-    debug('getRedirectFromUrl()', url);
-
-    setRedirectedFromState(url ? `${redirectedFromURLParamKey}=${url}` : '');
-  }, [pathname, searchParams]);
-
   const onResult = (result: Awaited<ReturnType<typeof signInWithEmailAction>>) => {
-    debug('action.result', result);
-
     resetCaptchaOnError(result, captchaRef);
-
-    if (!result.success) {
-      debug('action.failed', { metaError: result.metaError, errors: result.errors });
-      if (result.metaError) {
-        toast.error(tv(result.metaError as ValidationKeys), { id: toastCaptchaId, duration: 2000 });
+    if (!result.success && result.metaError) {
+      toast.error(tv(result.metaError as ValidationKeys), { id: toastCaptchaId, duration: 2000 });
+    }
+    if (result.success && result.data) {
+      const state = decodeURIComponent(result.data.redirectTo);
+      const pathName = JSON.parse(state) as { redirectedFrom?: string } | null;
+      if (pathName && pathName.redirectedFrom) {
+        // Do not use next-intl router here.
+        // After login, auth cookies are set on the server and middleware
+        // must re-evaluate the request with updated cookies.
+        // Full page navigation guarantees cookies are applied
+        // before accessing protected routes.
+        window.location.assign(pathName.redirectedFrom);
       }
-      return;
     }
-
-    if (!result.data?.redirectTo) {
-      debug('action.success BUT no redirectTo in data', result.data);
-      return;
-    }
-
-    const raw = result.data.redirectTo;
-    const decoded = (() => {
-      try {
-        return decodeURIComponent(raw);
-      } catch (e) {
-        debug('decodeURIComponent failed', { raw, e });
-        return raw;
-      }
-    })();
-
-    debug('redirectTo.raw/decoded', { raw, decoded });
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let parsed: any = null;
-    try {
-      parsed = JSON.parse(decoded);
-    } catch (e) {
-      debug('JSON.parse failed', { decoded, e });
-      return;
-    }
-
-    debug('redirectTo.parsed', parsed);
-
-    const redirectedFrom = parsed?.redirectedFrom;
-    if (!redirectedFrom || typeof redirectedFrom !== 'string') {
-      debug('parsed.redirectedFrom missing/invalid', { redirectedFrom });
-      return;
-    }
-
-    const target = stripLocale(redirectedFrom);
-    debug('router.replace target', { target, redirectedFrom });
-
-    router.refresh();
-    router.replace(target); //
-    // router.replace(redirectedFrom);
-    // window.location.assign(pathName.redirectedFrom)
   };
   const handleSubmitCb = createOnSubmitHandler(signInWithEmailAction, form, onResult, {
     getAdditionalFEData,
   });
-
   const onSubmit = form.handleSubmit(handleSubmitCb);
   const isFormInvalid = Object.keys(form.formState.errors).length > 0; // form.formState.isValid;
 

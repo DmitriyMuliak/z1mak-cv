@@ -74,11 +74,14 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
 
   const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
 
-  const onSuccessCb = async (out: Awaited<ReturnType<typeof sendToAnalyzeAction>>) => {
-    router.push(paths.cvReport + `?jobId=${out.data?.jobId}`);
+  const onResult = async (out: Awaited<ReturnType<typeof sendToAnalyzeAction>>) => {
+    if (out.success && out.data?.jobId) {
+      router.push(paths.cvReport + `?jobId=${out.data?.jobId}`);
+      return;
+    }
   };
 
-  const handleSubmitCb = createBaseOnSubmitHandler(sendToAnalyzeAction, form, onSuccessCb, {
+  const handleSubmitCb = createBaseOnSubmitHandler(sendToAnalyzeAction, form, onResult, {
     getAdditionalFEData: () => ({
       translateErrorFn: tre,
       locale,

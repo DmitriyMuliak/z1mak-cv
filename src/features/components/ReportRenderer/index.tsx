@@ -23,8 +23,8 @@ import {
   AppError,
 } from '@/types/server-actions';
 import { DEFAULT_RESUME_ERROR_KEY, RESUME_ERROR_KEY_MAP } from '@/features/consts/resumeErrors';
-import { motion } from 'framer-motion';
 import type { AnalysisSchemaType } from '../../schema/analysisSchema';
+import { AnimationContainer } from '@/components/AnimatedContainer';
 
 const SECTION_COMPONENTS: Record<UiSectionKey, React.FC<{ data: AnalysisSchemaType }>> = {
   header: Header,
@@ -112,20 +112,6 @@ export const ReportRenderer: React.FC = () => {
         })}
       </div>
     </AnimationContainer>
-  );
-};
-
-const AnimationContainer = ({ children, id }: PropsWithChildren<{ id: string | null }>) => {
-  return (
-    <motion.div
-      key={id}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.8 }}
-    >
-      {children}
-    </motion.div>
   );
 };
 
