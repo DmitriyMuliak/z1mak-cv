@@ -1,6 +1,7 @@
 export const redirectedFromURLParamKey = 'redirectedFrom';
 
 export const getRedirectFromUrl = (paramKey = redirectedFromURLParamKey) => {
+  if (typeof window === 'undefined') return null;
   // Check redirect params
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
