@@ -5,7 +5,7 @@ import { getServerClientCookiesOptions } from './utils/getServerClientCookiesOpt
 import type { Database } from '@/types/database/database-gen';
 
 const NEXT_PUBLIC_SUPABASE_URL = publicPrEnv.NEXT_PUBLIC_SUPABASE_URL;
-const NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = publicPrEnv.NEXT_PUBLIC_SUPABASE_PUBLISHEBLE_KEY;
+const NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = publicPrEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
 export async function createServerClient() {
   const cookieStore = await cookies();

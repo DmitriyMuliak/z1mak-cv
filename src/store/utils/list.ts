@@ -22,8 +22,6 @@ export const createListSlice = <T, State extends Record<K, ListSlice<T>>, K exte
   entityKey: K,
   options: CreateListSliceOptions<T>,
 ) => {
-  console.log(options);
-
   type P = SliceTypedParams<State, K>;
 
   return (set: P['set'], _get: P['get'], _api: P['api']) => {

@@ -29,8 +29,6 @@ export async function sendContactServerAction(
   if (!result.success) {
     const issues = flatten(result.issues).nested;
 
-    console.log('issues', issues);
-
     return {
       message: 'Validation failed. Please check your entries.',
       errors: issues,
