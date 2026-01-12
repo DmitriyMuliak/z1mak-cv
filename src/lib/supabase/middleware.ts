@@ -55,6 +55,12 @@ export async function updateSession(
     '[MW cookies]',
     request.cookies.getAll().map((c) => c.name),
   );
+  console.log('[MW]', {
+    hasCookie: request.headers.get('cookie')?.includes('sb-') ?? false,
+    cookies: request.cookies.getAll().map((c) => c.name),
+    hasClaims: !!data?.claims,
+    user,
+  });
   console.log('[Middleware]:', { 'request.nextUrl.pathname': request.nextUrl.pathname });
   if (!user && !isPublic(request.nextUrl.pathname, publicPatterns)) {
     // no user, potentially respond by redirecting the user to the login page
