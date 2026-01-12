@@ -137,6 +137,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
     const target = stripLocale(redirectedFrom);
     debug('router.replace target', { target, redirectedFrom });
 
+    router.refresh();
     router.replace(target); //
     // router.replace(redirectedFrom);
     // window.location.assign(pathName.redirectedFrom)
