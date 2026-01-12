@@ -52,11 +52,14 @@ export async function updateSession(
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
+  console.log('[Middleware]:', { 'request.nextUrl.pathname': request.nextUrl.pathname });
   if (!user && !isPublic(request.nextUrl.pathname, publicPatterns)) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     const locale = request.nextUrl.pathname.split('/').filter(Boolean)[0];
+    console.log('[Middleware]:', { url: url, locale });
     url.pathname = `/${locale}${paths.login}`;
+    // url.pathname = paths.login;
     url.searchParams.set('redirectedFrom', request.nextUrl.pathname);
     return NextResponse.redirect(url);
   }
