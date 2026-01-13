@@ -2,16 +2,16 @@
   "metadata": {
     "pages": {
       "about": {
-        "title": "About us",
-        "description": "Learn more about our company"
+        "title": "About",
+        "description": "Hello, my name is Dima. I'm front-end engineer."
       },
       "skills": {
-        "title": "Our Skills",
-        "description": "Learn more about our skills"
+        "title": "Skills",
+        "description": "You can read about some of my skills and experience"
       },
       "contact": {
         "title": "Contact Us",
-        "description": "Get in touch with us"
+        "description": "Get in touch with me"
       },
       "cvChecker": {
         "title": "CV Checker",
@@ -251,7 +251,8 @@
     "resumeErrors": {
       "queueFull": "The AI queue is full. Please try again in a moment.",
       "concurrencyLimit": "You have reached the limit of parallel analyses. Please try again shortly.",
-      "userRpdLimit": "You've hit your daily analysis limit. Please try again tomorrow.",
+      "userRpdLimit:lite": "You've hit your daily 'Standard' mode analysis limit. Please try again tomorrow.",
+      "userRpdLimit:hard": "You've hit your daily 'In-depth' mode analysis limit. Please try again tomorrow.",
       "modelLimit": "Our models are busy right now. Please retry in a few minutes.",
       "notFound": "This report was not found or has expired.",
       "unknown": "Something went wrong. Please try again later.",

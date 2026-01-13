@@ -33,7 +33,8 @@ export type AnalyzeResponse = {
 export type ResumeErrorCode =
   | 'QUEUE_FULL' // /resume/analyze: черга переповнена для моделі
   | 'CONCURRENCY_LIMIT' // /resume/analyze: user concurrency з Lua
-  | 'USER_RPD_LIMIT' // /resume/analyze: user RPD з Lua
+  | 'USER_RPD_LIMIT:lite' // /resume/analyze: user RPD з Lua
+  | 'USER_RPD_LIMIT:hard' // /resume/analyze: user RPD з Lua
   | 'MODEL_LIMIT' // /resume/analyze: усі моделі в chain по RPD
   | 'NOT_FOUND' // /resume/:id/result, /resume/:id/status
   | 'PROVIDER_ERROR'; // /resume/status
