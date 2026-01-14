@@ -1,5 +1,5 @@
 import { paths } from '@/consts/routes';
-import { ReportRenderer } from '@/features/components/ReportRenderer';
+import { ReportRenderer } from '@/features/cv-checker/components/ReportRenderer';
 import { redirect } from '@/i18n/navigation';
 
 type Props = {

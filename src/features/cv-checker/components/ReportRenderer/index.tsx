@@ -22,7 +22,10 @@ import {
   ServerActionResultFailure,
   AppError,
 } from '@/types/server-actions';
-import { DEFAULT_RESUME_ERROR_KEY, RESUME_ERROR_KEY_MAP } from '@/features/consts/resumeErrors';
+import {
+  DEFAULT_RESUME_ERROR_KEY,
+  RESUME_ERROR_KEY_MAP,
+} from '@/features/cv-checker/consts/resumeErrors';
 import type { AnalysisSchemaType } from '../../schema/analysisSchema';
 import { AnimationContainer } from '@/components/AnimatedContainer';
 

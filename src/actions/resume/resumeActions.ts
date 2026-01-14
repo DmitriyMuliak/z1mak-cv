@@ -2,7 +2,7 @@
 
 import { apiCvAnalyser } from '@/api/server';
 import { ApiRoutes } from '@/api/server/apiRoutes';
-import { AnalysisSchemaType } from '@/features/schema/analysisSchema';
+import { AnalysisSchemaType } from '@/features/cv-checker/schema/analysisSchema';
 import { createServerClient } from '@/lib/supabase/server';
 import { ServerActionResult } from '@/types/server-actions';
 import { handleServerError } from '../handleServerError';
@@ -44,7 +44,7 @@ export type ResumeErrorResponse = {
   message?: string; // used inly for QUEUE_FULL
 };
 
-type JobStatus = 'queued' | 'in_progress' | 'completed' | 'failed' | 'expired';
+type JobStatus = 'queued' | 'in_progress' | 'completed' | 'failed';
 
 export type StatusResponse = {
   status: JobStatus;

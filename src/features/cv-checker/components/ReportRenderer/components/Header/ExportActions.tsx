@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { AnalysisSchemaType } from '@/features/schema/analysisSchema';
-import { generateAndDownloadDocxReport } from '@/features/utils/generateReportHtml';
+import { AnalysisSchemaType } from '@/features/cv-checker/schema/analysisSchema';
+import { generateAndDownloadDocxReport } from '@/features/cv-checker/utils/generateReportHtml';
 import { downloadJson } from '@/utils/downloadFiles/downloadJson';
 import { useLocale, useTranslations } from 'next-intl';
 
