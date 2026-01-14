@@ -8,7 +8,7 @@ import { requestResetPasswordAction } from '@/actions/auth/requestResetPassword'
 import {
   RequestResetPasswordSchemaBase,
   RequestResetPasswordSchemaBaseType,
-} from '@/schema/loginSchema';
+} from '@/schema/authSchema';
 import { useTranslations } from 'next-intl';
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
 import { createOnSubmitHandler, resetCaptchaOnError } from '@/components/Forms/utils';

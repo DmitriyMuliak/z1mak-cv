@@ -5,7 +5,7 @@ import { updateSession } from './lib/supabase/middleware';
 
 const handleI18nRouting = createMiddleware(routing);
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const response = handleI18nRouting(request);
   const finalResponse = await updateSession(request, response);
   // https://nextjs.org/docs/app/guides/content-security-policy
@@ -24,6 +24,4 @@ export const config = {
   // '/([\\w-]+)?/users/(.+)'
 };
 
-// Migrate to v16 - npx @next/codemod@canary middleware-to-proxy .
-// export default createMiddleware(routing);
-export default middleware;
+export default proxy;

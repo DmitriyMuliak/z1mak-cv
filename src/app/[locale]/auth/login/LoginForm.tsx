@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { defaultInputStyles, TextField } from '@/components/Forms/fields/TextField';
 import { signInWithEmailAction, signInOrUpWithGoogleAction } from '@/actions/auth/signIn';
-import { SignInSchemaBase, SignInSchemaBaseType } from '@/schema/loginSchema';
+import { SignInSchemaBase, SignInSchemaBaseType } from '@/schema/authSchema';
 import { useTranslations } from 'next-intl';
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
 import { createOnSubmitHandler, resetCaptchaOnError } from '@/components/Forms/utils';

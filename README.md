@@ -1,89 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🔎 AI Resume analyzer
 
-## Getting Started
+A Next.js web application for CV analysis and enhancement. Users can upload or paste their resumes and vacancy descriptions, select analysis modes, and receive detailed reports featuring error lists, metrics, and export options (DOCX/HTML).
 
-First, run the development server:
+- The platform includes multi-language support (next-intl), theme customization, and data persistence and auth flows via Supabase.
+- The application core functionality relies on integration with the [z1mak-cv-queue](https://www.google.com/search?q=https://github.com/DmitriyMuliak/z1mak-cv-queue) backend service for asynchronous analysis and task management.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## ✨ Key Features
+
+- **Parsing & Normalization:** Supports PDF/DOCX/Images with OCR integration (tesseract.js).
+- **AI Analysis:** Multiple modes (General/Job-specific, IT/Common) with varying depth; async results via API queue.
+- **Results Dashboard:** Metrics, error tracking, "red flags," and actionable recommendations.
+- **User History:** Persistent storage via Supabase with a modal-based history viewer.
+- **Modern UI:** Tailwind CSS v4, dark/light modes, animations, and a theme configurator.
+
+## 🧩 Architecture Diagram
+
+```mermaid
+flowchart LR
+    Client --> CV[CV Checker]
+    CV --> Auth{Authenticated?}
+    Auth -- yes --> Submit[Submit CV]
+    Auth -- no --> AuthFlow[Redirect to Auth Flow]
+
+    Submit --> Enqueue{Enqueue status}
+    Enqueue -- error --> Toast[Show error toast]
+
+    Enqueue -- ok --> Renderer[Resume Renderer Page]
+    Renderer --> Status[Check Job Status]
+
+    Status -- error --> Retry[Retry counter]
+    Retry --> FailedView[Failed view]
+
+    Status -- in_process --> Progress[Show in progress view]
+    Status -- ok --> Results[Show analysis results]
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠 Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Frontend:** Next.js 16 (App Router, Turbopack), React 19, next-intl, next-themes, Tailwind CSS v4.
+- **State & Forms:** Zustand, react-hook-form, valibot.
+- **File Processing:** pdfjs-dist, docx, tesseract.js, dropzone.
+- **Backend/API:** Supabase SSR (Auth/DB), Server Actions for analysis API.
+- **Testing:** Vitest + @testing-library/react.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🧠 Integration
 
-## Learn More
+Integration with the [z1mak-cv-queue](https://www.google.com/search?q=https://github.com/DmitriyMuliak/z1mak-cv-queue) backend service for asynchronous task processing and analysis queue management.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-TODO:
-
-<!-- 1 - setup front store + add utils (debugger, immer); -->
-<!-- 2 - remove or keep only day - text: `Generated on: ${new Date(data.analysisTimestamp)}`, -->
-
-3 - change URL Configuration in Supabase to production.
-4 - change background + error colors
-5 - add tests for main flow and logic
-6 - add CI/CD pipeline to Github
-7 - clean up code
-8 - add nestJs (fly.io) + create DB handle results.
-9 - add queue (bullMq) > call DB > change models logic
-10 - move call from front-end to route.
-11 - add check status
-12 - add ENV Variables to Versel and Supabase.
-
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started
-
-First, run the development server:
+## 🚀 Quick Start
 
 ```bash
-npm run dev
+npm install
+npm run dev           # Turbopack dev
 # or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev-webpack   # Webpack dev fallback
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+URL: `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🎛️ Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build         # Turbopack build
+npm run start
+# or
+npm run build-webpack # Webpack build fallback
 
-## Learn More
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 🚦 Testing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm test
+npm run test:run      # CI/Single run
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
 
-## Deploy on Vercel
+## 📁 Contribution & Folder structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Localization:** Add translation keys in `messages/` and configure routes in `src/i18n`.
+- **Core Logic:** Feature components are located in `src/features/cv-checker/`, page routes in `src/app/[locale]/cv-checker`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+root
+├── src
+│   ├── actions        // server actions (CV analysis, statuses, history)
+│   ├── api            // API clients and routers
+│   ├── app            // Next.js App Router pages, layouts, locale routes
+│   ├── components     // shared UI components (header, loaders, toggles)
+│   ├── consts         // constants and configs
+│   ├── content        // static content/markdown
+│   ├── docs           // internal docs
+│   ├── features       // isolated features, main one is cv-checker
+│   ├── hooks          // custom React hooks
+│   ├── i18n           // localization and routes (next-intl)
+│   ├── lib            // utilities and clients (supabase, helpers)
+│   ├── schema         // validation schemas and data types
+│   ├── store          // Stores and common utilities
+│   ├── types          // shared TypeScript types
+│   ├── utils          // small utility functions
+│   ├── proxy.ts.      // entry point for requests, handle auth
+│   ├── next-intl.d.ts
+│   └── globals.d.ts
+├── supabase
+│   ├── Migrations.md
+│   ├── config.toml
+│   ├── migrations
+│   └── templates
+├── tests              // unit & e2e tests and utilities
+├── messages
+│   ├── en.json
+│   └── uk.json
+├── public
+│   └── docxWorker.js
+├── README.md
+├── package.json
+├── components.json
+├── eslint.config.mjs
+├── next-env.d.ts
+├── next.config.ts
+├── postcss.config.mjs
+├── tsconfig.json
+├── tsconfig.tsbuildinfo
+├── vercel.json
+└── vitest.config.ts
+```

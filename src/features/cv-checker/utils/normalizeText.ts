@@ -4,7 +4,7 @@ export const baseNormalizeText = (text: string) => {
     .replace(/\t/g, ' ') // tabs to space
     .replace(/[ \t]+$/gm, '') // trailing spaces per line
     .replace(/\n{3,}/g, '\n\n') // collapse 3+ empty lines to 2 (one blank line)
-    .replace(/\n[ \t]+(?=[•\-\*\u2022])/g, '\n') // remove leading spaces before bullets
+    .replace(/\n[ \t]+(?=[•\-*\u2022])/g, '\n') // remove leading spaces before bullets
     .trim();
 };
 
@@ -35,7 +35,7 @@ export const finalNormalizeText = (text: string) => {
       // 6. Сплющуємо 3+ порожніх рядків до 2 (абзацний відступ)
       .replace(/\n{3,}/g, '\n\n')
       // 7. (Опціонально) Фікс для списків: прибираємо пробіл перед булітом на новому рядку
-      .replace(/\n[ ]+(?=[•\-\*\u2022])/g, '\n')
+      .replace(/\n[ ]+(?=[•\-*\u2022])/g, '\n')
       .trim()
   );
 };

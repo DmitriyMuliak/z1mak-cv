@@ -1,26 +1,42 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'node:url';
-import { defineConfig } from 'eslint/config';
-import { includeIgnoreFile } from '@eslint/compat';
-import { FlatCompat } from '@eslint/eslintrc';
+import js from '@eslint/js';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
+import prettier from 'eslint-config-prettier';
+import next from '@next/eslint-plugin-next';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const gitignorePath = fileURLToPath(new URL('.gitignore', import.meta.url));
+export default [
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-const eslintConfig = defineConfig([
-  ...compat.extends('next/core-web-vitals', 'next/typescript', 'prettier'),
-  includeIgnoreFile(gitignorePath, 'Imported .gitignore patterns'),
   {
-    ignores: [], // Need specify absolute path from root
-  },
-  {
+    files: ['**/*.{js,jsx,ts,tsx,mjs}'],
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node },
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+      },
+    },
+    plugins: {
+      react,
+      'react-hooks': reactHooks,
+      '@next/next': next,
+    },
+    settings: {
+      react: { version: 'detect' },
+    },
     rules: {
-      'no-unused-vars': 'off', // Note: you must disable the base rule as it can report incorrect errors
+      // Next.js core rules (analog core-web-vitals)
+      ...next.configs.recommended.rules,
+      ...next.configs['core-web-vitals'].rules,
+
+      // TODO: add react hooks rules
+      // React hooks
+      // ...reactHooks.configs.recommended.rules,
+
+      // overrides
+      'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -33,10 +49,14 @@ const eslintConfig = defineConfig([
           ignoreRestSiblings: true,
         },
       ],
-      'no-unused-expressions': 'off', // Note: you must disable the base rule as it can report incorrect errors
+      'no-unused-expressions': 'off',
       '@typescript-eslint/no-unused-expressions': 'off',
     },
   },
-]);
 
-export default eslintConfig;
+  prettier,
+
+  {
+    ignores: ['.next/**', 'dist/**', 'node_modules/**'],
+  },
+];

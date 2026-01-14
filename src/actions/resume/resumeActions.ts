@@ -2,7 +2,7 @@
 
 import { apiCvAnalyser } from '@/api/server';
 import { ApiRoutes } from '@/api/server/apiRoutes';
-import { AnalysisSchemaType } from '@/features/schema/analysisSchema';
+import { AnalysisSchemaType } from '@/features/cv-checker/schema/analysisSchema';
 import { createServerClient } from '@/lib/supabase/server';
 import { ServerActionResult } from '@/types/server-actions';
 import { handleServerError } from '../handleServerError';
@@ -31,7 +31,7 @@ export type AnalyzeResponse = {
 };
 
 export type ResumeErrorCode =
-  | 'QUEUE_FULL' // /resume/analyze: черга переповнена для моделі
+  | 'QUEUE_FULL' // /resume/analyze: the queue is full for the model
   | 'CONCURRENCY_LIMIT' // /resume/analyze: user concurrency з Lua
   | 'USER_RPD_LIMIT:lite' // /resume/analyze: user RPD з Lua
   | 'USER_RPD_LIMIT:hard' // /resume/analyze: user RPD з Lua
@@ -41,7 +41,7 @@ export type ResumeErrorCode =
 
 export type ResumeErrorResponse = {
   error: ResumeErrorCode;
-  message?: string; // використовується зараз лише для QUEUE_FULL
+  message?: string; // used inly for QUEUE_FULL
 };
 
 type JobStatus = 'queued' | 'in_progress' | 'completed' | 'failed';

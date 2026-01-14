@@ -66,12 +66,13 @@ export function HistoryModal() {
   const renderContent = () => (
     <>
       {isLoading ? <div className="animate-pulse rounded h-72">{t('loading')}</div> : null}
-      {!isLoading && !tags.length ? <div className="p-2 h-72">{t('noHistory')}</div> : null}
-      {!isLoading && tags.length ? (
+      {!isLoading && !tags.length ? (
+        <div className="p-2 h-72">{t('noHistory')}</div>
+      ) : (
         <AnimationContainer id="tag-history-list">
           <HistoryList tags={tags} onItemClick={() => setOpen(false)} />
         </AnimationContainer>
-      ) : null}
+      )}
     </>
   );
 

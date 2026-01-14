@@ -8,7 +8,7 @@ import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolve
 import { cn } from '@/lib/utils';
 import { Form } from '@/components/ui/form';
 import { defaultInputStyles, TextField } from '@/components/Forms/fields/TextField';
-import { SetPasswordSchemaBase, SetPasswordSchemaBaseType } from '@/schema/loginSchema';
+import { SetPasswordSchemaBase, SetPasswordSchemaBaseType } from '@/schema/authSchema';
 import { createOnSubmitHandler } from '@/components/Forms/utils';
 import { GlobalFormErrorMessage } from '@/components/Forms/fields/GlobalFormErrorMessage';
 import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';

@@ -13,7 +13,7 @@ import { InterviewQuestions } from './components/InterviewQuestions';
 import { SchemaService, UiSectionKey } from '../../services/SchemaService';
 import { useResumePolling } from './hooks/useResumePolling';
 import { Button } from '@/components/ui/button';
-import { SphereLoader } from '@/components/Loaders/Sphere';
+import { DotAndBarLoader } from '@/components/Loaders/DotAndBar';
 import { useRouter } from '@/i18n/navigation';
 import { paths } from '@/consts/routes';
 import { ResultResponse, ResumeErrorCode } from '@/actions/resume/resumeActions';
@@ -22,7 +22,10 @@ import {
   ServerActionResultFailure,
   AppError,
 } from '@/types/server-actions';
-import { DEFAULT_RESUME_ERROR_KEY, RESUME_ERROR_KEY_MAP } from '@/features/consts/resumeErrors';
+import {
+  DEFAULT_RESUME_ERROR_KEY,
+  RESUME_ERROR_KEY_MAP,
+} from '@/features/cv-checker/consts/resumeErrors';
 import type { AnalysisSchemaType } from '../../schema/analysisSchema';
 import { AnimationContainer } from '@/components/AnimatedContainer';
 
@@ -79,7 +82,7 @@ export const ReportRenderer: React.FC = () => {
     return (
       <AnimationContainer id={jobId}>
         <Container>
-          <SphereLoader />
+          <DotAndBarLoader />
           <h3 className="text-md font-semibold text-center">
             {tReport(status as LoadingStatus)}...
           </h3>

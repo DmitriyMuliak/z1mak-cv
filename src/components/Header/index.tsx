@@ -17,7 +17,6 @@ export const Header = () => {
 
   useEffect(() => {
     if (!isClosed) setIsClosed(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [realPathname]);
 
   const links = [

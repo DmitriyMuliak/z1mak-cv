@@ -20,7 +20,7 @@ const parsedEnv = v.safeParse(EnvSchema, {
 });
 
 if (!parsedEnv.success) {
-  console.error('❌ Have wrong environment variables:', parsedEnv.issues);
+  parsedEnv.issues.forEach((i) => console.error('❌ Have wrong environment variable:', i.message)); // i.path can be used for debug
 
   throw new Error('Configuration Error: Invalid Public environment variables');
 }

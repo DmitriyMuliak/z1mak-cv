@@ -1,6 +1,6 @@
 'use server';
 
-import { SignInSchemaBase } from '@/schema/loginSchema';
+import { SignInSchemaBase } from '@/schema/authSchema';
 import { createServerClient } from '@/lib/supabase/server';
 import { getBaseUrl } from '@/utils/getBaseUrl';
 import { redirect } from 'next/navigation';

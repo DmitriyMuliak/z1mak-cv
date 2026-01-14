@@ -22,7 +22,6 @@ export function RecaptchaField<T extends FieldValues>({
     if (!visible) {
       clearErrors(name);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   return (
