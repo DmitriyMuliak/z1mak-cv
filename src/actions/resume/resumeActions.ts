@@ -31,7 +31,7 @@ export type AnalyzeResponse = {
 };
 
 export type ResumeErrorCode =
-  | 'QUEUE_FULL' // /resume/analyze: черга переповнена для моделі
+  | 'QUEUE_FULL' // /resume/analyze: the queue is full for the model
   | 'CONCURRENCY_LIMIT' // /resume/analyze: user concurrency з Lua
   | 'USER_RPD_LIMIT:lite' // /resume/analyze: user RPD з Lua
   | 'USER_RPD_LIMIT:hard' // /resume/analyze: user RPD з Lua
@@ -41,10 +41,10 @@ export type ResumeErrorCode =
 
 export type ResumeErrorResponse = {
   error: ResumeErrorCode;
-  message?: string; // використовується зараз лише для QUEUE_FULL
+  message?: string; // used inly for QUEUE_FULL
 };
 
-type JobStatus = 'queued' | 'in_progress' | 'completed' | 'failed';
+type JobStatus = 'queued' | 'in_progress' | 'completed' | 'failed' | 'expired';
 
 export type StatusResponse = {
   status: JobStatus;
