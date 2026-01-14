@@ -31,6 +31,7 @@ flowchart LR
     Status -- error --> Retry[Retry counter]
     Retry --> FailedView[Failed view]
 
+    Status -- in_process --> Progress[Show in progress view]
     Status -- ok --> Results[Show analysis results]
 
 ```
