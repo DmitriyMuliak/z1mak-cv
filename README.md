@@ -99,7 +99,6 @@ root
 │   ├── lib            // utilities and clients (supabase, helpers)
 │   ├── schema         // validation schemas and data types
 │   ├── store          // Stores and common utilities
-│   ├── test           // testing utilities
 │   ├── types          // shared TypeScript types
 │   ├── utils          // small utility functions
 │   ├── proxy.ts.      // entry point for requests, handle auth
@@ -110,6 +109,7 @@ root
 │   ├── config.toml
 │   ├── migrations
 │   └── templates
+├── tests              // unit & e2e tests and utilities
 ├── messages
 │   ├── en.json
 │   └── uk.json
