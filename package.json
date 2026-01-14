@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "prepare": "node .husky/install.mjs",
-    "postinstall": "npx playwright install --with-deps",
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "dev-webpack": "next dev --no-turbo",
