@@ -13,7 +13,7 @@ import { InterviewQuestions } from './components/InterviewQuestions';
 import { SchemaService, UiSectionKey } from '../../services/SchemaService';
 import { useResumePolling } from './hooks/useResumePolling';
 import { Button } from '@/components/ui/button';
-import { SphereLoader } from '@/components/Loaders/Sphere';
+import { DotAndBarLoader } from '@/components/Loaders/DotAndBar';
 import { useRouter } from '@/i18n/navigation';
 import { paths } from '@/consts/routes';
 import { ResultResponse, ResumeErrorCode } from '@/actions/resume/resumeActions';
@@ -79,7 +79,7 @@ export const ReportRenderer: React.FC = () => {
     return (
       <AnimationContainer id={jobId}>
         <Container>
-          <SphereLoader />
+          <DotAndBarLoader />
           <h3 className="text-md font-semibold text-center">
             {tReport(status as LoadingStatus)}...
           </h3>

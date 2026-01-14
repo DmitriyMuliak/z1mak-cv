@@ -1,7 +1,7 @@
 'use server';
 
 import { createServerClient } from '@/lib/supabase/server';
-import { RequestResetPasswordSchemaBase } from '@/schema/loginSchema';
+import { RequestResetPasswordSchemaBase } from '@/schema/authSchema';
 import { getLocale } from 'next-intl/server';
 import { createFormAction } from '../utils';
 import { getBaseUrl } from '@/utils/getBaseUrl';

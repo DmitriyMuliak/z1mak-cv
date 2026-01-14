@@ -1,7 +1,7 @@
 'use server';
 
 import { createServerClient } from '@/lib/supabase/server';
-import { SetPasswordSchemaBase } from '@/schema/loginSchema';
+import { SetPasswordSchemaBase } from '@/schema/authSchema';
 import { getLocale } from 'next-intl/server';
 import { createFormAction } from '../utils';
 import { redirect } from '@/i18n/navigation';

@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { Form } from '@/components/ui/form';
 import { defaultInputStyles, TextField } from '@/components/Forms/fields/TextField';
 import { signUpWithEmailAction } from '@/actions/auth/signUp';
-import { SignUpSchemaBase, SignUpSchemaBaseType } from '@/schema/loginSchema';
+import { SignUpSchemaBase, SignUpSchemaBaseType } from '@/schema/authSchema';
 import { useTranslations } from 'next-intl';
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
 import { createOnSubmitHandler, resetCaptchaOnError } from '@/components/Forms/utils';

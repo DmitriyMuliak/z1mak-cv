@@ -12,6 +12,7 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
+    "api": "@/api",
     "store": "@/store",
     "actions": "@/actions",
     "schema": "@/schema",
@@ -21,7 +22,8 @@
     "lib": "@/lib",
     "hooks": "@/hooks",
     "navigation": "@/i18n/navigation",
-    "consts": "@/consts"
+    "consts": "@/consts",
+    "features": "@/features"
   },
   "registries": {}
 }

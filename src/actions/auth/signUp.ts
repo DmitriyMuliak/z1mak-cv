@@ -1,6 +1,6 @@
 'use server';
 
-import { SignUpSchemaBase } from '@/schema/loginSchema';
+import { SignUpSchemaBase } from '@/schema/authSchema';
 import { createFormAction } from '../utils'; // ActionReturn,
 import { createServerClient } from '@/lib/supabase/server';
 import { getBaseUrl } from '@/utils/getBaseUrl';
