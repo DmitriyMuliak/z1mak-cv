@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-undef
 importScripts('https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js');
 
 self.onmessage = async (e) => {
@@ -5,6 +6,7 @@ self.onmessage = async (e) => {
   const buffer = e.data.buffer || e.data;
 
   try {
+    // eslint-disable-next-line no-undef
     const zip = await JSZip.loadAsync(buffer);
     const document = zip.file('word/document.xml');
 

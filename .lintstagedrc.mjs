@@ -8,7 +8,7 @@ const buildEslintCommand = (filenames) =>
   `eslint --fix --max-warnings=0 ${filenames.map((f) => path.relative(process.cwd(), f)).join(' ')}`;
 
 const lintStagedConfig = {
-  '*.{js,jsx,ts,tsx}': [buildEslintCommand, 'prettier --write'],
+  '*.{mjs,js,jsx,ts,tsx}': [buildEslintCommand, 'prettier --write'],
 };
 
 // Config Example:

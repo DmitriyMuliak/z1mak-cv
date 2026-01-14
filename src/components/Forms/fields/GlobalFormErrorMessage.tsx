@@ -8,9 +8,7 @@ interface GlobalFormErrorMessageProps<T extends FieldValues> {
 }
 
 export function GlobalFormErrorMessage<T extends FieldValues>(
-  {
-    // control,
-  }: GlobalFormErrorMessageProps<T>,
+  _props: GlobalFormErrorMessageProps<T>,
 ) {
   return (
     <div className="relative" data-form-error-field-id={'root.unexpected'}>

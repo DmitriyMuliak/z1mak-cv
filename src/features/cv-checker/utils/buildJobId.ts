@@ -7,6 +7,6 @@ export async function buildJobId(file: File, extractedText: string) {
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
     .slice(0, 16);
-  const safeName = file.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\-\.]/g, '');
+  const safeName = file.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\-.]/g, '');
   return `${safeName}-${file.size}-${hashHex}`;
 }
