@@ -1,4 +1,4 @@
-// import { Breadcrumbs } from '@/feature/components/Breadcrumbs';
+// import { Breadcrumbs } from '@/features/cv-checker/components/Breadcrumbs';
 
 interface Props {
   children: React.ReactNode;
@@ -6,7 +6,7 @@ interface Props {
 
 export default async function CVCheckerLayout({ children }: Props) {
   return (
-    <div className="sm:p-6 md:p-8">
+    <div className="pb-6 sm:p-6 md:p-8">
       {/* <Breadcrumbs /> */}
       {children}
     </div>

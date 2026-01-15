@@ -9,7 +9,7 @@ export default async function ContactPage(props: PageProps) {
 
   return (
     <div className="md:p-8">
-      <h2 className="text-3xl font-semibold mb-4">{t('title')}</h2>
+      <h2 className="font-heading text-3xl font-semibold mb-4">{t('title')}</h2>
       <div className="flex justify-center items-center">
         <ContactForm />
       </div>

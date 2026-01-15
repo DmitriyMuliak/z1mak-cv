@@ -31,7 +31,7 @@
     "about": {
       "title": "Hi, my\n​name is <name>Dima</name>",
       "description1": "A software engineer from Lviv, Ukraine",
-      "description2": "Curious to know more about me?\nLet’s go to the skills page 🙂"
+      "description2": "Curious to know more about me?\nLet’s go to the <link>skills</link> page 🙂"
     },
     "contact": {
       "title": "Message me"

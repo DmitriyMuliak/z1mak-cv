@@ -15,7 +15,14 @@
 /* Add specific styles to light theme - ex. className='light:text-white' */
 @custom-variant light (&:where(.light, .light *));
 
+/* 
+100vh (Viewport Height) - часто ігнорує висоту панелі навігації браузера (адресний рядок), що може призвести до обрізання контенту.
+100dvh (Dynamic Viewport Height) — адаптується під відкриття/закриття панелей браузера.
+100svh (Small Viewport Height) — це висота екрана з урахуванням розгорнутих панелей браузера (найменший можливий в'юпорт). */
+
 @theme inline {
+  --main-container-top-space-base-absolute: var(--main-container-top-space-base);
+  --main-container-min-height-relative: calc(100vh - var(--main-container-top-space-base));
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -68,6 +75,7 @@
 }
 
 :root {
+  --main-container-top-space-base: 120px;
   --color-info-background: rgba(255, 255, 255, 0.05); /*bg-info-background*/
   --root-bg-base: radial-gradient(circle, #93a5cf 0%, #e4efe9 100%);
   --radius: 0.625rem;
@@ -102,6 +110,18 @@
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
+}
+
+@media (min-width: theme(--breakpoint-sm)) {
+  :root {
+    --main-container-top-space-base: 140px;
+  }
+}
+
+@media (min-width: theme(--breakpoint-lg)) {
+  :root {
+    --main-container-top-space-base: 166px;
+  }
 }
 
 .dark {
@@ -158,14 +178,15 @@
   }
 }
 
-@utility min-h-full-screen {
-  min-height: calc(100vh - 140px);
-  margin-top: 70px;
+@utility full-screen-container {
+  min-height: var(--main-container-min-height-relative);
+  margin-top: calc(var(--main-container-top-space-base-absolute) / 2);
+}
 
-  @media (min-width: 1024px) {
-    min-height: calc(100vh - 166px);
-    margin-top: 83px;
-  }
+@utility full-screen-container-loader {
+  min-height: var(--main-container-min-height-relative);
+  margin-top: calc(var(--main-container-top-space-base-absolute) / 2);
+  pointer-events: none;
 }
 
 /* Global background styles because css modules had a "flash/blink effect" issue */
