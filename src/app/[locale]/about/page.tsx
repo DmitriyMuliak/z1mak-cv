@@ -1,7 +1,8 @@
 import { getTranslations } from 'next-intl/server';
 import { AnimatedPhoto } from '@/components/AnimatedPhoto';
 import { cn } from '@/lib/utils';
-// import { Temp } from './temp';
+import { Link } from '@/i18n/navigation';
+import { paths } from '@/consts/routes';
 
 type PageProps = { params: { locale: string } };
 
@@ -28,7 +29,13 @@ export default async function AboutPage(props: PageProps) {
           <h3
             className={cn('text-base mb-4 md:text-lg lg:text-2xl font-heading whitespace-pre-line')}
           >
-            {t('description2')}
+            {t.rich('description2', {
+              link: (node) => (
+                <Link className="underline underline-offset-4" href={paths.skills}>
+                  {node}
+                </Link>
+              ),
+            })}
           </h3>
         </div>
       </div>
@@ -37,7 +44,6 @@ export default async function AboutPage(props: PageProps) {
           'sm:w-1/2 h-[250px] sm:h-[350px] md:h-auto lg:max-h-[600px] flex flex-col justify-center items-center',
         )}
       >
-        {/* <Temp /> */}
         <AnimatedPhoto />
       </div>
     </div>

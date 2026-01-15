@@ -120,7 +120,7 @@ export const ReportRenderer: React.FC = () => {
 
 const Container = ({ children }: PropsWithChildren) => {
   return (
-    <div className="absolute inset-0 min-h-full-screen">
+    <div className="absolute inset-0 full-screen-container-loader">
       <div className="grid h-full w-full place-items-center content-center gap-4">{children}</div>
     </div>
   );

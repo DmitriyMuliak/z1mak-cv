@@ -61,12 +61,12 @@ export default async function LocaleLayout({ children, params }: Props) {
         <NextIntlClientProvider>
           <ThemeProvider attribute="class" defaultTheme="light">
             <div className={styles.mainContainer}>
-              <div className={`${styles.mainContent} ${styles.mainContentFullHeight}`}>
+              <div className={styles.mainContent}>
                 <Configurator />
                 <Lamp />
                 <LanguageSwitcher />
                 <Header />
-                <div className={cn('w-full max-w-[1200px] mx-auto md:px-4')}>
+                <div className={cn('w-full h-full max-w-300 mx-auto md:px-4')}>
                   {/* <AnimatePresence mode="wait">{children}</AnimatePresence> */}
                   {children}
                 </div>

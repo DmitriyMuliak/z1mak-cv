@@ -15,7 +15,7 @@ import {
   DockerIcon,
 } from '@/components/icons';
 
-<h2 className="text-3xl font-semibold mb-6">Skills</h2>
+<h2 className="font-heading text-3xl font-semibold mb-6">Skills</h2>
 
 <div className="flex flex-col gap-6">
 
@@ -46,6 +46,20 @@ import {
       </Link>
       {`.`}
     </p>
+    <div className="mt-8 p-4 border-l-4 border-primary bg-primary/5 rounded-r-lg">
+      <p className="text-sm sm:text-base">
+        {`🚀 `}<strong>Curious to evaluate your own or a candidate's CV?</strong>{` `} 
+        <Link
+          className="text-primary font-medium underline underline-offset-4"
+          href={paths.cvChecker}
+        >
+          Try
+        </Link>
+        {` uploading your resume to check job matching and get personalized improvement tips. Give it a
+        shot — I'd love to hear your feedback! 🙂`}
+      </p>
+    </div>
+
   </CardContent>
 </Card>
 
@@ -71,7 +85,11 @@ import {
         <b>Paradigms, principles:</b> FP, OOP, GRASP, SOLID, GOF, KISS, YAGNI, DRY, .etc
       </p>
       <p>
-        <b>Testing:</b> React Testing Library, Sinon, Jest, Vitest, Puppeteer, .etc
+        <b>Testing:</b> React Testing Library, Sinon, Jest, Vitest, Puppeteer, Playwright .etc
+      </p>
+      <p>
+        <b>Observability & Monitoring:</b> Sentry (Error Tracking), Grafana & Prometheus (Metrics)
+        .etc
       </p>
     </div>
     <Separator className="my-4" />
@@ -159,7 +177,7 @@ import {
     <CardTitle>💡 Soft Skills</CardTitle>
   </CardHeader>
   <CardContent>
-    <p>Responsible • Persistent • Proactive • Self-critical • Product-oriented</p>
+    <p>Responsible • Proactive • Product-oriented • Continuous Improvement enthusiast</p>
     <p>
       **P.S.:** It's no secret that I'm interested in Chinese tea, skydiving, and making music. I'd
       be happy to share experiences in my free time :)
