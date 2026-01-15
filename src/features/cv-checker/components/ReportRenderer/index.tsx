@@ -80,7 +80,7 @@ export const ReportRenderer: React.FC = () => {
 
   if (isProcessing && loadingStatuses.has(status)) {
     return (
-      <AnimationContainer id={jobId}>
+      <AnimationContainer id={`${jobId}:loading`}>
         <Container>
           <DotAndBarLoader />
           <h3 className="text-md font-semibold text-center">
@@ -93,12 +93,17 @@ export const ReportRenderer: React.FC = () => {
 
   if (isProcessing === false && status === 'failed') {
     return (
-      <AnimationContainer id={jobId}>
+      <AnimationContainer id={`${jobId}:error`}>
         <Container>
-          <h3 className="text-md text-red-600">{tReport('failed')}</h3>
-          <Button onClick={() => router.replace({ pathname: paths.cvChecker })} className="mt-2.5">
-            {tCommon('tryAgainButtonTitle')}
-          </Button>
+          <div className="pointer-events-auto grid place-items-center content-center">
+            <h3 className="text-md text-red-600">{tReport('failed')}</h3>
+            <Button
+              onClick={() => router.replace({ pathname: paths.cvChecker })}
+              className="mt-2.5"
+            >
+              {tCommon('tryAgainButtonTitle')}
+            </Button>
+          </div>
         </Container>
       </AnimationContainer>
     );
@@ -107,7 +112,7 @@ export const ReportRenderer: React.FC = () => {
   if (!report) return null;
 
   return (
-    <AnimationContainer id={jobId}>
+    <AnimationContainer id={`${jobId}:result`}>
       <div className="space-y-6">
         {activeSections.map((sectionKey) => {
           const Component = SECTION_COMPONENTS[sectionKey];
