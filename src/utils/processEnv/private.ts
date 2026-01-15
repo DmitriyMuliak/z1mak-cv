@@ -1,3 +1,4 @@
+import 'server-only';
 import * as v from 'valibot';
 
 const EnvSchema = v.object({

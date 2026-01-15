@@ -25,8 +25,12 @@ export const signUpWithEmailAction = createFormAction(
       },
     });
     if (error) {
-      devLogger.log('signInWithEmailAction Error', error);
-      return;
+      if (error.code === 'captcha_failed') {
+        return {
+          metaError: 'captchaInvalid',
+        };
+      }
+      return { metaError: 'unknown' };
     }
     if (data.user && !data.session) {
       // 'user_already_exists_try_login'

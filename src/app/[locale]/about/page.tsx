@@ -11,7 +11,7 @@ export default async function AboutPage(props: PageProps) {
   const t = await getTranslations({ locale, namespace: 'pages.about' });
 
   return (
-    <div className={cn('flex flex-col sm:flex-row gap-4')}>
+    <div className={cn('flex flex-col w-full sm:flex-row gap-4')}>
       <div className={cn('sm:w-1/2 flex flex-col justify-center ')}>
         <h1 className={cn('text-xl mb-4 md:text-4xl lg:text-7xl font-heading whitespace-pre-line')}>
           {t.rich('title', {
@@ -41,7 +41,7 @@ export default async function AboutPage(props: PageProps) {
       </div>
       <div
         className={cn(
-          'sm:w-1/2 h-[250px] sm:h-[350px] md:h-auto lg:max-h-[600px] flex flex-col justify-center items-center',
+          'sm:w-1/2 h-[250px] sm:h-[350px] md:h-auto lg:max-h-[600px] flex flex-col self-center',
         )}
       >
         <AnimatedPhoto />

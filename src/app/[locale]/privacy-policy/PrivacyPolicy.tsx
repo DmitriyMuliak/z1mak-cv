@@ -6,10 +6,10 @@ type Props = {
 
 export function PrivacyPolicy({ messages }: Props) {
   return (
-    <div className="md:p-8">
+    <div className="pb-4 md:p-8">
       <div className="p-6 frosted-card">
         <h2 className="text-3xl font-semibold mb-4">{messages.title}</h2>
-        <p className="leading-7 [&:not(:first-child)]:mt-6">{messages.section1}</p>
+        <p className="leading-7 not-first:mt-6">{messages.section1}</p>
         <p className="leading-7 [&:not(:first-child)]:mt-6">{messages.section2}</p>
         <p className="leading-7 [&:not(:first-child)]:mt-6">{messages.section3}</p>
         <p className="leading-7 [&:not(:first-child)]:mt-6">{messages.section4Intro}</p>

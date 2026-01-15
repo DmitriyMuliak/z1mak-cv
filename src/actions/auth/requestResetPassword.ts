@@ -13,9 +13,17 @@ export const requestResetPasswordAction = createFormAction(
     const supabase = await createServerClient();
     const locale = await getLocale();
     const url = getBaseUrl() + '/' + locale + paths.setPassword;
-    await supabase.auth.resetPasswordForEmail(values.email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
       captchaToken: values.captchaToken,
       redirectTo: url,
     });
+    if (error) {
+      if (error.code === 'captcha_failed') {
+        return {
+          metaError: 'captchaInvalid',
+        };
+      }
+      return { metaError: 'unknown' };
+    }
   },
 );

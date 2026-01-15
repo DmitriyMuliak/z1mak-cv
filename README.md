@@ -28,10 +28,14 @@ flowchart LR
     Enqueue -- ok --> Renderer[Resume Renderer Page]
     Renderer --> Status[Check Job Status]
 
-    Status -- error --> Retry[Retry counter]
-    Retry --> FailedView[Failed view]
-
+    %% Status polling
     Status -- in_process --> Progress[Show in progress view]
+    Progress -- wait & retry --> Status
+
+    Status -- error --> Retry[Retry counter]
+    Retry -- max reached --> FailedView[Failed view]
+    Retry -- retry --> Status
+
     Status -- ok --> Results[Show analysis results]
 
 ```
@@ -47,6 +51,13 @@ flowchart LR
 ## 🧠 Integration
 
 Integration with the [z1mak-cv-queue](https://www.google.com/search?q=https://github.com/DmitriyMuliak/z1mak-cv-queue) backend service for asynchronous task processing and analysis queue management.
+
+## 🔒 Environment Validation
+
+The project uses strict runtime validation for environment variables via `Valibot`.
+
+- **Fail-fast:** The app will throw a `Configuration Error` on startup if any required key is missing.
+- **Type-safety:** All env variables are strictly typed and accessed via `privatePrEnv` or `publicPrEnv`.
 
 ## 🚀 Quick Start
 
@@ -101,15 +112,15 @@ root
 │   ├── store          // Stores and common utilities
 │   ├── types          // shared TypeScript types
 │   ├── utils          // small utility functions
-│   ├── proxy.ts.      // entry point for requests, handle auth
+│   ├── proxy.ts       // entry point for requests, handle auth
 │   ├── next-intl.d.ts
 │   └── globals.d.ts
+├── tests              // unit & e2e tests and utilities
 ├── supabase
 │   ├── Migrations.md
 │   ├── config.toml
 │   ├── migrations
 │   └── templates
-├── tests              // unit & e2e tests and utilities
 ├── messages
 │   ├── en.json
 │   └── uk.json
