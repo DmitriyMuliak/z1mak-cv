@@ -6,7 +6,7 @@ interface Props {
 
 export default async function CVCheckerLayout({ children }: Props) {
   return (
-    <div className="pb-6 sm:p-6 md:p-8">
+    <div className="flex justify-center w-full pb-4 sm:p-6 md:p-8">
       {/* <Breadcrumbs /> */}
       {children}
     </div>

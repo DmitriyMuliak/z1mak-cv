@@ -22,8 +22,11 @@ import { getRedirectFromUrl, redirectedFromURLParamKey } from '@/utils/getRedire
 import { TurnstileCaptchaField } from '@/components/Forms/fields/TurnstileCaptcha';
 import { useRouter } from '@/i18n/navigation';
 import type { TurnstileCaptchaRef } from '@/components/TurnstileCaptcha';
+import { toast } from 'sonner';
+import { ValidationKeys } from '@/types/translations';
 
 const getAdditionalFEData = () => getRedirectFromUrl();
+const toastCaptchaId = 'toastCaptchaId';
 
 export function SignUpForm({ className, ...props }: React.ComponentProps<'div'>) {
   const router = useRouter();
@@ -51,6 +54,9 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<'div'>)
 
   const onSuccessCb = (result: Awaited<ReturnType<typeof signUpWithEmailAction>>) => {
     resetCaptchaOnError(result, captchaRef);
+    if (!result.success && result.metaError) {
+      toast.error(tv(result.metaError as ValidationKeys), { id: toastCaptchaId, duration: 2000 });
+    }
     result.success &&
       router.push(paths.login + (redirectedFromState ? `?${redirectedFromState}` : ''));
   };

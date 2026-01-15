@@ -16,6 +16,12 @@ export const setPasswordAction = createFormAction(SetPasswordSchemaBase, async (
   });
   if (error) {
     devLogger.log('error updateUser password', error);
+    if (error.code === 'captcha_failed') {
+      return {
+        metaError: 'captchaInvalid',
+      };
+    }
+    return { metaError: 'unknown' };
   } else {
     redirect({
       href: { pathname: paths.home },

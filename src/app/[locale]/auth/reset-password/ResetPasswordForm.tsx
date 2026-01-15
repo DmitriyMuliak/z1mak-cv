@@ -23,8 +23,11 @@ import { useRouter } from '@/i18n/navigation';
 import { TurnstileCaptchaField } from '@/components/Forms/fields/TurnstileCaptcha';
 import { paths } from '@/consts/routes';
 import type { TurnstileCaptchaRef } from '@/components/TurnstileCaptcha';
+import { toast } from 'sonner';
+import { ValidationKeys } from '@/types/translations';
 
 const getAdditionalFEData = () => getStateWithRedirectFromUrl();
+const toastCaptchaId = 'toastCaptchaId';
 
 export function ResetPasswordForm({ className, ...props }: React.ComponentProps<'div'>) {
   const t = useTranslations('pages.requestResetPassword');
@@ -46,6 +49,9 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentProps<
 
   const onResult = (result: Awaited<ReturnType<typeof requestResetPasswordAction>>) => {
     resetCaptchaOnError(result, captchaRef);
+    if (!result.success && result.metaError) {
+      toast.error(tv(result.metaError as ValidationKeys), { id: toastCaptchaId, duration: 2000 });
+    }
     result.success && router.replace(paths.home);
   };
 

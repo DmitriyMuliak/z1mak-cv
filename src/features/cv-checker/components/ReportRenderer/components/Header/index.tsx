@@ -7,7 +7,6 @@ import { FitDetails } from './FitDetails';
 import { Metrics } from './Metrics';
 import { Skills } from './Skills';
 import { ExportActions } from './ExportActions';
-// import { useCvStore } from '@/feature/store/useCvStore';
 import { Scores } from './Scores';
 
 export const Header: React.FC<{ data: AnalysisSchemaType }> = ({ data }) => {

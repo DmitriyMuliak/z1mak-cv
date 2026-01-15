@@ -18,11 +18,13 @@
 /* 
 100vh (Viewport Height) - часто ігнорує висоту панелі навігації браузера (адресний рядок), що може призвести до обрізання контенту.
 100dvh (Dynamic Viewport Height) — адаптується під відкриття/закриття панелей браузера.
-100svh (Small Viewport Height) — це висота екрана з урахуванням розгорнутих панелей браузера (найменший можливий в'юпорт). */
+100svh (Small Viewport Height) — це висота екрана з урахуванням розгорнутих панелей браузера (найменший можливий в'юпорт). 
+*/
 
 @theme inline {
   --main-container-top-space-base-absolute: var(--main-container-top-space-base);
-  --main-container-min-height-relative: calc(100vh - var(--main-container-top-space-base));
+  --main-container-min-height-relative-vh: calc(100vh - var(--main-container-top-space-base));
+  --main-container-min-height-relative-svh: calc(100svh - var(--main-container-top-space-base));
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -180,11 +182,13 @@
 
 @utility full-screen-container {
   min-height: var(--main-container-min-height-relative);
+  min-height: var(--main-container-min-height-relative-svh);
   margin-top: calc(var(--main-container-top-space-base-absolute) / 2);
 }
 
 @utility full-screen-container-loader {
   min-height: var(--main-container-min-height-relative);
+  min-height: var(--main-container-min-height-relative-svh);
   margin-top: calc(var(--main-container-top-space-base-absolute) / 2);
   pointer-events: none;
 }

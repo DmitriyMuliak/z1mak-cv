@@ -15,5 +15,5 @@ export default async function SkillsPage({ params }: Props) {
   // import SkillsPageContent from './skills.mdx';
   const { content } = await getMdxContent('skills', locale);
 
-  return <div className="md:p-8">{content}</div>;
+  return <div className="pb-4 md:p-8">{content}</div>;
 }
