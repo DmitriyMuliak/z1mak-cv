@@ -22,7 +22,7 @@ export const ModeBar: React.FC<Props> = ({ mode, onChange }) => {
 
   const DOMAIN_OPTIONS: ModeOption[] = [
     { value: 'it', label: t('domain.items.it') },
-    { value: 'general', label: t('domain.items.general') },
+    { value: 'common', label: t('domain.items.general') },
   ];
 
   const DEPTH_OPTIONS: ModeOption[] = [
