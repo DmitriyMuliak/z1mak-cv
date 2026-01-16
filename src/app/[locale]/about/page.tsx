@@ -3,6 +3,7 @@ import { AnimatedPhoto } from '@/components/AnimatedPhoto';
 import { cn } from '@/lib/utils';
 import { Link } from '@/i18n/navigation';
 import { paths } from '@/consts/routes';
+import { getMetadata, MetadataBaseParams } from '@/utils/getPageMetadata';
 
 type PageProps = { params: { locale: string } };
 
@@ -50,16 +51,6 @@ export default async function AboutPage(props: PageProps) {
   );
 }
 
-type MetadataParams = {
-  params: Promise<{ locale: string }>;
-};
-
-export async function generateMetadata({ params }: MetadataParams) {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'metadata.pages.about' });
-
-  return {
-    title: t('title'),
-    description: t('description'),
-  };
+export async function generateMetadata({ params }: MetadataBaseParams) {
+  return getMetadata({ params, pageKey: 'about' });
 }

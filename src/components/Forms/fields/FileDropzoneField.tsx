@@ -97,13 +97,10 @@ export function FileDropzoneField<T extends FieldValues>({
                       ),
                     })}
                   >
-                    <label
-                      htmlFor={name}
-                      className="text-sm cursor-pointer text-gray-900 dark:text-white"
-                    >
+                    <label className="text-sm cursor-pointer text-gray-900 dark:text-white">
                       {t('mainAddFileTitle')}
+                      <input {...getInputProps()} />
                     </label>
-                    <input {...getInputProps()} />
                   </div>
                 )}
               </Dropzone>

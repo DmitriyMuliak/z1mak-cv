@@ -1,6 +1,6 @@
 import '../globals.css';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { setRequestLocale } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Toaster } from '@/components/ui/sonner';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
@@ -13,8 +13,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Lamp } from '@/components/Lamp';
 import { cn } from '@/lib/utils';
 import styles from './layout.module.css';
-// import { AnimatePresence } from 'framer-motion';
-// import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -31,12 +30,6 @@ const bitter = Bitter({
   subsets: ['latin', 'cyrillic'],
   weight: ['400', '500', '600', '700'],
 });
-
-// https://next-intl.dev/docs/routing/setup#static-rendering
-// https://nextjs.org/docs/app/api-reference/functions/generate-static-params#static-rendering
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
 
 type Props = {
   children: React.ReactNode;
@@ -66,10 +59,7 @@ export default async function LocaleLayout({ children, params }: Props) {
                 <Lamp />
                 <LanguageSwitcher />
                 <Header />
-                <div className={cn('flex-1 flex w-full max-w-300 mx-auto md:px-4')}>
-                  {/* <AnimatePresence mode="wait">{children}</AnimatePresence> */}
-                  {children}
-                </div>
+                <div className={cn('flex-1 flex w-full max-w-300 mx-auto md:px-4')}>{children}</div>
               </div>
             </div>
             <Toaster position="top-right" richColors closeButton />
@@ -79,4 +69,50 @@ export default async function LocaleLayout({ children, params }: Props) {
       </body>
     </html>
   );
+}
+
+// https://next-intl.dev/docs/routing/setup#static-rendering
+// https://nextjs.org/docs/app/api-reference/functions/generate-static-params#static-rendering
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'metadata.pages.default' });
+
+  return {
+    metadataBase: new URL('https://z1mak-cv.vercel.app'),
+    title: {
+      template: `%s | ${t('brandName')}`,
+      default: t('title'),
+    },
+    description: t('description'),
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      url: './',
+      siteName: t('brandName'),
+      images: ['/og-image.png'],
+      locale: locale,
+      type: 'website',
+    },
+    icons: {
+      icon: '/favicon.ico',
+      shortcut: '/favicon.ico',
+      apple: '/favicon.ico',
+    },
+    alternates: {
+      canonical: '/',
+      languages: {
+        en: '/en',
+        uk: '/uk',
+        'x-default': '/en',
+      },
+    },
+  };
 }

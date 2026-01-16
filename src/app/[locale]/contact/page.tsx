@@ -1,3 +1,4 @@
+import { getMetadata, MetadataBaseParams } from '@/utils/getPageMetadata';
 import { ContactForm } from './ContactForm';
 
 import { getTranslations } from 'next-intl/server';
@@ -17,4 +18,8 @@ export default async function ContactPage(props: PageProps) {
       </div>
     </div>
   );
+}
+
+export async function generateMetadata({ params }: MetadataBaseParams) {
+  return getMetadata({ params, pageKey: 'contact' });
 }
