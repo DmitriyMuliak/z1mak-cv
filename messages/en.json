@@ -1,6 +1,11 @@
 {
   "metadata": {
     "pages": {
+      "default": {
+        "title": "Resume Analyzer",
+        "description": "You can check your resume and get personalized improvement tips.",
+        "brandName": "Dmytro M."
+      },
       "about": {
         "title": "About",
         "description": "Hello, my name is Dima. I'm front-end engineer."
@@ -14,8 +19,12 @@
         "description": "Get in touch with me"
       },
       "cvChecker": {
-        "title": "CV Checker",
-        "description": "Check your CV"
+        "title": "Resume Checker",
+        "description": "Check your Resume"
+      },
+      "cvReport": {
+        "title": "Resume Analysis Report",
+        "description": "A detailed breakdown of your resume: match score, key strengths, and actionable improvement tips."
       }
     }
   },
@@ -177,7 +186,7 @@
       "description": "Click to check previous analysis.",
       "noHistory": "No history found.",
       "loading": "Loading history...",
-      "cancel": "Cancel"
+      "cancel": "Close"
     }
   },
   "validator": {
@@ -248,6 +257,7 @@
     "formButtonSendTitle": "Send",
     "formButtonSendSuccessTitle": "Successfully Sent",
     "tryAgainButtonTitle": "Try Again",
+    "looksLikeNetworkIssue": "It looks like there is a problem with the internet connection",
     "resumeErrors": {
       "queueFull": "The AI queue is full. Please try again in a moment.",
       "concurrencyLimit": "You have reached the limit of parallel analyses. Please try again shortly.",

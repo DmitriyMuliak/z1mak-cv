@@ -13,3 +13,6 @@ export const paths = {
   privacyPolicy: '/privacy-policy',
   termsOfService: '/terms-of-service',
 } as const;
+
+export type PathKeys = keyof typeof paths;
+export type PathValues = (typeof paths)[keyof typeof paths];
