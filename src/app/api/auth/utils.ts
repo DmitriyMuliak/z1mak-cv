@@ -14,7 +14,7 @@ export const getNextPathFromStateParam = (stateRaw: string | null) => {
 
   let next = redirectedFrom ?? '/';
 
-  if (!next.startsWith('/')) {
+  if (!next.startsWith('/') && !next.startsWith('//')) {
     // if "next" is not a relative URL, use the default
     next = '/';
   }
