@@ -11,6 +11,7 @@ import { Header } from '@/components/Header';
 import { Configurator } from '@/components/Configurator';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { Lamp } from '@/components/Lamp';
+import { getBaseUrl } from '@/utils/getBaseUrl';
 import { cn } from '@/lib/utils';
 import styles from './layout.module.css';
 import type { Metadata } from 'next';
@@ -86,7 +87,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: 'metadata.pages.default' });
 
   return {
-    metadataBase: new URL('https://z1mak-cv.vercel.app'),
+    metadataBase: new URL(getBaseUrl()),
     title: {
       template: `%s | ${t('brandName')}`,
       default: t('title'),

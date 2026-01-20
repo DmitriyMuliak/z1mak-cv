@@ -124,8 +124,9 @@ root
 ├── messages
 │   ├── en.json
 │   └── uk.json
-├── public
-│   └── docxWorker.js
+├── public            // static assets
+├── .husky.           // Git hooks
+├── .gemini           // Gemini config
 ├── README.md
 ├── package.json
 ├── components.json

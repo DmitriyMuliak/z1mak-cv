@@ -2,6 +2,10 @@
   "name": "z1mak-cv",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DmitriyMuliak/z1mak-cv.git"
+  },
   "scripts": {
     "prepare": "node .husky/install.mjs",
     "dev": "next dev --turbopack",
