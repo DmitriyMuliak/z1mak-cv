@@ -50,7 +50,7 @@ flowchart LR
 
 ## 🧠 Integration
 
-Integration with the [z1mak-cv-queue](https://www.google.com/search?q=https://github.com/DmitriyMuliak/z1mak-cv-queue) backend service for asynchronous task processing and analysis queue management.
+Integration with the [z1mak-cv-queue](https://github.com/DmitriyMuliak/z1mak-cv-queue) backend service for asynchronous task processing and analysis queue management.
 
 ## 🔒 Environment Validation
 
@@ -125,7 +125,7 @@ root
 │   ├── en.json
 │   └── uk.json
 ├── public            // static assets
-├── .husky.           // Git hooks
+├── .husky            // Git hooks
 ├── .gemini           // Gemini config
 ├── README.md
 ├── package.json
