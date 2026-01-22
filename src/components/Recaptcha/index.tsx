@@ -15,7 +15,7 @@ interface CaptchaBoxProps {
 
 export function RecaptchaV2({ visible, onVerify }: CaptchaBoxProps) {
   const captchaRef = useRef<ReCAPTCHA | null>(null);
-  const [_expired, setExpired] = useState(false);
+  const [_expired, setExpired] = useState(false); // Google show it's own message
 
   const handleExpired = () => {
     setExpired(true);

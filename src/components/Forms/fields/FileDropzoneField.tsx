@@ -97,10 +97,17 @@ export function FileDropzoneField<T extends FieldValues>({
                       ),
                     })}
                   >
-                    <label className="text-sm cursor-pointer text-gray-900 dark:text-white">
+                    <span
+                      aria-hidden="true"
+                      className="text-sm cursor-pointer text-gray-900 dark:text-white"
+                    >
                       {t('mainAddFileTitle')}
-                      <input {...getInputProps()} />
-                    </label>
+                    </span>
+                    <input
+                      {...getInputProps({
+                        'aria-label': t('mainAddFileTitle'),
+                      })}
+                    />
                   </div>
                 )}
               </Dropzone>
