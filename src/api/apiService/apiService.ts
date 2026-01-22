@@ -1,11 +1,7 @@
 import { devLogger } from '@/lib/devLogger';
-
-type ResponseParseType = 'json' | 'text' | 'blob' | 'arrayBuffer' | 'formData' | 'response';
-
-export interface ApiRequestOptions extends RequestInit {
-  responseAs?: ResponseParseType;
-  params?: Record<string, unknown>;
-}
+import { InterceptorManager } from './interceptorManager';
+import type { ApiRequestOptions, MockHandler, ParamsType, ResponseParseType } from './types';
+import { ApiError } from './apiError';
 
 interface ApiServiceOptions {
   baseUrl: string;
@@ -56,18 +52,16 @@ export class ApiService {
     // 2. Run Request Interceptors
     const requestHandlers = this.interceptors.request.getActiveHandlers();
 
-    try {
-      for (const handler of requestHandlers) {
-        config = await handler.fulfilled(config);
-      }
-    } catch (error) {
-      const rejectedHandler = requestHandlers.find((h) => h.rejected)?.rejected;
-      if (rejectedHandler) {
-        config = await rejectedHandler(error);
-      } else {
-        throw error;
-      }
+    let configPromise = Promise.resolve(config);
+
+    for (const handler of requestHandlers) {
+      configPromise = configPromise.then(
+        (conf) => handler.fulfilled(conf),
+        handler.rejected ? (error) => handler.rejected!(error) : undefined,
+      );
     }
+
+    config = await configPromise;
 
     // 3. Prepare Final URL
     const { params, responseAs, ...fetchInit } = config;
@@ -172,9 +166,20 @@ export class ApiService {
     return JSON.stringify(body);
   }
 
-  private appendParams(url: string, params?: Record<string, unknown>): string {
+  private appendParams(url: string, params?: ApiRequestOptions['params']): string {
     if (!params) return url;
-    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+
+    const cleanParams = Object.entries(params).reduce(
+      (acc, [key, value]) => {
+        if (value !== undefined && value !== null) {
+          acc[key] = String(value);
+        }
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+
+    const queryString = new URLSearchParams(cleanParams).toString();
     return url.includes('?') ? `${url}&${queryString}` : `${url}?${queryString}`;
   }
 
@@ -241,7 +246,7 @@ export class ApiService {
 
   // --- Public HTTP Methods ---
 
-  public get<R, P extends Record<string, unknown> = Record<string, unknown>>(
+  public get<R, P extends ParamsType = ParamsType>(
     endpoint: string,
     params?: P,
     options?: ApiRequestOptions,
@@ -265,68 +270,3 @@ export class ApiService {
     return this.request<R>(endpoint, { ...options, method: 'DELETE' });
   }
 }
-
-type InterceptorHandler<V> = (value: V) => V | Promise<V>;
-type InterceptorErrorHandler<V> = (error: unknown) => V | Promise<V>;
-
-interface Interceptor<V> {
-  fulfilled: InterceptorHandler<V>;
-  rejected?: InterceptorErrorHandler<V>;
-}
-
-class InterceptorManager<V> {
-  private handlers: (Interceptor<V> | null)[] = [];
-
-  public use(fulfilled: InterceptorHandler<V>, rejected?: InterceptorErrorHandler<V>): number {
-    this.handlers.push({ fulfilled, rejected });
-    return this.handlers.length - 1;
-  }
-
-  public eject(id: number): void {
-    if (this.handlers[id]) {
-      this.handlers[id] = null;
-    }
-  }
-
-  public getActiveHandlers(): Interceptor<V>[] {
-    return this.handlers.filter((h): h is Interceptor<V> => h !== null);
-  }
-}
-
-export class ApiError<T = unknown> extends Error {
-  public status: number;
-  public body?: T;
-  public response: Response;
-  public config: ApiRequestOptions;
-  public url: string;
-
-  constructor(
-    message: string,
-    options: {
-      status: number;
-      body?: T;
-      cause?: unknown;
-      response: Response;
-      config: ApiRequestOptions;
-      url: string;
-    },
-  ) {
-    super(message);
-    this.name = 'ApiError';
-    this.status = options.status;
-    this.body = options.body;
-    this.response = options.response;
-    this.config = options.config;
-    this.url = options.url;
-
-    if (options.cause) {
-      this.cause = options.cause;
-    }
-  }
-}
-
-type MockHandler<P = unknown> = (
-  url: string,
-  params?: P,
-  options?: ApiRequestOptions,
-) => Promise<{ data?: unknown; status?: number }>;
