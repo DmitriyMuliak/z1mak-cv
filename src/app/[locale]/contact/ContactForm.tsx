@@ -1,9 +1,7 @@
 'use client';
 
-import { useForm, useFieldArray } from 'react-hook-form';
-import { CheckIcon, RefreshCw } from 'lucide-react';
+import { useForm, useWatch } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { TextField } from '@/components/Forms/fields/TextField';
 import { TextareaField } from '@/components/Forms/fields/TextareaField';
@@ -16,6 +14,7 @@ import { createOnSubmitHandler } from '@/components/Forms/utils';
 import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
 import { RecaptchaField } from '@/components/Forms/fields/Recapthca';
 import { GlobalFormErrorMessage } from '@/components/Forms/fields/GlobalFormErrorMessage';
+import { SubmitActionButton } from '@/components/Forms/buttons/SubmitActionButton';
 
 export function ContactForm() {
   const tf = useTranslations('fields');
@@ -26,9 +25,9 @@ export function ContactForm() {
     mode: 'onBlur',
     defaultValues: { name: '', email: '', message: '', files: [], recaptchaToken: null },
   });
-  const { fields, replace, remove, prepend } = useFieldArray({
-    name: 'files',
+  const files = useWatch({
     control: form.control,
+    name: 'files',
   });
   const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
   const isSubmitting = form.formState.isSubmitting;
@@ -64,14 +63,8 @@ export function ContactForm() {
         <FileDropzoneField
           control={form.control}
           name="files"
-          replace={replace}
-          remove={remove}
-          prepend={prepend}
-          setError={form.setError}
-          clearErrors={form.clearErrors}
           validateTrigger={form.trigger}
           isSingleFile
-          files={fields}
           multiple={false}
           accept={contactFileTypes}
         />
@@ -79,17 +72,15 @@ export function ContactForm() {
           control={form.control}
           name="recaptchaToken"
           clearErrors={form.clearErrors}
-          visible={fields.length > 0}
+          visible={!!files && files.length > 0}
         />
-        <Button
-          disabled={isSubmitting || isFormInvalid} // !form.formState.isValid - works differently than isFormInvalid
-          type="submit"
-          className={`!mt-0 w-full transition-colors duration-300 ${showSuccessLoader ? 'bg-green-500 hover:bg-green-500' : ''}`}
-        >
-          {showSuccessLoader ? tc('formButtonSendSuccessTitle') : tc('formButtonSendTitle')}
-          {showSuccessLoader ? <CheckIcon className="w-5 h-5 mr-2" /> : null}
-          {isSubmitting ? <RefreshCw className="w-5 h-5 mr-2 animate-spin" /> : null}
-        </Button>
+        <SubmitActionButton
+          isSubmitting={isSubmitting}
+          isFormInvalid={isFormInvalid}
+          showSuccessLoader={showSuccessLoader}
+          title={tc('formButtonSendTitle')}
+          onSuccessTitle={tc('formButtonSendSuccessTitle')}
+        />
         <GlobalFormErrorMessage />
       </form>
     </Form>
