@@ -1,6 +1,6 @@
 'use client';
 
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
@@ -46,33 +46,57 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
     defaultValues: { cvText: '', jobText: '', jobFile: [], cvFile: [] },
   });
 
+  const { isSubmitting, isSubmitSuccessful, isValid } = form.formState;
+
+  // Handle change evaluationMode
   useEffect(() => {
     if (evaluationMode === 'general') {
-      const inactiveFields = inactiveFieldsByMode[evaluationMode];
-      // clear error for another field for unblock submit button
+      const inactiveFields = inactiveFieldsByMode.general;
       form.clearErrors([inactiveFields.text, inactiveFields.file]);
-    }
-    if (evaluationMode === 'byJob') {
+    } else if (evaluationMode === 'byJob') {
       const { active } = jobTabFields[addJobBy];
-      form.getFieldState(active).isDirty && form.trigger(active);
+      const fieldState = form.getFieldState(active);
+      const fieldValue = form.getValues(active);
+
+      if (fieldState.isDirty || (Array.isArray(fieldValue) ? fieldValue.length : fieldValue)) {
+        form.trigger(active);
+      }
     }
   }, [evaluationMode, form, addJobBy]);
 
-  const getHandleTabOnChange =
-    (tabFields: TabFields, setAddBy: Dispatch<SetStateAction<AddDescriptionBy>>) =>
-    (value: AddDescriptionBy) => {
-      const { active, inactive } = tabFields[value];
-      setAddBy(value);
-      // revalidate field if it have value - because we was reset before
-      form.getFieldState(active).isDirty && form.trigger(active);
-      // clear error for another field for unblock submit button
-      form.clearErrors([inactive]);
-    };
+  // Handle CV tab
+  useEffect(() => {
+    const { active, inactive } = cvTabFields[addCvBy];
+    form.clearErrors(inactive);
 
-  const handleCvTabChange = getHandleTabOnChange(cvTabFields, setAddCvBy);
-  const handleJobTabChange = getHandleTabOnChange(jobTabFields, setAddJobBy);
+    const val = form.getValues(active);
+    const hasValue = Array.isArray(val) ? val.length > 0 : !!val;
+    const isDirty = form.getFieldState(active).isDirty;
 
-  const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
+    if (isDirty || hasValue) {
+      form.trigger(active);
+    }
+  }, [addCvBy, form]);
+
+  // // Handle Job tab
+  useEffect(() => {
+    const { active, inactive } = jobTabFields[addJobBy];
+
+    form.clearErrors(inactive);
+
+    const val = form.getValues(active);
+    const hasValue = Array.isArray(val) ? val.length > 0 : !!val;
+    const isDirty = form.getFieldState(active).isDirty;
+
+    if (isDirty || hasValue) {
+      form.trigger(active);
+    }
+  }, [addJobBy, form]);
+
+  const handleCvTabChange = (value: AddDescriptionBy) => setAddCvBy(value);
+  const handleJobTabChange = (value: AddDescriptionBy) => setAddJobBy(value);
+
+  const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting });
 
   const onResult = async (out: Awaited<ReturnType<typeof sendToAnalyzeAction>>) => {
     if (out.success && out.data?.jobId) {
@@ -92,10 +116,7 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
   });
 
   const onSubmit = form.handleSubmit(handleSubmitCb);
-
-  const isFormInvalid = Object.keys(form.formState.errors).length > 0;
-  const isSubmitting = form.formState.isSubmitting;
-  const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
+  const isSuccess = !isSubmitting && isSubmitSuccessful;
 
   return (
     <Form {...form}>
@@ -122,7 +143,7 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
         <div>
           <SubmitActionButton
             isSubmitting={isSubmitting}
-            isFormInvalid={isFormInvalid}
+            isFormInvalid={!isValid}
             showSuccessLoader={delayedIsLoading && isSuccess}
             title={tc('formButtonSendTitle')}
             onSuccessTitle={tc('formButtonSendSuccessTitle')}
@@ -148,5 +169,3 @@ const jobTabFields = {
   text: { active: 'jobText', inactive: 'jobFile' },
   file: { active: 'jobFile', inactive: 'jobText' },
 } as const;
-
-type TabFields = typeof cvTabFields | typeof jobTabFields;
