@@ -1,109 +1,214 @@
 import { devLogger } from '@/lib/devLogger';
 
-type RequestInterceptor<P> = (
-  url: string,
-  params?: P,
-  options?: ApiRequestOptions,
-) => Promise<{ data?: unknown }>;
+type ResponseParseType = 'json' | 'text' | 'blob' | 'arrayBuffer' | 'formData' | 'response';
 
-type RequestBody = object | string | FormData | undefined;
+export interface ApiRequestOptions extends RequestInit {
+  responseAs?: ResponseParseType;
+  params?: Record<string, unknown>;
+}
 
 interface ApiServiceOptions {
   baseUrl: string;
   headers?: Record<string, string>;
 }
 
-type ResponseParseType = 'json' | 'text' | 'blob' | 'arrayBuffer' | 'formData' | 'response';
-
-export interface ApiRequestOptions extends RequestInit {
-  responseAs?: ResponseParseType;
-}
-
 export class ApiService {
   private baseUrl: string;
-  private headers: Record<string, string>;
-  private interceptors: Map<string | RegExp, RequestInterceptor<unknown>> = new Map();
+  private defaultHeaders: Record<string, string>;
+  private mockHandlers: Map<string | RegExp, MockHandler> = new Map();
+
+  public interceptors = {
+    request: new InterceptorManager<ApiRequestOptions>(),
+    response: new InterceptorManager<Response>(),
+  };
 
   constructor(options: ApiServiceOptions) {
-    this.baseUrl = options.baseUrl;
-    this.headers = {
+    this.baseUrl = options.baseUrl.replace(/\/$/, '');
+    this.defaultHeaders = {
       'Content-Type': 'application/json',
       ...options.headers,
     };
   }
 
-  public addInterceptor<P>(urlPattern: string | RegExp, interceptor: RequestInterceptor<P>): void {
-    this.interceptors.set(urlPattern, interceptor as RequestInterceptor<unknown>);
+  public addMockHandler<P>(pattern: string | RegExp, handler: MockHandler<P>): void {
+    this.mockHandlers.set(pattern, handler as MockHandler);
   }
 
-  private getCorrectHeaders(body: RequestBody, options?: ApiRequestOptions) {
-    const finalHeaders = { ...this.headers, ...options?.headers } as Record<string, string>;
+  // --- Main Request Method ---
+
+  private async request<R>(
+    endpoint: string,
+    options: ApiRequestOptions = {},
+    body?: unknown,
+  ): Promise<R> {
+    const rawUrl = `${this.baseUrl}${endpoint}`;
+
+    // 1. Prepare Initial Config
+    let config: ApiRequestOptions = {
+      ...options,
+      headers: this.prepareHeaders(options.headers, body),
+    };
+
+    if (body !== undefined) {
+      config.body = this.prepareBody(body);
+    }
+
+    // 2. Run Request Interceptors
+    const requestHandlers = this.interceptors.request.getActiveHandlers();
+
+    try {
+      for (const handler of requestHandlers) {
+        config = await handler.fulfilled(config);
+      }
+    } catch (error) {
+      const rejectedHandler = requestHandlers.find((h) => h.rejected)?.rejected;
+      if (rejectedHandler) {
+        config = await rejectedHandler(error);
+      } else {
+        throw error;
+      }
+    }
+
+    // 3. Prepare Final URL
+    const { params, responseAs, ...fetchInit } = config;
+    const finalUrl = this.appendParams(rawUrl, params);
+
+    // 4. Check Mocks
+    const mockResponse = await this.tryMockRequest(rawUrl, config);
+    if (mockResponse) {
+      return this.handleResponseChain<R>(mockResponse, config, finalUrl);
+    }
+
+    // 5. Execution (Fetch)
+    let response: Response;
+    try {
+      response = await fetch(finalUrl, fetchInit);
+    } catch (error) {
+      return this.handleResponseChain<R>(Promise.reject(error), config, finalUrl);
+    }
+
+    // 6. Handle Response Chain
+    return this.handleResponseChain<R>(response, config, finalUrl);
+  }
+
+  // --- Response Pipeline Logic ---
+
+  private async handleResponseChain<R>(
+    initialResponseOrError: Response | Promise<Response>,
+    config: ApiRequestOptions,
+    requestUrl: string,
+  ): Promise<R> {
+    let promiseChain = Promise.resolve(initialResponseOrError);
+
+    // 1. Status Check
+    promiseChain = promiseChain.then(async (response) => {
+      if (!response.ok) {
+        const errorData = await this.safeParseError(response);
+
+        throw new ApiError(response.statusText || 'API Error', {
+          status: response.status,
+          body: errorData,
+          response: response,
+          config: config,
+          url: requestUrl,
+        });
+      }
+      return response;
+    });
+
+    // 2. Run Response Interceptors
+    const responseHandlers = this.interceptors.response.getActiveHandlers();
+    for (const handler of responseHandlers) {
+      // 3. UPDATED: No more "as Promise<Response>".
+      // TypeScript knows that fulfilled/rejected return Response based on generics.
+      promiseChain = promiseChain.then(handler.fulfilled, handler.rejected);
+    }
+
+    // 3. Final Parsing
+    return promiseChain
+      .then((response) =>
+        this.parseResponseData<R>(response, config.responseAs, requestUrl, config),
+      )
+      .catch((error) => {
+        if (error instanceof ApiError) {
+          devLogger.error(`[ApiService] ${error.status} ${error.message}`, error.body);
+        } else {
+          devLogger.error('[ApiService] Unexpected error', error);
+        }
+        throw error;
+      });
+  }
+
+  // --- Helper Methods ---
+
+  private prepareHeaders(
+    customHeaders: HeadersInit | undefined,
+    body: unknown,
+  ): Record<string, string> {
+    const headers = { ...this.defaultHeaders, ...(customHeaders as Record<string, string>) };
 
     if (body instanceof FormData) {
-      if (finalHeaders['Content-Type']) {
-        delete finalHeaders['Content-Type'];
-      }
+      delete headers['Content-Type'];
     }
 
     if (body instanceof URLSearchParams) {
-      if (finalHeaders['Content-Type']) {
-        delete finalHeaders['Content-Type'];
-      }
+      delete headers['Content-Type'];
     }
 
-    return finalHeaders;
+    return headers;
   }
 
-  private getParsedBody(body: RequestBody) {
-    return body instanceof FormData || typeof body === 'string' || body instanceof URLSearchParams
-      ? body
-      : JSON.stringify(body);
+  private prepareBody(body: unknown): BodyInit | null {
+    if (body === undefined || body === null) return null;
+
+    if (
+      body instanceof FormData ||
+      body instanceof URLSearchParams ||
+      body instanceof Blob ||
+      typeof body === 'string'
+    ) {
+      return body as BodyInit;
+    }
+    return JSON.stringify(body);
   }
 
-  private async request<R, P = unknown>(
-    endpoint: string,
-    options: ApiRequestOptions,
-    body?: P,
+  private appendParams(url: string, params?: Record<string, unknown>): string {
+    if (!params) return url;
+    const queryString = new URLSearchParams(params as Record<string, string>).toString();
+    return url.includes('?') ? `${url}&${queryString}` : `${url}?${queryString}`;
+  }
+
+  private async tryMockRequest(url: string, options: ApiRequestOptions): Promise<Response | null> {
+    for (const [pattern, handler] of this.mockHandlers) {
+      const isMatch = typeof pattern === 'string' ? url.includes(pattern) : pattern.test(url);
+
+      if (isMatch) {
+        devLogger.info(`[Mock] Handling request: ${url}`);
+        const { data, status = 200 } = await handler(url, options.params, options);
+
+        return new Response(JSON.stringify(data), {
+          status,
+          statusText: status === 200 ? 'OK' : 'Mock Error',
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+    }
+    return null;
+  }
+
+  private async parseResponseData<R>(
+    response: Response,
+    parseType: ResponseParseType = 'json',
+    requestUrl: string,
+    config: ApiRequestOptions,
   ): Promise<R> {
-    const url = `${this.baseUrl}${endpoint}`;
-
-    const { responseAs = 'json', ...fetchOptions } = options;
-
-    if (this.getIsHaveInterceptors()) {
-      const interceptorResult = await this._applyInterceptors(url, options, body);
-      if (interceptorResult.handled) {
-        return interceptorResult.data as R;
-      }
-    }
+    if (parseType === 'response') return response as unknown as R;
+    if (response.status === 204) return undefined as R;
 
     try {
-      const parsedBody = body ? this.getParsedBody(body) : undefined;
-
-      const headers = this.getCorrectHeaders(body as RequestBody, fetchOptions);
-
-      const response = await fetch(url, {
-        ...fetchOptions,
-        headers,
-        ...(parsedBody && { body: parsedBody }),
-      });
-
-      if (!response.ok) {
-        const errorBody = await this.safeParseJson(response);
-        const errorMessage = this.extractErrorMessage(errorBody, response);
-
-        devLogger.error('API Error Data:', errorBody);
-        throw new ApiError(errorMessage, { status: response.status, body: errorBody });
-      }
-
-      if (response.status === 204) {
-        devLogger.info('API request done with: response.status === 204, return undefined');
-        // No Content
-        return undefined as R;
-      }
-
-      switch (responseAs) {
+      switch (parseType) {
         case 'json':
-          return (await response.json()) as R;
+          return await response.json();
         case 'text':
           return (await response.text()) as R;
         case 'blob':
@@ -112,134 +217,116 @@ export class ApiService {
           return (await response.arrayBuffer()) as R;
         case 'formData':
           return (await response.formData()) as R;
-        case 'response':
-          return response as R;
         default:
-          return (await response.json()) as R;
+          return await response.json();
       }
     } catch (error) {
-      devLogger.error('API request failed:', error);
-      throw error;
+      throw new ApiError('Parsing Error', {
+        status: response.status,
+        cause: error,
+        response,
+        config,
+        url: requestUrl,
+      });
     }
   }
 
-  public get<R, P extends Record<string, unknown> = never>(
+  private async safeParseError(response: Response): Promise<unknown> {
+    try {
+      return await response.clone().json();
+    } catch {
+      return response.text();
+    }
+  }
+
+  // --- Public HTTP Methods ---
+
+  public get<R, P extends Record<string, unknown> = Record<string, unknown>>(
     endpoint: string,
     params?: P,
     options?: ApiRequestOptions,
   ): Promise<R> {
-    const urlWithParams = params
-      ? `${endpoint}?${new URLSearchParams(params as Record<string, string>).toString()}`
-      : endpoint;
-
-    const fetchOptions: ApiRequestOptions = {
-      ...options,
-      method: 'GET',
-    };
-
-    return this.request<R, P>(urlWithParams, fetchOptions);
+    return this.request<R>(endpoint, { ...options, method: 'GET', params });
   }
 
-  public post<R, P extends RequestBody>(
-    endpoint: string,
-    body: P,
-    options?: ApiRequestOptions,
-  ): Promise<R> {
-    const fetchOptions: ApiRequestOptions = {
-      ...options,
-      method: 'POST',
-    };
-
-    return this.request<R, P>(endpoint, fetchOptions, body);
+  public post<R, P = unknown>(endpoint: string, body: P, options?: ApiRequestOptions): Promise<R> {
+    return this.request<R>(endpoint, { ...options, method: 'POST' }, body);
   }
 
-  public put<R, P extends RequestBody>(
-    endpoint: string,
-    body: P,
-    options?: ApiRequestOptions,
-  ): Promise<R> {
-    const fetchOptions: ApiRequestOptions = {
-      ...options,
-      method: 'PUT',
-    };
-    return this.request<R, P>(endpoint, fetchOptions, body);
+  public put<R, P = unknown>(endpoint: string, body: P, options?: ApiRequestOptions): Promise<R> {
+    return this.request<R>(endpoint, { ...options, method: 'PUT' }, body);
   }
 
-  public patch<R, P extends RequestBody>(
-    endpoint: string,
-    body: P,
-    options?: ApiRequestOptions,
-  ): Promise<R> {
-    const fetchOptions: ApiRequestOptions = {
-      ...options,
-      method: 'PATCH',
-    };
-    return this.request<R, P>(endpoint, fetchOptions, body);
+  public patch<R, P = unknown>(endpoint: string, body: P, options?: ApiRequestOptions): Promise<R> {
+    return this.request<R>(endpoint, { ...options, method: 'PATCH' }, body);
   }
 
   public delete<R = undefined>(endpoint: string, options?: ApiRequestOptions): Promise<R> {
-    const fetchOptions: ApiRequestOptions = {
-      ...options,
-      method: 'DELETE',
-    };
-    return this.request<R, undefined>(endpoint, fetchOptions);
+    return this.request<R>(endpoint, { ...options, method: 'DELETE' });
+  }
+}
+
+type InterceptorHandler<V> = (value: V) => V | Promise<V>;
+type InterceptorErrorHandler<V> = (error: unknown) => V | Promise<V>;
+
+interface Interceptor<V> {
+  fulfilled: InterceptorHandler<V>;
+  rejected?: InterceptorErrorHandler<V>;
+}
+
+class InterceptorManager<V> {
+  private handlers: (Interceptor<V> | null)[] = [];
+
+  public use(fulfilled: InterceptorHandler<V>, rejected?: InterceptorErrorHandler<V>): number {
+    this.handlers.push({ fulfilled, rejected });
+    return this.handlers.length - 1;
   }
 
-  private getIsHaveInterceptors(): boolean {
-    return this.interceptors.size > 0;
-  }
-
-  private async _applyInterceptors<P>(url: string, options: ApiRequestOptions, params?: P) {
-    if (!this.getIsHaveInterceptors()) {
-      return { handled: false };
-    }
-
-    for (const [pattern, interceptor] of this.interceptors.entries()) {
-      const match =
-        (typeof pattern === 'string' && url.includes(pattern)) ||
-        (pattern instanceof RegExp && pattern.test(url));
-
-      if (match) {
-        const result = await interceptor(url, params, options);
-        return { handled: true, data: result.data };
-      }
-    }
-    return { handled: false };
-  }
-
-  private async safeParseJson(response: Response): Promise<unknown> {
-    try {
-      return await response.json();
-    } catch (_error) {
-      console.warn('[ApiService][safeParseJson] - parse error');
-      return undefined;
+  public eject(id: number): void {
+    if (this.handlers[id]) {
+      this.handlers[id] = null;
     }
   }
 
-  private extractErrorMessage(errorBody: unknown, response: Response): string {
-    const messageFromBody =
-      typeof errorBody === 'object' &&
-      errorBody !== null &&
-      'message' in errorBody &&
-      typeof (errorBody as { message?: unknown }).message === 'string'
-        ? (errorBody as { message: string }).message
-        : null;
-
-    return messageFromBody || response.statusText || String(response.status);
+  public getActiveHandlers(): Interceptor<V>[] {
+    return this.handlers.filter((h): h is Interceptor<V> => h !== null);
   }
 }
 
 export class ApiError<T = unknown> extends Error {
   public status: number;
   public body?: T;
+  public response: Response;
+  public config: ApiRequestOptions;
+  public url: string;
 
-  constructor(message: string, options: { status: number; body?: T; cause?: unknown }) {
+  constructor(
+    message: string,
+    options: {
+      status: number;
+      body?: T;
+      cause?: unknown;
+      response: Response;
+      config: ApiRequestOptions;
+      url: string;
+    },
+  ) {
     super(message);
     this.name = 'ApiError';
     this.status = options.status;
     this.body = options.body;
+    this.response = options.response;
+    this.config = options.config;
+    this.url = options.url;
+
     if (options.cause) {
       this.cause = options.cause;
     }
   }
 }
+
+type MockHandler<P = unknown> = (
+  url: string,
+  params?: P,
+  options?: ApiRequestOptions,
+) => Promise<{ data?: unknown; status?: number }>;
