@@ -1,6 +1,6 @@
 'use client';
 
-import { Control, UseFormReturn } from 'react-hook-form';
+import { Control } from 'react-hook-form';
 import { TextareaField } from '@/components/Forms/fields/TextareaField';
 import { FileDropzoneField } from '@/components/Forms/fields/FileDropzoneField';
 import { SendToAnalyzeFEType } from '../schema/form/toAnalyzeSchemaFE';
@@ -13,7 +13,6 @@ type SectionInputProps = {
   label: string;
   textAreaPlaceHolder: string;
   control: Control<SendToAnalyzeFEType>;
-  form: UseFormReturn<SendToAnalyzeFEType>;
   textName: 'cvText' | 'jobText';
   fileName: 'cvFile' | 'jobFile';
   addBy: AddDescriptionBy;
@@ -25,7 +24,6 @@ export const SectionInput: React.FC<SectionInputProps> = ({
   label,
   textAreaPlaceHolder,
   control,
-  form,
   textName,
   fileName,
   addBy,
@@ -64,7 +62,6 @@ export const SectionInput: React.FC<SectionInputProps> = ({
           multiple={false}
           accept={cvFileTypes}
           className="min-h-[64px] mb-0"
-          validateTrigger={form.trigger}
         />
       </div>
     </div>

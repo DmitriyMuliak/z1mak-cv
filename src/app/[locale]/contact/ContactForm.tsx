@@ -63,7 +63,6 @@ export function ContactForm() {
         <FileDropzoneField
           control={form.control}
           name="files"
-          validateTrigger={form.trigger}
           isSingleFile
           multiple={false}
           accept={contactFileTypes}

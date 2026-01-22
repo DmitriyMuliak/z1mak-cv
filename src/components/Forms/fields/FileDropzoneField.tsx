@@ -12,8 +12,8 @@ import {
   ArrayPath,
   useFormState,
   FieldError,
-  UseFormTrigger,
   useFieldArray,
+  useFormContext,
 } from 'react-hook-form';
 import { XIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -25,14 +25,12 @@ const MAX_SIZE_MB = (MAX_SIZE / 1024 / 1024).toFixed();
 interface FileDropzoneFieldProps<T extends FieldValues> extends DropzoneOptions {
   control: Control<T>;
   name: ArrayPath<T>;
-  validateTrigger: UseFormTrigger<T>;
   className?: string;
 }
 
 export function FileDropzoneField<T extends FieldValues>({
   control,
   name,
-  validateTrigger,
   isSingleFile,
   className,
   ...rest
@@ -40,6 +38,7 @@ export function FileDropzoneField<T extends FieldValues>({
   type TFiles = FieldArray<T, ArrayPath<T>>;
   const t = useTranslations('fields.file');
   const { errors } = useFormState({ control });
+  const { trigger } = useFormContext<T>();
   const { fields, replace, remove, prepend } = useFieldArray({
     name,
     control,
@@ -59,22 +58,22 @@ export function FileDropzoneField<T extends FieldValues>({
                   const files = acceptedFiles.map((file) => ({ file }));
                   if (isSingleFile) {
                     replace(files as TFiles);
-                    validateTrigger(name as Path<T>);
+                    trigger(name as Path<T>);
                     return;
                   }
                   prepend(files as TFiles);
-                  validateTrigger(name as Path<T>);
+                  trigger(name as Path<T>);
                 }}
                 onDropRejected={(rejections) => {
                   // Accept and show any file. Validation will be on schema level.
                   const files = rejections.map(({ file }) => ({ file }));
                   if (isSingleFile) {
                     replace(files as TFiles);
-                    validateTrigger(name as Path<T>);
+                    trigger(name as Path<T>);
                     return;
                   }
                   prepend(files as TFiles);
-                  validateTrigger(name as Path<T>);
+                  trigger(name as Path<T>);
                 }}
               >
                 {({ getRootProps, getInputProps, isDragActive }) => (
@@ -120,7 +119,7 @@ export function FileDropzoneField<T extends FieldValues>({
                 className="pr-1"
                 onClick={() => {
                   remove(index);
-                  validateTrigger(name as Path<T>);
+                  trigger(name as Path<T>);
                 }}
               >
                 <XIcon className="size-5 text-white hover:text-red-500" />
