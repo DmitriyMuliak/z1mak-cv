@@ -15,6 +15,7 @@ import { SectionInput } from './SectionInput';
 import { AddDescriptionBy, Mode } from '../store/useCvStore';
 import { SendToAnalyzeFEType, getSendToAnalyzeSchema } from '../schema/form/toAnalyzeSchemaFE';
 import { sendToAnalyzeAction } from '../actions/sendToAnalyzeAction';
+import { useTabValidation, validateIfActive } from '../hooks/useTabValidation';
 
 interface Props {
   mode: Mode;
@@ -48,50 +49,19 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
 
   const { isSubmitting, isSubmitSuccessful, isValid } = form.formState;
 
-  // Handle change evaluationMode
+  // Handle evaluationMode switch
   useEffect(() => {
     if (evaluationMode === 'general') {
       const inactiveFields = inactiveFieldsByMode.general;
       form.clearErrors([inactiveFields.text, inactiveFields.file]);
     } else if (evaluationMode === 'byJob') {
       const { active } = jobTabFields[addJobBy];
-      const fieldState = form.getFieldState(active);
-      const fieldValue = form.getValues(active);
-
-      if (fieldState.isDirty || (Array.isArray(fieldValue) ? fieldValue.length : fieldValue)) {
-        form.trigger(active);
-      }
+      validateIfActive(form, active);
     }
   }, [evaluationMode, form, addJobBy]);
 
-  // Handle CV tab
-  useEffect(() => {
-    const { active, inactive } = cvTabFields[addCvBy];
-    form.clearErrors(inactive);
-
-    const val = form.getValues(active);
-    const hasValue = Array.isArray(val) ? val.length > 0 : !!val;
-    const isDirty = form.getFieldState(active).isDirty;
-
-    if (isDirty || hasValue) {
-      form.trigger(active);
-    }
-  }, [addCvBy, form]);
-
-  // // Handle Job tab
-  useEffect(() => {
-    const { active, inactive } = jobTabFields[addJobBy];
-
-    form.clearErrors(inactive);
-
-    const val = form.getValues(active);
-    const hasValue = Array.isArray(val) ? val.length > 0 : !!val;
-    const isDirty = form.getFieldState(active).isDirty;
-
-    if (isDirty || hasValue) {
-      form.trigger(active);
-    }
-  }, [addJobBy, form]);
+  useTabValidation(form, addCvBy, cvTabFields);
+  useTabValidation(form, addJobBy, jobTabFields);
 
   const handleCvTabChange = (value: AddDescriptionBy) => setAddCvBy(value);
   const handleJobTabChange = (value: AddDescriptionBy) => setAddJobBy(value);
