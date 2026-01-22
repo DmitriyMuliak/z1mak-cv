@@ -1,13 +1,12 @@
 'use client';
 
 import { FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form';
-import Dropzone, { DropzoneOptions, FileRejection } from 'react-dropzone';
+import Dropzone, { DropzoneOptions } from 'react-dropzone';
 import { cn } from '@/lib/utils';
 import {
   Control,
   FieldValues,
   Path,
-  UseFormSetError,
   FieldArray,
   ArrayPath,
   useFormState,
@@ -18,10 +17,6 @@ import {
 import { XIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-const OneMbInKb = 1048576;
-const MAX_SIZE = OneMbInKb * 10;
-const MAX_SIZE_MB = (MAX_SIZE / 1024 / 1024).toFixed();
-
 interface FileDropzoneFieldProps<T extends FieldValues> extends DropzoneOptions {
   control: Control<T>;
   name: ArrayPath<T>;
@@ -31,10 +26,10 @@ interface FileDropzoneFieldProps<T extends FieldValues> extends DropzoneOptions 
 export function FileDropzoneField<T extends FieldValues>({
   control,
   name,
-  isSingleFile,
   className,
+  multiple = true,
   ...rest
-}: FileDropzoneFieldProps<T> & { isSingleFile?: boolean }) {
+}: FileDropzoneFieldProps<T>) {
   type TFiles = FieldArray<T, ArrayPath<T>>;
   const t = useTranslations('fields.file');
   const { errors } = useFormState({ control });
@@ -54,9 +49,10 @@ export function FileDropzoneField<T extends FieldValues>({
             <FormControl>
               <Dropzone
                 {...rest}
+                multiple={multiple}
                 onDropAccepted={(acceptedFiles) => {
                   const files = acceptedFiles.map((file) => ({ file }));
-                  if (isSingleFile) {
+                  if (!multiple) {
                     replace(files as TFiles);
                     trigger(name as Path<T>);
                     return;
@@ -67,7 +63,7 @@ export function FileDropzoneField<T extends FieldValues>({
                 onDropRejected={(rejections) => {
                   // Accept and show any file. Validation will be on schema level.
                   const files = rejections.map(({ file }) => ({ file }));
-                  if (isSingleFile) {
+                  if (!multiple) {
                     replace(files as TFiles);
                     trigger(name as Path<T>);
                     return;
@@ -135,32 +131,3 @@ export function FileDropzoneField<T extends FieldValues>({
     </div>
   );
 }
-
-const _onRejectedValidation = <T extends FieldValues>(
-  name: Path<T>,
-  rejections: FileRejection[],
-  setError: UseFormSetError<T>,
-  tValidator: ReturnType<typeof useTranslations<'validator'>>,
-) => {
-  const tooLarge = rejections.some((rej) => rej.errors.some((e) => e.code === 'file-too-large'));
-  const wrongType = rejections.some((rej) =>
-    rej.errors.some((e) => e.code === 'file-invalid-type'),
-  );
-
-  if (tooLarge) {
-    setError(name, {
-      type: 'manual',
-      message: tValidator('file_too_large', { max: MAX_SIZE_MB }),
-    });
-  } else if (wrongType) {
-    setError(name, {
-      type: 'manual',
-      message: tValidator('file_invalid_type'),
-    });
-  } else {
-    setError(name, {
-      type: 'manual',
-      message: tValidator('file_problem'),
-    });
-  }
-};

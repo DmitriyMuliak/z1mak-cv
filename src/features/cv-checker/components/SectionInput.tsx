@@ -58,7 +58,6 @@ export const SectionInput: React.FC<SectionInputProps> = ({
         <FileDropzoneField
           control={control}
           name={fileName}
-          isSingleFile
           multiple={false}
           accept={cvFileTypes}
           className="min-h-[64px] mb-0"

@@ -60,7 +60,6 @@ export function ContactForm() {
         <FileDropzoneField
           control={form.control}
           name="files"
-          isSingleFile
           multiple={false}
           accept={contactFileTypes}
         />
