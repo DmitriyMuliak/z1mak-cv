@@ -1,6 +1,6 @@
 'use client';
 
-import { useFieldArray, Control, UseFormReturn } from 'react-hook-form';
+import { Control } from 'react-hook-form';
 import { TextareaField } from '@/components/Forms/fields/TextareaField';
 import { FileDropzoneField } from '@/components/Forms/fields/FileDropzoneField';
 import { SendToAnalyzeFEType } from '../schema/form/toAnalyzeSchemaFE';
@@ -13,7 +13,6 @@ type SectionInputProps = {
   label: string;
   textAreaPlaceHolder: string;
   control: Control<SendToAnalyzeFEType>;
-  form: UseFormReturn<SendToAnalyzeFEType>;
   textName: 'cvText' | 'jobText';
   fileName: 'cvFile' | 'jobFile';
   addBy: AddDescriptionBy;
@@ -25,18 +24,12 @@ export const SectionInput: React.FC<SectionInputProps> = ({
   label,
   textAreaPlaceHolder,
   control,
-  form,
   textName,
   fileName,
   addBy,
   setAddBy,
   isVisible = true,
 }) => {
-  const { fields, replace, remove, prepend } = useFieldArray({
-    name: fileName,
-    control,
-  });
-
   if (!isVisible) return null;
 
   const isText = addBy === 'text';
@@ -65,20 +58,9 @@ export const SectionInput: React.FC<SectionInputProps> = ({
         <FileDropzoneField
           control={control}
           name={fileName}
-          isSingleFile
           multiple={false}
           accept={cvFileTypes}
           className="min-h-[64px] mb-0"
-          // casting need for have possibility to use v.AnySchema in case when we should ignore inputs
-          files={fields as unknown as { file: File; id: string }[]}
-          // Field Array methods
-          replace={replace}
-          remove={remove}
-          prepend={prepend}
-          // Form methods
-          setError={form.setError}
-          clearErrors={form.clearErrors}
-          validateTrigger={form.trigger}
         />
       </div>
     </div>

@@ -104,7 +104,6 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
           label={tp('cvForm.title')}
           textAreaPlaceHolder={tp('cvForm.textAreaPlaceholder')}
           control={form.control}
-          form={form}
           textName="cvText"
           fileName="cvFile"
           addBy={addCvBy}
@@ -114,7 +113,6 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
           label={tp('jobForm.title')}
           textAreaPlaceHolder={tp('jobForm.textAreaPlaceholder')}
           control={form.control}
-          form={form}
           textName="jobText"
           fileName="jobFile"
           addBy={addJobBy}
