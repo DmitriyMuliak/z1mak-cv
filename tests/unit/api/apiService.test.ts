@@ -174,22 +174,6 @@ describe('ApiService', () => {
       expect(interceptor).toHaveBeenCalled();
     });
 
-    it('should handle request interceptor rejection and recover', async () => {
-      const interceptorError = new Error('Request interceptor failed');
-      apiService.interceptors.request.use(
-        () => Promise.reject(interceptorError),
-        (_error) => {
-          // Allow recovery
-          return Promise.resolve({ headers: { 'X-Recovered': 'true' } });
-        },
-      );
-
-      mockFetch.mockResolvedValue(new Response('{}'));
-      await apiService.get('/req-interceptor-rejection');
-
-      expect(mockFetch.mock.calls[0][1].headers).toHaveProperty('X-Recovered', 'true');
-    });
-
     it('should handle response interceptor rejection and recover', async () => {
       // This interceptor will handle the rejection and recover
       apiService.interceptors.response.use(
@@ -268,6 +252,69 @@ describe('ApiService', () => {
 
       expect(retryCallArgs[0]).toBe(`${baseUrl}/secure-data`);
       expect(retryHeaders['Authorization']).toBe('Bearer new-fake-access-token');
+    });
+
+    describe('Interceptors Error Chaining (Pipeline)', () => {
+      it('should allow a second interceptor to catch and recover from an error thrown by the first interceptor', async () => {
+        apiService.interceptors.request.use(() => {
+          throw new Error('Interceptor 1 Failed');
+        });
+
+        apiService.interceptors.request.use(
+          (conf) => conf,
+          (error) => {
+            expect((error as Error).message).toBe('Interceptor 1 Failed');
+            return { headers: { 'X-Recovered-By-Chain': 'true' } };
+          },
+        );
+
+        mockFetch.mockResolvedValue(new Response('{}'));
+
+        await apiService.get('/chain-test');
+
+        expect(mockFetch).toHaveBeenCalled();
+        expect(mockFetch.mock.calls[0][1].headers).toHaveProperty('X-Recovered-By-Chain', 'true');
+      });
+
+      it('should pass error through an intermediate interceptor that has no error handler', async () => {
+        apiService.interceptors.request.use(() => Promise.reject(new Error('Boom')));
+
+        apiService.interceptors.request.use((conf) => {
+          conf.headers = { 'X-Should-Not-Exist': 'true' };
+          return conf;
+        });
+
+        apiService.interceptors.request.use(
+          (conf) => conf,
+          (error) => {
+            expect((error as Error).message).toBe('Boom');
+            return { headers: { 'X-Caught-At-End': 'true' } };
+          },
+        );
+
+        mockFetch.mockResolvedValue(new Response('{}'));
+
+        await apiService.get('/fallthrough-test');
+
+        const headers = mockFetch.mock.calls[0][1].headers;
+        expect(headers).not.toHaveProperty('X-Should-Not-Exist');
+        expect(headers).toHaveProperty('X-Caught-At-End', 'true');
+      });
+
+      it('should allow an interceptor to catch an error and throw a different one', async () => {
+        apiService.interceptors.request.use(() => {
+          throw new Error('Original Error');
+        });
+
+        apiService.interceptors.request.use(
+          (c) => c,
+          (error) => {
+            throw new Error(`Wrapped: ${(error as Error).message}`);
+          },
+        );
+
+        await expect(apiService.get('/transform')).rejects.toThrow('Wrapped: Original Error');
+      });
     });
   });
 
