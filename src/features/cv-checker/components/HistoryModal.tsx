@@ -24,56 +24,50 @@ import {
 } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { BaseInfoResponse, getResentResumeBaseInfo } from '@/actions/resume/resumeActions';
 import { Link } from '@/i18n/navigation';
-import { paths } from '@/consts/routes';
-import { formatToUserDate } from '@/utils/date';
-import { FolderOpenDot } from 'lucide-react';
+import { FolderOpenDot, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AnimationContainer } from '@/components/AnimatedContainer';
-
-interface HistoryTag extends BaseInfoResponse {
-  link: string;
-}
+import { useHistoryStore } from '@/features/cv-checker/store/historyStore';
+import { HistoryTag } from '@/features/cv-checker/types';
 
 export function HistoryModal() {
-  const [isLoading, setIsLoading] = React.useState(true);
   const [open, setOpen] = React.useState(false);
-  const [tags, setTags] = React.useState<HistoryTag[]>([]);
   const locale = useLocale();
   const t = useTranslations('components.historyModal');
   const isDesktop = useMediaQuery('(min-width: 768px)');
+  const { history, isFetching, fetchHistory } = useHistoryStore();
 
   useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      try {
-        const list = await getResentResumeBaseInfo();
-        setTags(
-          list.map((item) => ({
-            ...item,
-            createdAt: formatToUserDate(item.createdAt, { locale }),
-            link: `${paths.cvReport}?jobId=${item.id}`,
-          })),
-        );
-      } finally {
-        setIsLoading(false);
-      }
+    if (open) {
+      fetchHistory(locale);
     }
-    if (open) fetchData();
-  }, [open, locale]);
+  }, [open, fetchHistory, locale]);
 
   const renderContent = () => (
     <>
-      {isLoading ? <div className="animate-pulse rounded h-72">{t('loading')}</div> : null}
-      {!isLoading && !tags.length ? <div className="p-2 h-72">{t('noHistory')}</div> : null}
-      {!isLoading && tags.length ? (
+      {history.length > 0 ? (
         <AnimationContainer id="tag-history-list">
-          <HistoryList tags={tags} onItemClick={() => setOpen(false)} />
+          <HistoryList tags={history} onItemClick={() => setOpen(false)} />
         </AnimationContainer>
-      ) : null}
+      ) : isFetching ? (
+        <div className="animate-pulse rounded h-72 flex items-center justify-center">
+          {t('loading')}
+        </div>
+      ) : (
+        <div className="p-2 h-72 flex items-center justify-center">{t('noHistory')}</div>
+      )}
     </>
   );
+
+  const renderUpdateIcon = () => {
+    return (
+      isFetching &&
+      history.length > 0 && (
+        <RefreshCw size={16} className="inline-block animate-spin duration-1500 ml-1 mr-1" />
+      )
+    );
+  };
 
   if (isDesktop) {
     return (
@@ -83,7 +77,10 @@ export function HistoryModal() {
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px] z-50 frosted-card">
           <DialogHeader>
-            <DialogTitle className="light:text-white">{t('title')}</DialogTitle>
+            <DialogTitle className="light:text-white">
+              {t('title')}
+              {renderUpdateIcon()}
+            </DialogTitle>
             <DialogDescription className="light:text-[#c7c7c7]">
               {t('description')}
             </DialogDescription>
@@ -101,13 +98,16 @@ export function HistoryModal() {
       </DrawerTrigger>
       <DrawerContent className="z-50 frosted-card [&_[data-slot=drawer-handle]]:bg-primary">
         <DrawerHeader className="text-left">
-          <DrawerTitle className="light:text-white">{t('title')}</DrawerTitle>
+          <DrawerTitle className="light:text-white">
+            {t('title')}
+            {renderUpdateIcon()}
+          </DrawerTitle>
           <DrawerDescription className="light:text-white">{t('description')}</DrawerDescription>
         </DrawerHeader>
         <div className="p-4 pb-0">{renderContent()}</div>
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
-            <Button variant="outline">{t('cancel')}</Button>
+            <Button variant="outline">{t('close')}</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

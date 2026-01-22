@@ -186,7 +186,8 @@
       "description": "Click to check previous analysis.",
       "noHistory": "No history found.",
       "loading": "Loading history...",
-      "cancel": "Close"
+      "close": "Close",
+      "updating": "Updating list..."
     }
   },
   "validator": {
