@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
 import { Form } from '@/components/ui/form';
 import { TextField } from '@/components/Forms/fields/TextField';
@@ -25,10 +25,7 @@ export function ContactForm() {
     mode: 'onBlur',
     defaultValues: { name: '', email: '', message: '', files: [], recaptchaToken: null },
   });
-  const files = useWatch({
-    control: form.control,
-    name: 'files',
-  });
+  const files = form.watch('files');
   const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
   const isSubmitting = form.formState.isSubmitting;
   const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
