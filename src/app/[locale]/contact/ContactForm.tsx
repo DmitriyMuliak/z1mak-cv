@@ -27,13 +27,12 @@ export function ContactForm() {
   });
   const files = form.watch('files');
   const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
-  const isSubmitting = form.formState.isSubmitting;
+  const { isSubmitting, isValid } = form.formState;
   const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
   const showSuccessLoader = delayedIsLoading && isSuccess;
 
   const handleSubmitCb = createOnSubmitHandler(sendContactAction, form);
   const onSubmit = form.handleSubmit(handleSubmitCb);
-  const isFormInvalid = Object.keys(form.formState.errors).length > 0;
 
   return (
     <Form {...form}>
@@ -71,7 +70,7 @@ export function ContactForm() {
         />
         <SubmitActionButton
           isSubmitting={isSubmitting}
-          isFormInvalid={isFormInvalid}
+          isFormInvalid={!isValid}
           showSuccessLoader={showSuccessLoader}
           title={tc('formButtonSendTitle')}
           onSuccessTitle={tc('formButtonSendSuccessTitle')}
