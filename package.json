@@ -108,5 +108,11 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.53.0",
     "vitest": "^4.0.17"
+  },
+  "overrides": {
+    "supabase": {
+      "tar": "^7.5.6"
+    },
+    "elliptic": "^6.6.1"
   }
 }

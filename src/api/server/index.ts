@@ -1,5 +1,11 @@
+'use server';
+
 import { ApiService } from '../apiService';
 import { ApiRoutes } from './apiRoutes';
+import { redirect } from '@/navigation';
+import { createServerClient } from '@/lib/supabase/server';
+import { paths } from '@/consts/routes';
+import { getLocale } from 'next-intl/server';
 
 export const apiGoogleCaptcha = new ApiService({
   baseUrl: ApiRoutes.RECAPTCHA_VERIFY.baseUrl,
@@ -7,4 +13,26 @@ export const apiGoogleCaptcha = new ApiService({
 
 export const apiCvAnalyser = new ApiService({
   baseUrl: ApiRoutes.CV_ANALYSER.baseUrl,
+});
+
+apiCvAnalyser.interceptors.request.use(async (config) => {
+  const supabase = await createServerClient();
+  const locale = await getLocale();
+
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession();
+
+  if (error || !session) {
+    redirect({ href: { pathname: paths.login }, locale });
+    return Promise.reject(new Error('Unauthorized'));
+  }
+
+  const token = session.access_token;
+
+  const headers = new Headers(config.headers);
+  headers.set('Authorization', `Bearer ${token}`);
+
+  return config;
 });
