@@ -1,7 +1,7 @@
 'use server';
 
-import { ApiService } from '../apiService';
-import { ApiRoutes } from './apiRoutes';
+import { ApiService } from '@/api/apiService';
+import { ApiRoutes } from '@/api/server/apiRoutes';
 import { redirect } from '@/navigation';
 import { createServerClient } from '@/lib/supabase/server';
 import { paths } from '@/consts/routes';
