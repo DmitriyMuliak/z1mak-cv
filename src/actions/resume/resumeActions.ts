@@ -68,11 +68,6 @@ export type BaseInfoResponse = {
   status: JobStatus;
 };
 
-const internalApiKey = process.env.INTERNAL_API_KEY ?? 'not set';
-const authHeader = {
-  'x-internal-api-key': internalApiKey,
-};
-
 const getUserAuthData = async () => {
   const supabase = await createServerClient();
   const { data, error } = await supabase.auth.getClaims();
@@ -104,9 +99,6 @@ export const analyzeResume = async (
     const data = await apiCvAnalyser.post<AnalyzeResponse, AnalyzeRequest>(
       ApiRoutes.CV_ANALYSER.analyze,
       body,
-      {
-        headers: authHeader,
-      },
     );
 
     return { success: true, data };
@@ -119,13 +111,7 @@ export const getResumeStatus = async (
   jobId: string,
 ): Promise<ServerActionResult<StatusResponse>> => {
   try {
-    const data = await apiCvAnalyser.get<StatusResponse>(
-      ApiRoutes.CV_ANALYSER.status(jobId),
-      undefined,
-      {
-        headers: authHeader,
-      },
-    );
+    const data = await apiCvAnalyser.get<StatusResponse>(ApiRoutes.CV_ANALYSER.status(jobId));
     return { success: true, data };
   } catch (error) {
     return handleServerError(error);
@@ -139,9 +125,6 @@ export const getResumeResult = async (
     const data = await apiCvAnalyser.get<ResultResponse>(
       ApiRoutes.CV_ANALYSER.result(jobId),
       undefined,
-      {
-        headers: authHeader,
-      },
     );
     return { success: true, data };
   } catch (error) {
