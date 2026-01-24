@@ -21,8 +21,6 @@ export type AnalyzePayload = {
 };
 
 export type AnalyzeRequest = {
-  userId: string;
-  role: 'user' | 'admin';
   payload: AnalyzePayload;
 };
 
@@ -35,13 +33,13 @@ export type ResumeErrorCode =
   | 'CONCURRENCY_LIMIT' // /resume/analyze: user concurrency з Lua
   | 'USER_RPD_LIMIT:lite' // /resume/analyze: user RPD з Lua
   | 'USER_RPD_LIMIT:hard' // /resume/analyze: user RPD з Lua
-  | 'MODEL_LIMIT' // /resume/analyze: усі моделі в chain по RPD
+  | 'MODEL_LIMIT' // /resume/analyze: all models in chain down by RPD
   | 'NOT_FOUND' // /resume/:id/result, /resume/:id/status
   | 'PROVIDER_ERROR'; // /resume/status
 
 export type ResumeErrorResponse = {
   error: ResumeErrorCode;
-  message?: string; // used inly for QUEUE_FULL
+  message?: string; // used only for QUEUE_FULL
 };
 
 type JobStatus = 'queued' | 'in_progress' | 'completed' | 'failed';
@@ -68,12 +66,7 @@ export type BaseInfoResponse = {
   status: JobStatus;
 };
 
-const internalApiKey = process.env.INTERNAL_API_KEY ?? 'not set';
-const authHeader = {
-  'x-internal-api-key': internalApiKey,
-};
-
-const getUserAuthData = async () => {
+export const getUserAuthData = async () => {
   const supabase = await createServerClient();
   const { data, error } = await supabase.auth.getClaims();
 
@@ -91,22 +84,14 @@ const getUserAuthData = async () => {
 export const analyzeResume = async (
   params: AnalyzePayload,
 ): Promise<ServerActionResult<AnalyzeResponse>> => {
-  // TODO: send user jwt token to verify user identity directly in the queue service
-  const { userId, userRole } = await getUserAuthData();
-
   const body = {
     payload: params,
-    userId,
-    role: userRole,
   };
 
   try {
     const data = await apiCvAnalyser.post<AnalyzeResponse, AnalyzeRequest>(
       ApiRoutes.CV_ANALYSER.analyze,
       body,
-      {
-        headers: authHeader,
-      },
     );
 
     return { success: true, data };
@@ -119,13 +104,7 @@ export const getResumeStatus = async (
   jobId: string,
 ): Promise<ServerActionResult<StatusResponse>> => {
   try {
-    const data = await apiCvAnalyser.get<StatusResponse>(
-      ApiRoutes.CV_ANALYSER.status(jobId),
-      undefined,
-      {
-        headers: authHeader,
-      },
-    );
+    const data = await apiCvAnalyser.get<StatusResponse>(ApiRoutes.CV_ANALYSER.status(jobId));
     return { success: true, data };
   } catch (error) {
     return handleServerError(error);
@@ -136,13 +115,7 @@ export const getResumeResult = async (
   jobId: string,
 ): Promise<ServerActionResult<ResultResponse>> => {
   try {
-    const data = await apiCvAnalyser.get<ResultResponse>(
-      ApiRoutes.CV_ANALYSER.result(jobId),
-      undefined,
-      {
-        headers: authHeader,
-      },
-    );
+    const data = await apiCvAnalyser.get<ResultResponse>(ApiRoutes.CV_ANALYSER.result(jobId));
     return { success: true, data };
   } catch (error) {
     return handleServerError(error);
@@ -156,10 +129,6 @@ export const getResentResumeBaseInfo = async (
   // const { userId } = await getUserAuthData();
   // const resp = await apiCvAnalyser.get<BaseInfoResponse[]>(
   //   ApiRoutes.CV_ANALYSER.recent(userId),
-  //   undefined,
-  //   {
-  //     headers: authHeader,
-  //   },
   // );
 
   const supabase = await createServerClient();

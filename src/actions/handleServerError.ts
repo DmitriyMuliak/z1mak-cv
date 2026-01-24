@@ -23,24 +23,38 @@ const processApiError = (
   return { isProcessed: false };
 };
 
-const getCriticalError = () => {
-  return {
-    success: false as const,
-    error: {
-      httpStatus: 500,
-      code: 'INTERNAL_SERVER_ERROR',
-      message: 'Something went wrong on the server side',
-    },
-  };
-};
-
 export const handleServerError = (error: unknown): ServerActionResult<never> => {
   const processed = processApiError(error);
   if (processed.isProcessed) {
     return processed.result;
   }
 
-  console.error('[ServerAction] Critical Error:', error);
-  // TODO: investigate mb better throw error for error.tsx view
-  return getCriticalError();
+  const resultedError = new CriticalError('Critical Error', { cause: error });
+
+  console.error(`[ServerAction] Critical Error: [${resultedError.id}]`, resultedError);
+
+  return getClientCriticalError(resultedError.id);
 };
+
+const getClientCriticalError = (errorId?: string) => {
+  return {
+    success: false as const,
+    error: {
+      httpStatus: 500,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Something went wrong on the server side',
+      ...(errorId ? { data: { errorId } } : {}),
+    },
+  };
+};
+
+class CriticalError extends Error {
+  public id: string;
+  public timestamp: string;
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options);
+    this.name = 'CriticalError';
+    this.id = crypto.randomUUID();
+    this.timestamp = new Date().toISOString();
+  }
+}
