@@ -21,8 +21,6 @@ export type AnalyzePayload = {
 };
 
 export type AnalyzeRequest = {
-  userId: string;
-  role: 'user' | 'admin';
   payload: AnalyzePayload;
 };
 
@@ -68,7 +66,7 @@ export type BaseInfoResponse = {
   status: JobStatus;
 };
 
-const getUserAuthData = async () => {
+export const getUserAuthData = async () => {
   const supabase = await createServerClient();
   const { data, error } = await supabase.auth.getClaims();
 
@@ -86,13 +84,8 @@ const getUserAuthData = async () => {
 export const analyzeResume = async (
   params: AnalyzePayload,
 ): Promise<ServerActionResult<AnalyzeResponse>> => {
-  // TODO: send user jwt token to verify user identity directly in the queue service
-  const { userId, userRole } = await getUserAuthData();
-
   const body = {
     payload: params,
-    userId,
-    role: userRole,
   };
 
   try {
@@ -122,10 +115,7 @@ export const getResumeResult = async (
   jobId: string,
 ): Promise<ServerActionResult<ResultResponse>> => {
   try {
-    const data = await apiCvAnalyser.get<ResultResponse>(
-      ApiRoutes.CV_ANALYSER.result(jobId),
-      undefined,
-    );
+    const data = await apiCvAnalyser.get<ResultResponse>(ApiRoutes.CV_ANALYSER.result(jobId));
     return { success: true, data };
   } catch (error) {
     return handleServerError(error);
@@ -139,10 +129,6 @@ export const getResentResumeBaseInfo = async (
   // const { userId } = await getUserAuthData();
   // const resp = await apiCvAnalyser.get<BaseInfoResponse[]>(
   //   ApiRoutes.CV_ANALYSER.recent(userId),
-  //   undefined,
-  //   {
-  //     headers: authHeader,
-  //   },
   // );
 
   const supabase = await createServerClient();
