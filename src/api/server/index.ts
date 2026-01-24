@@ -1,4 +1,4 @@
-'use server';
+import 'server-only';
 
 import { ApiService } from '@/api/apiService';
 import { ApiRoutes } from '@/api/server/apiRoutes';
