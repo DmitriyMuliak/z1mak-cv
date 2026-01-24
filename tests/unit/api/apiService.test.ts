@@ -420,6 +420,6 @@ describe('ApiError', () => {
     expect(error.name).toBe('ApiError');
     expect(error.config).toBe(config);
     expect(error.url).toBe('http://test.com');
-    expect((await error.response.json()).value).toBe(data.value);
+    expect(error.response && (await error.response.json()).value).toBe(data.value);
   });
 });

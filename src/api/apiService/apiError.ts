@@ -3,7 +3,7 @@ import type { ApiRequestOptions } from './types';
 export class ApiError<T = unknown> extends Error {
   public status: number;
   public body?: T;
-  public response: Response;
+  public response?: Response;
   public config: ApiRequestOptions;
   public url: string;
 
@@ -13,7 +13,7 @@ export class ApiError<T = unknown> extends Error {
       status: number;
       body?: T;
       cause?: unknown;
-      response: Response;
+      response?: Response;
       config: ApiRequestOptions;
       url: string;
     },

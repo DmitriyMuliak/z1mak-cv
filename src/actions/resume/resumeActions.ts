@@ -35,13 +35,13 @@ export type ResumeErrorCode =
   | 'CONCURRENCY_LIMIT' // /resume/analyze: user concurrency з Lua
   | 'USER_RPD_LIMIT:lite' // /resume/analyze: user RPD з Lua
   | 'USER_RPD_LIMIT:hard' // /resume/analyze: user RPD з Lua
-  | 'MODEL_LIMIT' // /resume/analyze: усі моделі в chain по RPD
+  | 'MODEL_LIMIT' // /resume/analyze: all models in chain down by RPD
   | 'NOT_FOUND' // /resume/:id/result, /resume/:id/status
   | 'PROVIDER_ERROR'; // /resume/status
 
 export type ResumeErrorResponse = {
   error: ResumeErrorCode;
-  message?: string; // used inly for QUEUE_FULL
+  message?: string; // used only for QUEUE_FULL
 };
 
 type JobStatus = 'queued' | 'in_progress' | 'completed' | 'failed';

@@ -78,6 +78,24 @@ export class ApiService {
     try {
       response = await fetch(finalUrl, fetchInit);
     } catch (error) {
+      const isAbort = error instanceof DOMException && error.name === 'AbortError';
+
+      if (isAbort) {
+        return this.handleResponseChain<R>(
+          Promise.reject(
+            new ApiError('Request Aborted', {
+              body: { error: 'aborted' },
+              cause: error,
+              config,
+              url: finalUrl,
+              status: 0,
+            }),
+          ),
+          config,
+          finalUrl,
+        );
+      }
+
       return this.handleResponseChain<R>(Promise.reject(error), config, finalUrl);
     }
 
@@ -113,8 +131,6 @@ export class ApiService {
     // 2. Run Response Interceptors
     const responseHandlers = this.interceptors.response.getActiveHandlers();
     for (const handler of responseHandlers) {
-      // 3. UPDATED: No more "as Promise<Response>".
-      // TypeScript knows that fulfilled/rejected return Response based on generics.
       promiseChain = promiseChain.then(handler.fulfilled, handler.rejected);
     }
 
@@ -141,6 +157,7 @@ export class ApiService {
   ): Record<string, string> {
     const headers = { ...this.defaultHeaders, ...(customHeaders as Record<string, string>) };
 
+    // Host (Browser/Node) should set boundary by it self
     if (body instanceof FormData) {
       delete headers['Content-Type'];
     }
