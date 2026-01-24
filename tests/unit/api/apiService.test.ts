@@ -28,14 +28,29 @@ describe('ApiService', () => {
       expect(apiService['baseUrl']).toBe(baseUrl);
     });
 
-    it('should set default headers', () => {
+    it('should NOT set default headers', () => {
       const serviceWithCustomHeaders = new ApiService({
         baseUrl,
         headers: { 'X-Custom': 'value' },
       });
       expect(serviceWithCustomHeaders['defaultHeaders']).toEqual({
-        'Content-Type': 'application/json',
         'X-Custom': 'value',
+      });
+    });
+
+    describe('Validation', () => {
+      it('should throw error if baseUrl is invalid', () => {
+        expect(() => new ApiService({ baseUrl: 'invalid-url' })).toThrow(/valid absolute URL/);
+      });
+
+      it('should throw error if baseUrl contains query params', () => {
+        expect(() => new ApiService({ baseUrl: 'https://api.com?v=1' })).toThrow(
+          /query parameters/,
+        );
+      });
+
+      it('should throw error if protocol is not allowed (e.g. ftp)', () => {
+        expect(() => new ApiService({ baseUrl: 'ftp://api.com' })).toThrow(/must use https:/);
       });
     });
   });
@@ -102,6 +117,27 @@ describe('ApiService', () => {
         expect.any(Object),
       );
     });
+    it('should serialize array parameters and ignore null/undefined', async () => {
+      const params = {
+        ids: [1, 2],
+        filter: 'active',
+        ignored: undefined,
+        empty: null,
+      };
+
+      mockFetch.mockResolvedValue(new Response('{}'));
+
+      await apiService.get('/search', params);
+
+      const calledUrl = mockFetch.mock.calls[0][0];
+      const urlObj = new URL(calledUrl);
+
+      expect(urlObj.searchParams.getAll('ids')).toEqual(['1', '2']);
+
+      expect(urlObj.searchParams.get('filter')).toBe('active');
+      expect(urlObj.searchParams.has('ignored')).toBe(false);
+      expect(urlObj.searchParams.has('empty')).toBe(false);
+    });
   });
 
   describe('Error Handling', () => {
@@ -131,8 +167,24 @@ describe('ApiService', () => {
       const networkError = new TypeError('Failed to fetch');
       mockFetch.mockRejectedValue(networkError);
 
-      await expect(apiService.get('/network-error')).rejects.toThrow(networkError);
-      expect(devLogger.error).toHaveBeenCalledWith('[ApiService] Unexpected error', networkError);
+      await expect(apiService.get('/network-error')).rejects.toThrow(ApiError);
+
+      try {
+        await apiService.get('/network-error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(ApiError);
+
+        if (error instanceof ApiError) {
+          expect(error.message).toBe('Failed to fetch');
+          expect(error.status).toBe(0);
+          expect(error.cause).toBe(networkError);
+        }
+      }
+
+      expect(devLogger.error).toHaveBeenCalledWith(
+        '[ApiService] 0 Failed to fetch',
+        undefined, // body is undefined for network errors
+      );
     });
 
     it('should throw ApiError on JSON parsing error', async () => {
@@ -149,19 +201,48 @@ describe('ApiService', () => {
         }
       }
     });
+
+    it('should handle request cancellation via AbortSignal', async () => {
+      const controller = new AbortController();
+
+      mockFetch.mockImplementation(async () => {
+        return new Promise((_, reject) => {
+          setTimeout(() => {
+            reject(new DOMException('The operation was aborted', 'AbortError'));
+          }, 50);
+        });
+      });
+
+      const requestPromise = apiService.get('/slow', undefined, { signal: controller.signal });
+
+      controller.abort();
+
+      await expect(requestPromise).rejects.toThrow('The operation was aborted');
+      await expect(requestPromise).rejects.toHaveProperty('name', 'AbortError');
+    });
   });
 
   describe('Interceptors', () => {
     it('should apply request interceptors', async () => {
       apiService.interceptors.request.use((config) => {
-        config.headers = { ...config.headers, 'X-Intercepted': 'true' };
+        if (config.headers instanceof Headers) {
+          config.headers.set('X-Intercepted', 'true');
+        } else {
+          config.headers = { ...config.headers, 'X-Intercepted': 'true' };
+        }
         return config;
       });
 
       mockFetch.mockResolvedValue(new Response('{}'));
       await apiService.get('/intercept');
 
-      expect(mockFetch.mock.calls[0][1].headers).toHaveProperty('X-Intercepted', 'true');
+      const calledHeaders = mockFetch.mock.calls[0][1].headers;
+
+      if (calledHeaders instanceof Headers) {
+        expect(calledHeaders.get('X-Intercepted')).toBe('true');
+      } else {
+        expect(calledHeaders).toHaveProperty('X-Intercepted', 'true');
+      }
     });
 
     it('should apply response interceptors', async () => {
@@ -343,6 +424,17 @@ describe('ApiService', () => {
       expect(result).toEqual(mockData);
       expect(mockFetch).not.toHaveBeenCalled();
     });
+
+    it('should prefer mock handler over real network request', async () => {
+      apiService.addMockHandler('/users', async () => ({ data: [{ id: 1 }] }));
+
+      mockFetch.mockRejectedValue(new Error('Should not be called'));
+
+      const result = await apiService.get('/users');
+
+      expect(result).toEqual([{ id: 1 }]);
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
   });
 
   describe('Response Parsing', () => {
@@ -365,6 +457,27 @@ describe('ApiService', () => {
       const result = await apiService.delete('/resource');
       expect(result).toBeUndefined();
     });
+
+    it('should return Blob when responseAs is set to "blob"', async () => {
+      const mockBlob = new Blob(['binary'], { type: 'application/pdf' });
+      mockFetch.mockResolvedValue(
+        new Response(mockBlob, {
+          headers: { 'Content-Type': 'application/pdf' },
+        }),
+      );
+
+      const result = await apiService.get<Blob>('/file', undefined, { responseAs: 'blob' });
+
+      expect(result).toBeInstanceOf(Blob);
+      expect(result.type).toBe('application/pdf');
+    });
+
+    it('should return undefined for 200 OK with empty body when expecting JSON', async () => {
+      mockFetch.mockResolvedValue(new Response('', { status: 200 }));
+
+      const result = await apiService.get('/empty-json');
+      expect(result).toBeUndefined();
+    });
   });
 
   describe('Headers and Body preparation', () => {
@@ -383,7 +496,7 @@ describe('ApiService', () => {
 
 describe('InterceptorManager', () => {
   it('should add and eject interceptors', () => {
-    const apiService = new ApiService({ baseUrl: 'dummy' });
+    const apiService = new ApiService({ baseUrl: 'https://dummy.com' });
     const manager = apiService.interceptors.request;
     const handler = (config: ApiRequestOptions) => config;
 
