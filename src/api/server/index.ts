@@ -35,5 +35,6 @@ apiCvAnalyser.interceptors.request.use(async (config) => {
   headers.set('Authorization', `Bearer ${token}`);
   headers.set('x-internal-api-key', process.env.INTERNAL_API_KEY ?? 'internal api key is not set');
 
+  config.headers = headers;
   return config;
 });
