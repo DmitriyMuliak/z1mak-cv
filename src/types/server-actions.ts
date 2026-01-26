@@ -1,5 +1,5 @@
 export type AppError<TCode = string, TErrorData = Record<string, unknown>> = {
-  httpStatus: number;
+  httpStatus?: number;
   code: TCode;
   message?: string;
   data?: TErrorData;

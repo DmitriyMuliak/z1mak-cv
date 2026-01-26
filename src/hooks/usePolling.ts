@@ -1,110 +1,133 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useMemo, useCallback, useEffect, useRef, useState } from 'react';
 
-export interface PollingOptions<T> {
-  fn: () => Promise<T>; // TODO: add AbortSignal support for fetch callback - fn: (ctx: { signal: AbortSignal }) => Promise<T>;
+type FetcherFn<T> = (ctx: { signal: AbortSignal }) => Promise<T>;
+
+export interface PollingOptions<T, E = Error> {
+  fn: FetcherFn<T>;
   validate: (data: T) => { isComplete: boolean; isFailed: boolean };
+  onSuccess?: (data: T) => void;
+  onFailure?: (error: E) => void;
+  shouldRetry?: (error: E) => boolean;
   interval?: number;
   timeout?: number;
   enabled?: boolean;
   maxAttempts?: number;
+  timingStrategy?: 'fixed-delay' | 'fixed-rate';
 }
 
 export const usePolling = <T, E = Error>({
   fn,
   validate,
+  onSuccess,
+  onFailure,
+  shouldRetry,
   interval = 2000,
   timeout = 30 * 60 * 1000,
   enabled = true,
   maxAttempts = 3,
-}: PollingOptions<T>) => {
+  timingStrategy = 'fixed-delay',
+}: PollingOptions<T, E>) => {
   const [data, setData] = useState<T | null>(null);
-  const [error, setError] = useState<E | Error | null>(null);
+  const [error, setError] = useState<E | null>(null);
   const [isFinished, setIsFinished] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
-  const fnRef = useRef(fn);
-  fnRef.current = fn;
-
-  const validateRef = useRef(validate);
-  validateRef.current = validate;
+  const refs = useRef({ fn, validate, onSuccess, onFailure, shouldRetry });
+  useEffect(() => {
+    refs.current = { fn, validate, onSuccess, onFailure, shouldRetry };
+  }, [fn, validate, onSuccess, onFailure, shouldRetry]);
 
   const generationRef = useRef(0);
-
   const activeControllerRef = useRef<AbortController | null>(null);
+  const retriesRef = useRef(0);
 
   const reset = useCallback(() => {
     generationRef.current += 1;
-
     activeControllerRef.current?.abort();
     activeControllerRef.current = null;
-
     setData(null);
     setError(null);
     setIsFinished(false);
     setRetryCount(0);
+    retriesRef.current = 0;
   }, []);
 
   useEffect(() => {
     if (!enabled || isFinished) return;
-
     const myGen = generationRef.current;
-    const pollingStartTime = Date.now();
 
+    const pollingStartTime = Date.now();
     let timerId: ReturnType<typeof setTimeout> | undefined;
     let cancelled = false;
 
     const run = async () => {
-      if (cancelled) return;
-      if (generationRef.current !== myGen) return;
+      if (cancelled || generationRef.current !== myGen) return;
 
+      // 1. Timeout Check
       if (Date.now() - pollingStartTime > timeout) {
-        setError(new Error('POLLING_TIMEOUT'));
+        const timeoutErr = new Error('POLLING_TIMEOUT') as unknown as E;
+        setError(timeoutErr);
         setIsFinished(true);
+        refs.current.onFailure?.(timeoutErr);
         return;
       }
 
       const requestStartTime = Date.now();
-
       const controller = new AbortController();
       activeControllerRef.current = controller;
 
       try {
-        const result = await fnRef.current(); // TODO: add support AbortController in fetch callback - fnRef.current({ signal: controller.signal });
+        const result = await refs.current.fn({ signal: controller.signal });
 
-        if (cancelled) return;
-        if (generationRef.current !== myGen) return;
+        if (cancelled || generationRef.current !== myGen) return;
 
-        setRetryCount(0);
+        // Success reset
+        if (retriesRef.current > 0) {
+          retriesRef.current = 0;
+          setRetryCount(0);
+        }
         setError(null);
-
-        const { isComplete, isFailed } = validateRef.current(result);
         setData(result);
+
+        const { isComplete, isFailed } = refs.current.validate(result);
 
         if (isComplete || isFailed) {
           setIsFinished(true);
+          if (isComplete) {
+            refs.current.onSuccess?.(result);
+          }
+          // stop flow (prevent new timer)
           return;
         }
 
-        timerId = setTimeout(run, calculateNextDelay(requestStartTime, interval));
-      } catch (err) {
-        if (cancelled) return;
-        if (generationRef.current !== myGen) return;
+        const delay =
+          timingStrategy === 'fixed-delay'
+            ? interval
+            : calculateFixedRateDelay(requestStartTime, interval);
 
+        timerId = setTimeout(run, delay);
+      } catch (err: unknown) {
+        if (cancelled || generationRef.current !== myGen) return;
         if (isAbortError(err)) return;
 
-        setError(err as E | Error);
+        const capturedError = err as E;
+        setError(capturedError);
 
-        setRetryCount((c) => {
-          const next = c + 1;
+        const isRetryAllowed = refs.current.shouldRetry
+          ? refs.current.shouldRetry(capturedError)
+          : true;
 
-          if (next < maxAttempts) {
-            timerId = setTimeout(run, interval);
-          } else {
-            setIsFinished(true);
-          }
+        const nextRetry = retriesRef.current + 1;
+        retriesRef.current = nextRetry;
+        setRetryCount(nextRetry);
 
-          return next;
-        });
+        if (!isRetryAllowed || nextRetry >= maxAttempts) {
+          setIsFinished(true);
+          refs.current.onFailure?.(capturedError);
+          return;
+        }
+
+        timerId = setTimeout(run, interval);
       } finally {
         if (activeControllerRef.current === controller) {
           activeControllerRef.current = null;
@@ -116,28 +139,32 @@ export const usePolling = <T, E = Error>({
 
     return () => {
       cancelled = true;
-
       activeControllerRef.current?.abort();
-      activeControllerRef.current = null;
-
       if (timerId) clearTimeout(timerId);
     };
-  }, [enabled, interval, timeout, isFinished, maxAttempts]);
+  }, [enabled, interval, timeout, isFinished, maxAttempts, timingStrategy]);
 
-  return { data, error, isFinished, reset, retryCount } as const;
+  return useMemo(
+    () => ({
+      data,
+      error,
+      isFinished,
+      reset,
+      retryCount,
+    }),
+    [data, error, isFinished, reset, retryCount],
+  );
 };
 
-const calculateNextDelay = (startTime: number, minInterval: number): number => {
+// --- Helpers ---
+const calculateFixedRateDelay = (startTime: number, targetInterval: number): number => {
   const executionTime = Date.now() - startTime;
-  return Math.max(0, minInterval - executionTime);
+  return Math.max(200, targetInterval - executionTime);
 };
 
 const isAbortError = (err: unknown) => {
-  // fetch -> DOMException AbortError
-  if (err instanceof DOMException && err.name === 'AbortError') return true;
-
-  // some envs/libraries put name/code
-  if (typeof err === 'object' && err && 'name' in err && err.name === 'AbortError') return true;
-
-  return false;
+  return (
+    (err instanceof DOMException && err.name === 'AbortError') ||
+    (typeof err === 'object' && err && 'name' in err && err.name === 'AbortError')
+  );
 };

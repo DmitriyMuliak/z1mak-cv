@@ -5,7 +5,7 @@ import type {
   SuccessData,
   ResultReturn,
   CreateOnSubmitHandlerConfig,
-} from '@/actions/utils';
+} from '@/actions/utils/serverUtils';
 import type { TurnstileCaptchaRef } from '@/components/TurnstileCaptcha';
 
 export const createOnSubmitHandler =
