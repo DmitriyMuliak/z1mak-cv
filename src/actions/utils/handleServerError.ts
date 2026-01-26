@@ -29,6 +29,12 @@ export const handleServerError = (error: unknown): ServerActionResult<never> => 
     return processed.result;
   }
 
+  // Todo: to assess the need of throwing additional error type from server actions
+  // create AppError/BusinessError class for business errors from our server actions not from BE
+  // if(error instanceof AppError && error.actor === 'action'){
+  //   return { success: false, error }
+  // }
+
   const resultedError = new CriticalError('Critical Error', { cause: error });
 
   console.error(`[ServerAction] Critical Error: [${resultedError.id}]`, resultedError);
@@ -36,7 +42,7 @@ export const handleServerError = (error: unknown): ServerActionResult<never> => 
   return getClientCriticalError(resultedError.id);
 };
 
-const getClientCriticalError = (errorId?: string) => {
+const getClientCriticalError = (errorId?: string): ServerActionResult<never> => {
   return {
     success: false as const,
     error: {
@@ -44,7 +50,7 @@ const getClientCriticalError = (errorId?: string) => {
       code: 'INTERNAL_SERVER_ERROR',
       message: 'Something went wrong on the server side',
       ...(errorId ? { data: { errorId } } : {}),
-    },
+    } satisfies AppError,
   };
 };
 

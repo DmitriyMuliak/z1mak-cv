@@ -3,7 +3,7 @@
 import { createServerClient } from '@/lib/supabase/server';
 import { RequestResetPasswordSchemaBase } from '@/schema/authSchema';
 import { getLocale } from 'next-intl/server';
-import { createFormAction } from '../utils';
+import { createFormAction } from '../utils/serverUtils';
 import { getBaseUrl } from '@/utils/getBaseUrl';
 import { paths } from '@/consts/routes';
 

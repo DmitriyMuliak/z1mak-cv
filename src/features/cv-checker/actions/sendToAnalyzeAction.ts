@@ -1,5 +1,5 @@
 import { toast } from 'sonner';
-import { ResultReturn } from '@/actions/utils';
+import { ResultReturn } from '@/actions/utils/serverUtils';
 import { analyzeResume, ResumeErrorCode } from '@/actions/resume/resumeActions';
 import { parseFile } from '../parsers/parseFile';
 import { AddDescriptionBy, Mode } from '../store/useCvStore';

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useMemo, useState, PropsWithChildren } from 'react';
+import React, { useMemo, PropsWithChildren } from 'react';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
@@ -11,17 +11,13 @@ import { RedFlags } from './components/RedFlags';
 import { Improvements } from './components/Improvements';
 import { InterviewQuestions } from './components/InterviewQuestions';
 import { SchemaService, UiSectionKey } from '../../services/SchemaService';
-import { useResumePolling } from './hooks/useResumePolling';
+import { useResumePolling } from '@/features/cv-checker/hooks/useResumePolling';
 import { Button } from '@/components/ui/button';
 import { DotAndBarLoader } from '@/components/Loaders/DotAndBar';
 import { useRouter } from '@/i18n/navigation';
 import { paths } from '@/consts/routes';
-import { ResultResponse, ResumeErrorCode } from '@/actions/resume/resumeActions';
-import {
-  ServerActionResultSuccess,
-  ServerActionResultFailure,
-  AppError,
-} from '@/types/server-actions';
+import { ResumeErrorCode } from '@/actions/resume/resumeActions';
+import { AppError } from '@/types/server-actions';
 import {
   DEFAULT_RESUME_ERROR_KEY,
   RESUME_ERROR_KEY_MAP,
@@ -41,7 +37,6 @@ const SECTION_COMPONENTS: Record<UiSectionKey, React.FC<{ data: AnalysisSchemaTy
 const toastId = 'resume-error-toast';
 
 export const ReportRenderer: React.FC = () => {
-  const [report, setReport] = useState<AnalysisSchemaType>();
   const router = useRouter();
   const tError = useTranslations('common.resumeErrors');
   const tReport = useTranslations('pages.cvReport.loadingTitle');
@@ -49,28 +44,17 @@ export const ReportRenderer: React.FC = () => {
   const searchParams = useSearchParams();
   const jobId = searchParams.get('jobId');
 
-  const onSuccess = useCallback((result: ServerActionResultSuccess<ResultResponse>) => {
-    result.data.data && setReport(result.data.data);
-  }, []);
+  const onFailure = (error: AppError) => {
+    toast.error(
+      tError(RESUME_ERROR_KEY_MAP[error.code as ResumeErrorCode] || DEFAULT_RESUME_ERROR_KEY),
+      {
+        id: toastId,
+        duration: 2000,
+      },
+    );
+  };
 
-  const onFailure = useCallback(
-    ({ error }: ServerActionResultFailure<AppError>) => {
-      const errorCode =
-        typeof error === 'object' && error && 'code' in error ? error.code : undefined;
-
-      toast.error(
-        tError(RESUME_ERROR_KEY_MAP[errorCode as ResumeErrorCode] || DEFAULT_RESUME_ERROR_KEY),
-        { id: toastId, duration: 2000 },
-      );
-    },
-    [tError],
-  );
-
-  const { status, isProcessing } = useResumePolling(jobId, {
-    onSuccess,
-    onFailure,
-    onPollingFailure: onFailure,
-  });
+  const { status, isProcessing, report } = useResumePolling(jobId, { onFailure });
 
   const activeSections = useMemo(() => {
     if (!report) return [];
@@ -104,6 +88,16 @@ export const ReportRenderer: React.FC = () => {
               {tCommon('tryAgainButtonTitle')}
             </Button>
           </div>
+        </Container>
+      </AnimationContainer>
+    );
+  }
+
+  if (status === 'completed' && !report) {
+    return (
+      <AnimationContainer id={`${jobId}:loading`}>
+        <Container>
+          <h3 className="text-md font-semibold text-center">{tReport('empty')}</h3>
         </Container>
       </AnimationContainer>
     );

@@ -5,7 +5,7 @@ import { createServerClient } from '@/lib/supabase/server';
 import { getBaseUrl } from '@/utils/getBaseUrl';
 import { redirect } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
-import { createFormAction } from '../utils';
+import { createFormAction } from '../utils/serverUtils';
 import { devLogger } from '@/lib/devLogger';
 
 export async function signInOrUpWithGoogleAction(state: string | null = '') {

@@ -4,8 +4,7 @@ import { apiCvAnalyser } from '@/api/server';
 import { ApiRoutes } from '@/api/server/apiRoutes';
 import { AnalysisSchemaType } from '@/features/cv-checker/schema/analysisSchema';
 import { createServerClient } from '@/lib/supabase/server';
-import { ServerActionResult } from '@/types/server-actions';
-import { handleServerError } from '../handleServerError';
+import { createAsyncServerAction } from '../utils/createAsyncAction';
 
 export type AnalyzeMode = {
   evaluationMode: 'general' | 'byJob';
@@ -81,46 +80,24 @@ export const getUserAuthData = async () => {
   return { userId, userRole };
 };
 
-export const analyzeResume = async (
-  params: AnalyzePayload,
-): Promise<ServerActionResult<AnalyzeResponse>> => {
+export const analyzeResume = createAsyncServerAction(async (payload: AnalyzePayload) => {
   const body = {
-    payload: params,
+    payload,
   };
 
-  try {
-    const data = await apiCvAnalyser.post<AnalyzeResponse, AnalyzeRequest>(
-      ApiRoutes.CV_ANALYSER.analyze,
-      body,
-    );
+  return await apiCvAnalyser.post<AnalyzeResponse, AnalyzeRequest>(
+    ApiRoutes.CV_ANALYSER.analyze,
+    body,
+  );
+});
 
-    return { success: true, data };
-  } catch (error) {
-    return handleServerError(error);
-  }
-};
+export const getResumeStatus = createAsyncServerAction(async (jobId: string) => {
+  return await apiCvAnalyser.get<StatusResponse>(ApiRoutes.CV_ANALYSER.status(jobId));
+});
 
-export const getResumeStatus = async (
-  jobId: string,
-): Promise<ServerActionResult<StatusResponse>> => {
-  try {
-    const data = await apiCvAnalyser.get<StatusResponse>(ApiRoutes.CV_ANALYSER.status(jobId));
-    return { success: true, data };
-  } catch (error) {
-    return handleServerError(error);
-  }
-};
-
-export const getResumeResult = async (
-  jobId: string,
-): Promise<ServerActionResult<ResultResponse>> => {
-  try {
-    const data = await apiCvAnalyser.get<ResultResponse>(ApiRoutes.CV_ANALYSER.result(jobId));
-    return { success: true, data };
-  } catch (error) {
-    return handleServerError(error);
-  }
-};
+export const getResumeResult = createAsyncServerAction(async (jobId: string) => {
+  return apiCvAnalyser.get<ResultResponse>(ApiRoutes.CV_ANALYSER.result(jobId));
+});
 
 export const getResentResumeBaseInfo = async (
   pagination: { offset: number; limit: number } = { offset: 0, limit: 20 },

@@ -3,7 +3,7 @@
 import { createServerClient } from '@/lib/supabase/server';
 import { SetPasswordSchemaBase } from '@/schema/authSchema';
 import { getLocale } from 'next-intl/server';
-import { createFormAction } from '../utils';
+import { createFormAction } from '../utils/serverUtils';
 import { redirect } from '@/i18n/navigation';
 import { paths } from '@/consts/routes';
 import { devLogger } from '@/lib/devLogger';

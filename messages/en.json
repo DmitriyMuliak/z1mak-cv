@@ -96,6 +96,7 @@
         "loading": "Loading report",
         "queued": "Report is queued",
         "in_progress": "Report is generating",
+        "empty": "No such report found",
         "failed": "Failed to generate the report. Please try again later."
       },
       "overall": {

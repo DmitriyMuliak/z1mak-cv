@@ -6,9 +6,13 @@ export function useServerActionPolling<T, E>(opts: {
   enabled?: boolean;
   action: () => Promise<{ success: true; data: T } | { success: false; error: E }>;
   validate: Validate<T>;
+  onSuccess?: (data: T) => void;
+  onFailure?: (error: E) => void;
+  shouldRetry?: (error: E) => boolean;
   interval?: number;
   timeout?: number;
   maxAttempts?: number;
+  timingStrategy?: 'fixed-delay' | 'fixed-rate';
 }) {
   return usePolling<T, E>({
     enabled: opts.enabled,
@@ -16,6 +20,10 @@ export function useServerActionPolling<T, E>(opts: {
     timeout: opts.timeout,
     maxAttempts: opts.maxAttempts,
     validate: opts.validate,
+    onSuccess: opts.onSuccess,
+    onFailure: opts.onFailure,
+    shouldRetry: opts.shouldRetry,
+    timingStrategy: opts.timingStrategy,
     fn: async () => unwrapServerAction(await opts.action()),
   });
 }
