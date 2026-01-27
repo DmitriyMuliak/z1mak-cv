@@ -10,6 +10,7 @@ import type {
 } from './types';
 import type { IApiService } from './apiServiceType';
 import { envType } from '@/utils/envType';
+import { readLimitedBody } from './readLimitedBody';
 
 interface ApiServiceOptions {
   baseUrl: string;
@@ -242,9 +243,12 @@ export class ApiService implements IApiService {
 
   private async safeParseError(response: Response): Promise<unknown> {
     try {
-      // Clone the response because the request body stream can only be read once.
-      // This prevents locking the stream for other consumers (e.g., interceptors).
-      const text = await response.clone().text();
+      // Why not response.json() or response.clone()?
+      // 1. Memory Safety: Standard methods buffer the *entire* stream into RAM.
+      //    If the error body is unexpectedly large (e.g., HTML dump, infinite stream), it causes OOM crashes.
+      // 2. Control: We need to enforce a size limit (e.g., 16KB) and strictly cancel()
+      //    the stream if exceeded to free up network resources immediately.
+      const text = await readLimitedBody(response);
       try {
         return JSON.parse(text);
       } catch {
@@ -367,7 +371,7 @@ const validateBaseUrl = (baseUrl: string): void => {
     throw new Error(`[ApiService]: baseUrl can't contain hash. Got: ${baseUrl}`);
   }
 
-  const allowedProtocols = envType.isDev ? ['https:', 'wss:', 'http:', 'ws:'] : ['https:', 'wss:'];
+  const allowedProtocols = envType.isProd ? ['https:', 'wss:'] : ['https:', 'wss:', 'http:', 'ws:'];
 
   if (!allowedProtocols.includes(url.protocol)) {
     throw new Error(
