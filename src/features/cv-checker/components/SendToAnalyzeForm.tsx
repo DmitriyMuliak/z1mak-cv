@@ -7,7 +7,6 @@ import { useRouter } from '@/i18n/navigation';
 import { Form } from '@/components/ui/form';
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
 import { createBaseOnSubmitHandler } from '@/components/Forms/utils';
-import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
 import { GlobalFormErrorMessage } from '@/components/Forms/fields/GlobalFormErrorMessage';
 import { SubmitActionButton } from '@/components/Forms/buttons/SubmitActionButton';
 import { paths } from '@/consts/routes';
@@ -47,7 +46,7 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
     defaultValues: { cvText: '', jobText: '', jobFile: [], cvFile: [] },
   });
 
-  const { isSubmitting, isSubmitSuccessful, isValid } = form.formState;
+  const { isValid } = form.formState;
 
   // Handle evaluationMode switch
   useEffect(() => {
@@ -65,8 +64,6 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
 
   const handleCvTabChange = (value: AddDescriptionBy) => setAddCvBy(value);
   const handleJobTabChange = (value: AddDescriptionBy) => setAddJobBy(value);
-
-  const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting });
 
   const onResult = async (out: Awaited<ReturnType<typeof sendToAnalyzeAction>>) => {
     if (out.success && out.data?.jobId) {
@@ -86,7 +83,6 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
   });
 
   const onSubmit = form.handleSubmit(handleSubmitCb);
-  const isSuccess = !isSubmitting && isSubmitSuccessful;
 
   return (
     <Form {...form}>
@@ -112,9 +108,7 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
         />
         <div>
           <SubmitActionButton
-            isSubmitting={isSubmitting}
             isFormInvalid={!isValid}
-            showSuccessLoader={delayedIsLoading && isSuccess}
             title={tc('formButtonSendTitle')}
             onSuccessTitle={tc('formButtonSendSuccessTitle')}
           />

@@ -2,17 +2,16 @@
 
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Form } from '@/components/ui/form';
 import { defaultInputStyles, TextField } from '@/components/Forms/fields/TextField';
 import { signUpWithEmailAction } from '@/actions/auth/signUp';
 import { SignUpSchemaBase, SignUpSchemaBaseType } from '@/schema/authSchema';
+import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
+import { Form } from '@/components/ui/form';
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
 import { createOnSubmitHandler, resetCaptchaOnError } from '@/components/Forms/utils';
-import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
 import { GlobalFormErrorMessage } from '@/components/Forms/fields/GlobalFormErrorMessage';
 import { cn } from '@/lib/utils';
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Field, FieldDescription, FieldGroup } from '@/components/ui/field';
 import { Link } from '@/navigation';
@@ -22,7 +21,6 @@ import { getRedirectFromUrl, redirectedFromURLParamKey } from '@/utils/getRedire
 import { TurnstileCaptchaField } from '@/components/Forms/fields/TurnstileCaptcha';
 import { useRouter } from '@/i18n/navigation';
 import type { TurnstileCaptchaRef } from '@/components/TurnstileCaptcha';
-import { toast } from 'sonner';
 import { ValidationKeys } from '@/types/translations';
 
 const getAdditionalFEData = () => getRedirectFromUrl();
@@ -41,16 +39,11 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<'div'>)
     defaultValues: { name: '', email: '', password: '' },
   });
   const captchaRef = React.useRef<TurnstileCaptchaRef>(null);
-  const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
 
   useEffect(() => {
     const url = getRedirectFromUrl();
     setRedirectedFromState(url ? `${redirectedFromURLParamKey}=${url}` : '');
   }, []);
-
-  const isSubmitting = form.formState.isSubmitting;
-  const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
-  const showSuccessLoader = delayedIsLoading && isSuccess;
 
   const onSuccessCb = (result: Awaited<ReturnType<typeof signUpWithEmailAction>>) => {
     resetCaptchaOnError(result, captchaRef);
@@ -64,7 +57,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<'div'>)
     getAdditionalFEData,
   });
   const onSubmit = form.handleSubmit(handleSubmitCb);
-  const isFormInvalid = Object.keys(form.formState.errors).length > 0;
 
   return (
     <div className={cn('flex flex-col', className)} {...props}>
@@ -109,9 +101,6 @@ export function SignUpForm({ className, ...props }: React.ComponentProps<'div'>)
                 />
                 <Field>
                   <SubmitActionButton
-                    isSubmitting={isSubmitting}
-                    isFormInvalid={isFormInvalid}
-                    showSuccessLoader={showSuccessLoader}
                     title={t('signUpTitle')}
                     onSuccessTitle={tc('formButtonSendSuccessTitle')}
                   />
