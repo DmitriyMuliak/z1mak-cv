@@ -1,12 +1,13 @@
 import { devLogger } from '@/lib/devLogger';
 import { InterceptorManager } from './interceptorManager';
-import { ApiError } from './apiError';
+import { ApiError, ErrorBody } from './apiError';
 import type {
   ApiRequestOptions,
   MockHandler,
   ParamsType,
   ResponseParseType,
   RelativePath,
+  ApiInternalConfig,
 } from './types';
 import type { IApiService } from './apiServiceType';
 import { envType } from '@/utils/envType';
@@ -38,7 +39,15 @@ export class ApiService implements IApiService {
     this.mockHandlers.set(pattern, handler as MockHandler);
   }
 
-  // --- Main Request Method ---
+  public async retryRequest<R>(config: ApiInternalConfig): Promise<R> {
+    if (!config.url) {
+      throw new Error('[ApiService] Cannot retry request without a URL');
+    }
+
+    return this.execute<R>(config.url, config);
+  }
+
+  // --- Main Request Pipeline ---
 
   private async request<R>(
     endpoint: RelativePath,
@@ -61,8 +70,14 @@ export class ApiService implements IApiService {
     config = await configPromise;
 
     // 3. Prepare Final URL
-    const { params, responseAs, ...fetchInit } = config;
+    const { params } = config;
     const finalUrl = this.buildUrl(this.baseUrl, endpoint, params);
+
+    return this.execute<R>(finalUrl, config);
+  }
+
+  private async execute<R>(finalUrl: string, config: ApiRequestOptions): Promise<R> {
+    const { params, responseAs, ...fetchInit } = config;
 
     // 4. Check Mocks
     const mockResponse = await this.tryMockRequest(finalUrl, config);
@@ -80,10 +95,13 @@ export class ApiService implements IApiService {
       }
 
       const errorMessage = error instanceof Error ? error.message : 'Unknown Request Error';
+      const internalConfig: ApiInternalConfig = {
+        ...config,
+        url: finalUrl,
+      };
       const apiError = new ApiError(errorMessage, {
         cause: error,
-        config,
-        url: finalUrl,
+        config: internalConfig,
         status: 0,
       });
 
@@ -161,13 +179,13 @@ export class ApiService implements IApiService {
 
     promiseChain = promiseChain.then(async (response) => {
       if (!response.ok) {
+        const internalConfig: ApiInternalConfig = { ...config, url: requestUrl };
         const errorData = await this.safeParseError(response);
         throw new ApiError(response.statusText || 'API Error', {
           status: response.status,
           body: errorData,
           response,
-          config,
-          url: requestUrl,
+          config: internalConfig,
         });
       }
       return response;
@@ -231,17 +249,17 @@ export class ApiService implements IApiService {
           return await response.json();
       }
     } catch (error) {
+      const internalConfig: ApiInternalConfig = { ...config, url: requestUrl };
       throw new ApiError('Parsing Error', {
         status: response.status,
         cause: error,
         response,
-        config,
-        url: requestUrl,
+        config: internalConfig,
       });
     }
   }
 
-  private async safeParseError(response: Response): Promise<unknown> {
+  private async safeParseError(response: Response): Promise<ErrorBody> {
     try {
       // Why not response.json() or response.clone()?
       // 1. Memory Safety: Standard methods buffer the *entire* stream into RAM.
@@ -250,12 +268,29 @@ export class ApiService implements IApiService {
       //    the stream if exceeded to free up network resources immediately.
       const text = await readLimitedBody(response);
       try {
-        return JSON.parse(text);
+        const json = JSON.parse(text);
+
+        if (json && typeof json === 'object' && !Array.isArray(json)) {
+          return { ...json, invalidFormat: false };
+        }
+
+        return {
+          invalidFormat: true,
+          message: 'Unexpected error format (not an object)',
+          data: json,
+        };
       } catch {
-        return text;
+        return {
+          invalidFormat: true,
+          message: 'Invalid JSON response',
+          raw: text,
+        };
       }
     } catch {
-      return 'Could not read error body';
+      return {
+        invalidFormat: true,
+        message: 'Could not read error body',
+      };
     }
   }
 

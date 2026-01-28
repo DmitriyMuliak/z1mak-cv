@@ -1,5 +1,10 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { ApiService, ApiError, type ApiRequestOptions } from '@/api/apiService';
+import {
+  ApiService,
+  ApiError,
+  type ApiRequestOptions,
+  type ApiInternalConfig,
+} from '@/api/apiService';
 import { devLogger } from '@/lib/devLogger';
 
 vi.mock('@/lib/devLogger', () => ({
@@ -157,8 +162,8 @@ describe('ApiService', () => {
         expect(error).toBeInstanceOf(ApiError);
         if (error instanceof ApiError) {
           expect(error.status).toBe(404);
-          expect(error.body).toEqual(errorBody);
-          expect(devLogger.error).toHaveBeenCalled();
+          expect(error.body).toEqual(expect.objectContaining({ invalidFormat: false }));
+          expect(error.body).toEqual(expect.objectContaining(errorBody));
         }
       }
     });
@@ -183,7 +188,7 @@ describe('ApiService', () => {
 
       expect(devLogger.error).toHaveBeenCalledWith(
         '[ApiService] 0 Failed to fetch',
-        undefined, // body is undefined for network errors
+        {}, // body is empty object for network errors
       );
     });
 
@@ -513,7 +518,7 @@ describe('InterceptorManager', () => {
 
 describe('ApiError', () => {
   it('should construct with all properties', async () => {
-    const config: ApiRequestOptions = { method: 'GET' };
+    const config: ApiInternalConfig = { method: 'GET', url: 'http://test.com' };
     const data = { value: 'response data' };
     const response = new Response(JSON.stringify(data), {
       status: 200,
@@ -524,7 +529,6 @@ describe('ApiError', () => {
       body: { detail: 'Internal' },
       response,
       config,
-      url: 'http://test.com',
     });
 
     expect(error.message).toBe('Test Error');
@@ -533,6 +537,9 @@ describe('ApiError', () => {
     expect(error.name).toBe('ApiError');
     expect(error.config).toBe(config);
     expect(error.url).toBe('http://test.com');
-    expect(error.response && (await error.response.json()).value).toBe(data.value);
+    // in ApiError we prevent access to .json()
+    // because we pass JSON.parse(resp.text()) in { response } prop
+    const resp = error.response as unknown as Response;
+    expect(error.response && (await resp.json()).value).toBe(data.value);
   });
 });

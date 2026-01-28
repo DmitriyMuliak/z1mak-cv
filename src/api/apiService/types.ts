@@ -9,6 +9,11 @@ export type ParamsType = Record<string, ParamsValueType>;
 export interface ApiRequestOptions extends RequestInit {
   responseAs?: ResponseParseType;
   params?: ParamsType;
+  meta?: Record<string, unknown>;
+}
+
+export interface ApiInternalConfig extends ApiRequestOptions {
+  url: string;
 }
 
 export type MockHandler<P = unknown> = (
