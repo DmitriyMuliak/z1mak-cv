@@ -14,6 +14,14 @@ vi.mock('@/i18n/navigation', () => ({
   useRouter: () => ({ push: vi.fn() }),
 }));
 
+// Radix add a lot of execution of time
+vi.mock('react-dropzone', () => ({
+  __esModule: true,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  default: ({ children }: any) =>
+    children({ getRootProps: () => ({}), getInputProps: () => ({}), isDragActive: false }),
+}));
+
 vi.mock('@/features/cv-checker/actions/sendToAnalyzeAction', () => ({
   sendToAnalyzeAction: vi.fn().mockResolvedValue({ success: true, data: { jobId: 'job-1' } }),
 }));
