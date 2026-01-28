@@ -155,16 +155,13 @@ describe('ApiService', () => {
         }),
       );
 
-      await expect(apiService.get('/fail')).rejects.toThrow(ApiError);
-      try {
-        await apiService.get('/fail');
-      } catch (error) {
-        expect(error).toBeInstanceOf(ApiError);
-        if (error instanceof ApiError) {
-          expect(error.status).toBe(404);
-          expect(error.body).toEqual(expect.objectContaining({ invalidFormat: false }));
-          expect(error.body).toEqual(expect.objectContaining(errorBody));
-        }
+      const error = (await apiService.get('/fail').catch((err) => err)) as unknown;
+
+      expect(error).toBeInstanceOf(ApiError);
+      if (error instanceof ApiError) {
+        expect(error.status).toBe(404);
+        expect(error.body).toEqual(expect.objectContaining({ invalidFormat: false }));
+        expect(error.body).toEqual(expect.objectContaining(errorBody));
       }
     });
 
