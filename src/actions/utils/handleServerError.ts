@@ -1,6 +1,33 @@
+'use server';
+
 import { ApiError } from '@/api/apiService';
+import { BodyLimitExceededError } from '@/api/apiService/readLimitedBody';
+import { isAbortError } from '@/api/apiService/utils';
 import { AppError, ServerActionResult } from '@/types/server-actions';
 import { isObject } from '@/utils/isObject';
+
+export const handleServerError = (error: unknown): ServerActionResult<never> => {
+  const processedApiError = processApiError(error);
+  if (processedApiError.isProcessed) {
+    return processedApiError.result;
+  }
+
+  const processedAbort = processAbortError(error);
+  if (processedAbort.isProcessed) {
+    return processedAbort.result;
+  }
+
+  const processedBodyLimitExceeded = processBodyLimitExceededError(error);
+  if (processedBodyLimitExceeded.isProcessed) {
+    return processedBodyLimitExceeded.result;
+  }
+
+  const resultedError = new CriticalError('Critical Error', { cause: error });
+
+  console.error(`[ServerAction] Critical Error: [${resultedError.id}]`, resultedError);
+
+  return getClientCriticalError(resultedError.id);
+};
 
 const processApiError = (
   error: unknown,
@@ -23,23 +50,38 @@ const processApiError = (
   return { isProcessed: false };
 };
 
-export const handleServerError = (error: unknown): ServerActionResult<never> => {
-  const processed = processApiError(error);
-  if (processed.isProcessed) {
-    return processed.result;
+const processAbortError = (
+  error: unknown,
+): { isProcessed: true; result: { success: false; error: AppError } } | { isProcessed: false } => {
+  if (isAbortError(error)) {
+    const appError: AppError = {
+      httpStatus: 408,
+      code: 'REQUEST_ABORTED',
+      message: 'Request was cancelled.',
+      data: { reason: 'server_abort' },
+    };
+
+    return { isProcessed: true, result: { success: false, error: appError } };
   }
 
-  // Todo: to assess the need of throwing additional error type from server actions
-  // create AppError/BusinessError class for business errors from our server actions not from BE
-  // if(error instanceof AppError && error.actor === 'action'){
-  //   return { success: false, error }
-  // }
+  return { isProcessed: false };
+};
 
-  const resultedError = new CriticalError('Critical Error', { cause: error });
+const processBodyLimitExceededError = (
+  error: unknown,
+): { isProcessed: true; result: { success: false; error: AppError } } | { isProcessed: false } => {
+  if (error instanceof BodyLimitExceededError) {
+    const appError: AppError = {
+      httpStatus: 502,
+      code: 'RESPONSE_BODY_TOO_LARGE',
+      message: 'Upstream error body exceeded safety limit.',
+      data: { limitBytes: error.limitBytes, reason: 'body_limit_exceeded' },
+    };
 
-  console.error(`[ServerAction] Critical Error: [${resultedError.id}]`, resultedError);
+    return { isProcessed: true, result: { success: false, error: appError } };
+  }
 
-  return getClientCriticalError(resultedError.id);
+  return { isProcessed: false };
 };
 
 const getClientCriticalError = (errorId?: string): ServerActionResult<never> => {

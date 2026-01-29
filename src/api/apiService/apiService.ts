@@ -11,7 +11,8 @@ import type {
 } from './types';
 import type { IApiService } from './apiServiceType';
 import { envType } from '@/utils/envType';
-import { readLimitedBody } from './readLimitedBody';
+import { BodyLimitExceededError, readLimitedBody } from './readLimitedBody';
+import { isAbortError } from './utils';
 
 interface ApiServiceOptions {
   baseUrl: string;
@@ -47,7 +48,9 @@ export class ApiService implements IApiService {
     return this.execute<R>(config.url, config);
   }
 
-  // --- Main Request Pipeline ---
+  /**
+   * Main Request Pipeline
+   */
 
   private async request<R>(
     endpoint: RelativePath,
@@ -90,7 +93,14 @@ export class ApiService implements IApiService {
     try {
       response = await fetch(finalUrl, fetchInit);
     } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') {
+      // DNS error
+      // Connection refused
+      // TLS error
+      // Offline
+      // CORS failure
+      // Request aborted (AbortError)
+
+      if (isAbortError(error)) {
         throw error;
       }
 
@@ -112,7 +122,9 @@ export class ApiService implements IApiService {
     return this.handleResponseChain<R>(response, config, finalUrl);
   }
 
-  // --- Helpers for Request Preparation ---
+  /**
+   * Helpers for Request Preparation
+   */
 
   private prepareRequestConfig(options: ApiRequestOptions, body: unknown): ApiRequestOptions {
     const config: ApiRequestOptions = { ...options };
@@ -168,7 +180,9 @@ export class ApiService implements IApiService {
     return url.href;
   }
 
-  // --- Response Pipeline ---
+  /**
+   * Response Pipeline
+   */
 
   private async handleResponseChain<R>(
     initialResponseOrError: Response | Promise<Response>,
@@ -201,8 +215,7 @@ export class ApiService implements IApiService {
         this.parseResponseData<R>(response, config.responseAs, requestUrl, config),
       )
       .catch((error) => {
-        const isAbort = error instanceof DOMException && error.name === 'AbortError';
-        if (!isAbort) {
+        if (!isAbortError(error)) {
           if (error instanceof ApiError) {
             devLogger.error(`[ApiService] ${error.status} ${error.message}`, error.body);
           } else {
@@ -286,7 +299,12 @@ export class ApiService implements IApiService {
           raw: text,
         };
       }
-    } catch {
+    } catch (error) {
+      if (isAbortError(error)) throw error;
+      if (error instanceof BodyLimitExceededError) {
+        throw error;
+      }
+
       return {
         invalidFormat: true,
         message: 'Could not read error body',
@@ -294,7 +312,9 @@ export class ApiService implements IApiService {
     }
   }
 
-  // --- Mocks ---
+  /**
+   * Mocks
+   */
 
   private async tryMockRequest(url: string, options: ApiRequestOptions): Promise<Response | null> {
     for (const [pattern, handler] of this.mockHandlers) {
@@ -339,7 +359,9 @@ export class ApiService implements IApiService {
     return null;
   }
 
-  // --- Public HTTP Methods ---
+  /**
+   * Public HTTP Methods
+   */
 
   public get<R, P extends ParamsType = ParamsType>(
     endpoint: RelativePath,

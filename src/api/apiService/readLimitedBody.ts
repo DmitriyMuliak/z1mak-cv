@@ -1,3 +1,5 @@
+import { isAbortError } from './utils';
+
 /**
  * Reads the response body stream with a hard limit on size.
  * Prevents memory exhaustion attacks or large file downloads on error endpoints.
@@ -26,7 +28,7 @@ export const readLimitedBody = async (
       // 2. Check limit
       if (receivedBytes > limitBytes) {
         await reader.cancel('Body limit exceeded');
-        return `[Error Body Truncated]: Size > ${limitBytes} bytes`;
+        throw new BodyLimitExceededError(limitBytes);
       }
 
       // 3. Decode { stream: true } is important for correct processing of multibyte characters on chunk boundaries (e.g. Cyrillic/Emoji) split between chunks
@@ -36,7 +38,19 @@ export const readLimitedBody = async (
     result += decoder.decode();
     return result;
   } catch (error) {
-    return `[Read Error]: ${error instanceof Error ? error.message : 'Unknown stream error'}`;
+    if (error instanceof BodyLimitExceededError) throw error;
+    if (isAbortError(error)) throw error;
+
+    throw new Error(
+      `[Body Read Error]: ${error instanceof Error ? error.message : 'Unknown stream error'}`,
+    );
   }
   // finally is unnecessary for releaseLock here, as exhausting the stream (reading until done) or invoking cancel() implicitly releases the lock.
 };
+
+export class BodyLimitExceededError extends Error {
+  constructor(public readonly limitBytes: number) {
+    super(`Body limit exceeded (${limitBytes} bytes)`);
+    this.name = 'BodyLimitExceededError';
+  }
+}

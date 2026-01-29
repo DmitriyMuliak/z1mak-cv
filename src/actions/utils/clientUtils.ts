@@ -20,18 +20,20 @@ export async function clientSafeAction<T>(
       };
     }
 
-    const isFetchError =
+    const isNetworkError =
       error instanceof TypeError &&
-      (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'));
+      (error.message === 'Failed to fetch' || // Chrome/FF
+        error.message.includes('NetworkError') || // Edge/Safari triggers
+        error.message.includes('Load failed')); // Safari (ios) sometimes
 
     // CORS, DNS errors, Connection Refused
-    if (isFetchError) {
+    if (isNetworkError) {
       return {
         success: false,
         error: {
           httpStatus: 0,
           code: 'NETWORK_ERROR',
-          message: 'Unable to reach the server. It might be down or blocked.',
+          message: 'Unable to connect to the server. Firewall or DNS issue.',
           data: { cause: error },
         } satisfies AppError,
       };
@@ -44,7 +46,7 @@ export async function clientSafeAction<T>(
       error: {
         httpStatus: 0,
         code: 'UNKNOWN_CLIENT_ERROR',
-        message: 'An unexpected client error occurred.',
+        message: 'An unexpected error occurred.',
         data: {
           cause: error,
           isDigest: isNextDigestError,

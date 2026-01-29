@@ -10,10 +10,12 @@ const loadActualModule = () =>
 
 describe('readLimitedBody', () => {
   let readLimitedBody: ReadLimitedBody;
+  let BodyLimitExceededError: typeof import('@/api/apiService/readLimitedBody').BodyLimitExceededError;
 
   beforeEach(async () => {
     const mod = await loadActualModule();
     readLimitedBody = mod.readLimitedBody;
+    BodyLimitExceededError = mod.BodyLimitExceededError;
   });
 
   it('returns empty string when response has no body', async () => {
@@ -50,9 +52,7 @@ describe('readLimitedBody', () => {
 
     const response = new Response(stream);
 
-    const result = await readLimitedBody(response, 6);
-
-    expect(result).toBe('[Error Body Truncated]: Size > 6 bytes');
+    await expect(readLimitedBody(response, 6)).rejects.toBeInstanceOf(BodyLimitExceededError);
     expect(cancelReason).toBe('Body limit exceeded');
   });
 
@@ -88,8 +88,6 @@ describe('readLimitedBody', () => {
 
     const response = new Response(stream);
 
-    const result = await readLimitedBody(response, 10);
-
-    expect(result).toBe('[Read Error]: boom');
+    await expect(readLimitedBody(response, 10)).rejects.toThrow('[Body Read Error]: boom');
   });
 });
