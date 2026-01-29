@@ -1,3 +1,5 @@
+'use server';
+
 import { handleServerError } from './handleServerError';
 import type { ServerActionResult } from '@/types/server-actions';
 

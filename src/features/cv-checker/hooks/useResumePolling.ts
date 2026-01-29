@@ -23,6 +23,8 @@ export const useResumePolling = (
     if (response.status !== 'completed') return;
     if (!jobId) return;
 
+    // Create useAction() - which will use clientSafeAction & add callServerActionWithAbort which should return { run, abort } object.
+    // TODO: migrate to Tanstack Query
     setIsResumeFetching(true);
     const resumeResult = await clientSafeAction(getResumeResult(jobId));
     setIsResumeFetching(false);
