@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useMemo, PropsWithChildren } from 'react';
-import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { Header } from './components/Header';
@@ -16,12 +15,6 @@ import { Button } from '@/components/ui/button';
 import { DotAndBarLoader } from '@/components/Loaders/DotAndBar';
 import { useRouter } from '@/i18n/navigation';
 import { paths } from '@/consts/routes';
-import { ResumeErrorCode } from '@/actions/resume/resumeActions';
-import { AppError } from '@/types/server-actions';
-import {
-  DEFAULT_RESUME_ERROR_KEY,
-  RESUME_ERROR_KEY_MAP,
-} from '@/features/cv-checker/consts/resumeErrors';
 import type { AnalysisSchemaType } from '../../schema/analysisSchema';
 import { AnimationContainer } from '@/components/AnimatedContainer';
 
@@ -34,27 +27,13 @@ const SECTION_COMPONENTS: Record<UiSectionKey, React.FC<{ data: AnalysisSchemaTy
   questions: InterviewQuestions,
 };
 
-const toastId = 'resume-error-toast';
-
 export const ReportRenderer: React.FC = () => {
   const router = useRouter();
-  const tError = useTranslations('common.resumeErrors');
   const tReport = useTranslations('pages.cvReport.loadingTitle');
   const tCommon = useTranslations('common');
   const searchParams = useSearchParams();
   const jobId = searchParams.get('jobId');
-
-  const onFailure = (error: AppError) => {
-    toast.error(
-      tError(RESUME_ERROR_KEY_MAP[error.code as ResumeErrorCode] || DEFAULT_RESUME_ERROR_KEY),
-      {
-        id: toastId,
-        duration: 4000,
-      },
-    );
-  };
-
-  const { status, isProcessing, report, error } = useResumePolling(jobId, { onFailure });
+  const { status, isProcessing, report, error } = useResumePolling(jobId);
 
   const activeSections = useMemo(() => {
     if (!report) return [];

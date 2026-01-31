@@ -1,31 +1,65 @@
-import { useEffect, useMemo, useRef } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+'use client';
+
+import { useCallback, useEffect, useMemo, useRef, RefObject } from 'react';
+import { FetchStatus, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 import { AppError } from '@/types/server-actions';
-import { getResumeResult, getResumeStatus, StatusResponse } from '@/actions/resume/resumeActions';
-import { notRetryableErrors } from '../consts/resumeErrors';
+import {
+  getResumeResult,
+  getResumeStatus,
+  ResumeErrorCode,
+  StatusResponse,
+} from '@/actions/resume/resumeActions';
+import {
+  DEFAULT_RESUME_ERROR_KEY,
+  RESUME_ERROR_KEY_MAP,
+  notRetryableErrors,
+} from '../consts/resumeErrors';
 import { AnalysisSchemaType } from '../schema/analysisSchema';
 import { clientSafeAction } from '@/actions/utils/clientUtils';
 
-interface UseResumePollingCallbacks {
-  onFailure: (error: AppError) => void | Promise<void>;
-  onSuccess?: (data: StatusResponse) => void | Promise<void>;
-}
+const toastId = 'resume-error-toast';
 
-export const useResumePolling = (
-  jobId: string | null,
-  { onFailure, onSuccess: externalOnSuccess }: UseResumePollingCallbacks,
-) => {
+export const useResumePolling = (jobId: string | null) => {
   const queryClient = useQueryClient();
   const statusQueryKey = ['resume:status', jobId] as const;
   const resultQueryKey = ['resume:result', jobId] as const;
+  const tError = useTranslations('common.resumeErrors');
   const lastStatusErrorRef = useRef<string | null>(null);
   const lastResultErrorRef = useRef<string | null>(null);
-  const lastSuccessJobIdRef = useRef<string | null>(null);
+
+  const onFailure = useCallback(
+    (error: AppError) => {
+      toast.error(
+        tError(RESUME_ERROR_KEY_MAP[error.code as ResumeErrorCode] || DEFAULT_RESUME_ERROR_KEY),
+        {
+          id: toastId,
+          duration: 4000,
+        },
+      );
+    },
+    [tError],
+  );
+
+  const processError = useCallback(
+    (
+      error: AppError | null | undefined,
+      fetchStatus: FetchStatus,
+      ref: RefObject<string | null>,
+    ) => {
+      if (!error || fetchStatus !== 'idle') return;
+      const signature = `${error.code}:${error.message ?? ''}`;
+      if (ref.current === signature) return;
+      ref.current = signature;
+      onFailure(error);
+    },
+    [onFailure],
+  );
 
   useEffect(() => {
     lastStatusErrorRef.current = null;
     lastResultErrorRef.current = null;
-    lastSuccessJobIdRef.current = null;
   }, [jobId]);
 
   const statusQuery = useQuery<StatusResponse, AppError>({
@@ -76,27 +110,15 @@ export const useResumePolling = (
   });
 
   useEffect(() => {
-    if (!statusQuery.error || statusQuery.fetchStatus !== 'idle') return;
-    const signature = `${statusQuery.error.code}:${statusQuery.error.message ?? ''}`;
-    if (lastStatusErrorRef.current === signature) return;
-    lastStatusErrorRef.current = signature;
-    onFailure(statusQuery.error);
-  }, [statusQuery.error, statusQuery.fetchStatus, onFailure]);
-
-  useEffect(() => {
-    if (!resultQuery.error || resultQuery.fetchStatus !== 'idle') return;
-    const signature = `${resultQuery.error.code}:${resultQuery.error.message ?? ''}`;
-    if (lastResultErrorRef.current === signature) return;
-    lastResultErrorRef.current = signature;
-    onFailure(resultQuery.error);
-  }, [resultQuery.error, resultQuery.fetchStatus, onFailure]);
-
-  useEffect(() => {
-    if (!jobId || !resultQuery.data || !statusQuery.data) return;
-    if (lastSuccessJobIdRef.current === jobId) return;
-    lastSuccessJobIdRef.current = jobId;
-    externalOnSuccess?.(statusQuery.data);
-  }, [jobId, resultQuery.data, statusQuery.data, externalOnSuccess]);
+    processError(statusQuery.error, statusQuery.fetchStatus, lastStatusErrorRef);
+    processError(resultQuery.error, resultQuery.fetchStatus, lastResultErrorRef);
+  }, [
+    processError,
+    statusQuery.error,
+    statusQuery.fetchStatus,
+    resultQuery.error,
+    resultQuery.fetchStatus,
+  ]);
 
   const hasFinalStatusError = !!statusQuery.error && statusQuery.fetchStatus === 'idle';
   const finalStatusError = hasFinalStatusError ? statusQuery.error : null;
