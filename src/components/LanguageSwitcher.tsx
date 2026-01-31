@@ -10,14 +10,16 @@ import {
 import { useRouter, usePathname } from '@/navigation';
 import { routing } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 
 export function LanguageSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const locale = useLocale();
 
   const changeLanguage = (newLocale: string) => {
-    router.replace({ pathname }, { locale: newLocale });
+    router.replace({ pathname, query: Object.fromEntries(searchParams) }, { locale: newLocale });
   };
 
   return (
