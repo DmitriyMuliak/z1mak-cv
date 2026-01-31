@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { BackgroundContainer } from '@/components/BackgroundContainer';
+import { ReactQueryProvider } from '@/components/ReactQueryProvider';
 import { Geist, Geist_Mono, Bitter } from 'next/font/google';
 import { Header } from '@/components/Header';
 import { Configurator } from '@/components/Configurator';
@@ -54,16 +55,20 @@ export default async function LocaleLayout({ children, params }: Props) {
       >
         <NextIntlClientProvider>
           <ThemeProvider attribute="class" defaultTheme="light">
-            <div className={styles.mainContainer}>
-              <div className={styles.mainContent}>
-                <Configurator />
-                <Lamp />
-                <LanguageSwitcher />
-                <Header />
-                <div className={cn('flex-1 flex w-full max-w-300 mx-auto md:px-4')}>{children}</div>
+            <ReactQueryProvider>
+              <div className={styles.mainContainer}>
+                <div className={styles.mainContent}>
+                  <Configurator />
+                  <Lamp />
+                  <LanguageSwitcher />
+                  <Header />
+                  <div className={cn('flex-1 flex w-full max-w-300 mx-auto md:px-4')}>
+                    {children}
+                  </div>
+                </div>
               </div>
-            </div>
-            <Toaster position="top-right" richColors closeButton />
+              <Toaster position="top-right" richColors closeButton />
+            </ReactQueryProvider>
           </ThemeProvider>
           <BackgroundContainer />
         </NextIntlClientProvider>

@@ -49,12 +49,12 @@ export const ReportRenderer: React.FC = () => {
       tError(RESUME_ERROR_KEY_MAP[error.code as ResumeErrorCode] || DEFAULT_RESUME_ERROR_KEY),
       {
         id: toastId,
-        duration: 2000,
+        duration: 4000,
       },
     );
   };
 
-  const { status, isProcessing, report } = useResumePolling(jobId, { onFailure });
+  const { status, isProcessing, report, error } = useResumePolling(jobId, { onFailure });
 
   const activeSections = useMemo(() => {
     if (!report) return [];
@@ -62,6 +62,7 @@ export const ReportRenderer: React.FC = () => {
     return service.getUiSections();
   }, [report]);
 
+  // Handle updating status
   if (isProcessing && loadingStatuses.has(status)) {
     return (
       <AnimationContainer id={`${jobId}:loading`}>
@@ -75,12 +76,15 @@ export const ReportRenderer: React.FC = () => {
     );
   }
 
+  // Handle failed status
   if (isProcessing === false && status === 'failed') {
     return (
       <AnimationContainer id={`${jobId}:error`}>
         <Container>
           <div className="pointer-events-auto grid place-items-center content-center">
-            <h3 className="text-md text-red-600">{tReport('failed')}</h3>
+            <h3 className="text-md text-red-600">
+              {error?.code === 'NOT_FOUND' ? tReport('empty') : tReport('failed')}
+            </h3>
             <Button
               onClick={() => router.replace({ pathname: paths.cvChecker })}
               className="mt-2.5"
@@ -93,6 +97,7 @@ export const ReportRenderer: React.FC = () => {
     );
   }
 
+  // Handle empty result
   if (status === 'completed' && !report) {
     return (
       <AnimationContainer id={`${jobId}:loading`}>

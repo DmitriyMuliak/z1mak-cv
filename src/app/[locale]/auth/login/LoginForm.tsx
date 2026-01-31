@@ -11,7 +11,6 @@ import { SignInSchemaBase, SignInSchemaBaseType } from '@/schema/authSchema';
 import { useTranslations } from 'next-intl';
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
 import { createOnSubmitHandler, resetCaptchaOnError } from '@/components/Forms/utils';
-import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
 import { GlobalFormErrorMessage } from '@/components/Forms/fields/GlobalFormErrorMessage';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -49,15 +48,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
     mode: 'onBlur',
     defaultValues: { email: '', password: '' },
   });
-  const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
 
   const urlWithRedirect = getRedirectFromUrl();
   const redirectedFromState = urlWithRedirect
     ? `${redirectedFromURLParamKey}=${urlWithRedirect}`
     : '';
-  const isSubmitting = form.formState.isSubmitting;
-  const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
-  const showSuccessLoader = delayedIsLoading && isSuccess;
 
   const onResult = (result: Awaited<ReturnType<typeof signInWithEmailAction>>) => {
     resetCaptchaOnError(result, captchaRef);
@@ -81,7 +76,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
     getAdditionalFEData,
   });
   const onSubmit = form.handleSubmit(handleSubmitCb);
-  const isFormInvalid = Object.keys(form.formState.errors).length > 0; // form.formState.isValid;
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
@@ -142,9 +136,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                 />
                 <Field>
                   <SubmitActionButton
-                    isSubmitting={isSubmitting}
-                    isFormInvalid={isFormInvalid}
-                    showSuccessLoader={showSuccessLoader}
                     title={t('loginTitle')}
                     onSuccessTitle={tc('formButtonSendSuccessTitle')}
                   />

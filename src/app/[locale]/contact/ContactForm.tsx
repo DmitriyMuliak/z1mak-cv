@@ -11,7 +11,6 @@ import { ContactSchemaFE, ContactSchemaFEType } from '@/schema/contactSchema/con
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
 import { contactFileTypes } from '@/schema/contactSchema/consts';
 import { createOnSubmitHandler } from '@/components/Forms/utils';
-import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
 import { RecaptchaField } from '@/components/Forms/fields/Recapthca';
 import { GlobalFormErrorMessage } from '@/components/Forms/fields/GlobalFormErrorMessage';
 import { SubmitActionButton } from '@/components/Forms/buttons/SubmitActionButton';
@@ -26,10 +25,7 @@ export function ContactForm() {
     defaultValues: { name: '', email: '', message: '', files: [], recaptchaToken: null },
   });
   const files = form.watch('files');
-  const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
-  const { isSubmitting, isValid } = form.formState;
-  const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
-  const showSuccessLoader = delayedIsLoading && isSuccess;
+  const { isValid } = form.formState;
 
   const handleSubmitCb = createOnSubmitHandler(sendContactAction, form);
   const onSubmit = form.handleSubmit(handleSubmitCb);
@@ -69,9 +65,7 @@ export function ContactForm() {
           visible={!!files && files.length > 0}
         />
         <SubmitActionButton
-          isSubmitting={isSubmitting}
           isFormInvalid={!isValid}
-          showSuccessLoader={showSuccessLoader}
           title={tc('formButtonSendTitle')}
           onSuccessTitle={tc('formButtonSendSuccessTitle')}
         />

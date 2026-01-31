@@ -12,7 +12,6 @@ import {
 import { useTranslations } from 'next-intl';
 import { localizedValibotResolver } from '@/lib/validator/localizedSchemaResolver';
 import { createOnSubmitHandler, resetCaptchaOnError } from '@/components/Forms/utils';
-import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
 import { GlobalFormErrorMessage } from '@/components/Forms/fields/GlobalFormErrorMessage';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,11 +41,6 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentProps<
   const captchaRef = React.useRef<TurnstileCaptchaRef>(null);
   const router = useRouter();
 
-  const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
-  const isSubmitting = form.formState.isSubmitting;
-  const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
-  const showSuccessLoader = delayedIsLoading && isSuccess;
-
   const onResult = (result: Awaited<ReturnType<typeof requestResetPasswordAction>>) => {
     resetCaptchaOnError(result, captchaRef);
     if (!result.success && result.metaError) {
@@ -59,7 +53,6 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentProps<
     getAdditionalFEData,
   });
   const onSubmit = form.handleSubmit(handleSubmitCb);
-  const isFormInvalid = Object.keys(form.formState.errors).length > 0;
 
   return (
     <div className={cn('flex flex-col', className)} {...props}>
@@ -89,9 +82,6 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentProps<
                 />
                 <Field>
                   <SubmitActionButton
-                    isSubmitting={isSubmitting}
-                    isFormInvalid={isFormInvalid}
-                    showSuccessLoader={showSuccessLoader}
                     title={tc('formButtonSendTitle')}
                     onSuccessTitle={tc('formButtonSendSuccessTitle')}
                   />

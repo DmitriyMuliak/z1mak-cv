@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -28,21 +28,34 @@ import { Link } from '@/i18n/navigation';
 import { FolderOpenDot, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AnimationContainer } from '@/components/AnimatedContainer';
-import { useHistoryStore } from '@/features/cv-checker/store/historyStore';
 import { HistoryTag } from '@/features/cv-checker/types';
+import { useQuery } from '@tanstack/react-query';
+import { getResentResumeBaseInfo } from '@/actions/resume/resumeActions';
+import { formatToUserDate } from '@/utils/date';
+import { paths } from '@/consts/routes';
 
 export function HistoryModal() {
   const [open, setOpen] = React.useState(false);
   const locale = useLocale();
   const t = useTranslations('components.historyModal');
   const isDesktop = useMediaQuery('(min-width: 768px)');
-  const { history, isFetching, fetchHistory } = useHistoryStore();
+  const historyQuery = useQuery<HistoryTag[], Error>({
+    queryKey: ['resume:history', locale],
+    enabled: open,
+    queryFn: async () => {
+      const list = await getResentResumeBaseInfo();
+      return list.map((item) => ({
+        ...item,
+        createdAt: formatToUserDate(item.createdAt, { locale }),
+        link: `${paths.cvReport}?jobId=${item.id}`,
+      }));
+    },
+    staleTime: 0,
+    refetchOnWindowFocus: false,
+  });
 
-  useEffect(() => {
-    if (open) {
-      fetchHistory(locale);
-    }
-  }, [open, fetchHistory, locale]);
+  const history = historyQuery.data ?? [];
+  const isFetching = historyQuery.isFetching;
 
   const renderContent = () => (
     <>

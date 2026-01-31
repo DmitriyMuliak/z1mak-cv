@@ -11,7 +11,6 @@ import { defaultInputStyles, TextField } from '@/components/Forms/fields/TextFie
 import { SetPasswordSchemaBase, SetPasswordSchemaBaseType } from '@/schema/authSchema';
 import { createOnSubmitHandler } from '@/components/Forms/utils';
 import { GlobalFormErrorMessage } from '@/components/Forms/fields/GlobalFormErrorMessage';
-import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Field, FieldGroup } from '@/components/ui/field';
 import { SubmitActionButton } from '@/components/Forms/buttons/SubmitActionButton';
@@ -27,14 +26,8 @@ export function SetPasswordForm({ className, ...props }: React.ComponentProps<'d
     defaultValues: { password: '', confirmPassword: '' },
   });
 
-  const { delayedIsLoading } = useDelayedSubmitting({ isSubmitting: form.formState.isSubmitting });
-  const isSubmitting = form.formState.isSubmitting;
-  const isSuccess = !isSubmitting && form.formState.isSubmitSuccessful;
-  const showSuccessLoader = delayedIsLoading && isSuccess;
-
   const handleSubmitCb = createOnSubmitHandler(setPasswordAction, form);
   const onSubmit = form.handleSubmit(handleSubmitCb);
-  const isFormInvalid = Object.keys(form.formState.errors).length > 0;
 
   return (
     <div className={cn('flex flex-col', className)} {...props}>
@@ -65,9 +58,6 @@ export function SetPasswordForm({ className, ...props }: React.ComponentProps<'d
                 />
                 <Field>
                   <SubmitActionButton
-                    isSubmitting={isSubmitting}
-                    isFormInvalid={isFormInvalid}
-                    showSuccessLoader={showSuccessLoader}
                     title={tc('formButtonSendTitle')}
                     onSuccessTitle={tc('formButtonSendSuccessTitle')}
                   />

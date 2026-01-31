@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useServerActionPolling } from '@/hooks/useServerActionPolling';
+import { useEffect, useMemo, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AppError } from '@/types/server-actions';
 import { getResumeResult, getResumeStatus, StatusResponse } from '@/actions/resume/resumeActions';
 import { notRetryableErrors } from '../consts/resumeErrors';
@@ -15,72 +15,113 @@ export const useResumePolling = (
   jobId: string | null,
   { onFailure, onSuccess: externalOnSuccess }: UseResumePollingCallbacks,
 ) => {
-  const [isResumeFetching, setIsResumeFetching] = useState(false);
-  const [report, setReport] = useState<AnalysisSchemaType | null>(null);
-  const lastJobIdRef = useRef<string | null>(jobId);
+  const queryClient = useQueryClient();
+  const statusQueryKey = ['resume:status', jobId] as const;
+  const resultQueryKey = ['resume:result', jobId] as const;
+  const lastStatusErrorRef = useRef<string | null>(null);
+  const lastResultErrorRef = useRef<string | null>(null);
+  const lastSuccessJobIdRef = useRef<string | null>(null);
 
-  const onSuccess = async (response: StatusResponse) => {
-    if (response.status !== 'completed') return;
-    if (!jobId) return;
+  useEffect(() => {
+    lastStatusErrorRef.current = null;
+    lastResultErrorRef.current = null;
+    lastSuccessJobIdRef.current = null;
+  }, [jobId]);
 
-    setIsResumeFetching(true);
-    const resumeResult = await clientSafeAction(getResumeResult(jobId));
-    setIsResumeFetching(false);
-
-    if (jobId !== lastJobIdRef.current) return;
-
-    if (!resumeResult.success) {
-      onFailure(resumeResult.error);
-      return;
-    }
-
-    if (!resumeResult.data.data) {
-      onFailure({ code: 'NOT_FOUND', message: 'Resume result is empty' } satisfies AppError);
-      return;
-    }
-
-    setReport(resumeResult.data.data);
-    externalOnSuccess?.(response);
-  };
-
-  const polling = useServerActionPolling<StatusResponse, AppError>({
+  const statusQuery = useQuery<StatusResponse, AppError>({
+    queryKey: statusQueryKey,
     enabled: !!jobId,
-    action: async () => {
-      const result = await getResumeStatus(jobId!);
-      return result;
+    queryFn: async () => {
+      const result = await clientSafeAction(getResumeStatus(jobId!));
+      if (!result.success) {
+        throw result.error;
+      }
+      return result.data;
     },
-    validate: (res) => ({
-      isComplete: res.status === 'completed',
-      isFailed: res.status === 'failed',
-    }),
-    onSuccess,
-    onFailure,
-    shouldRetry: (error) => !notRetryableErrors.has(error.code),
-    interval: 2000,
-    maxAttempts: 3,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+
+      if (!status) return 2000;
+      if (status === 'completed' || status === 'failed') return false;
+
+      return 2000;
+    },
+    refetchIntervalInBackground: false,
+    retry: (failureCount, error) => !notRetryableErrors.has(error.code) && failureCount < 3,
+    retryDelay: 2000,
   });
 
-  // auto-reset when jobId changes
+  const resultQuery = useQuery<AnalysisSchemaType, AppError>({
+    queryKey: resultQueryKey,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    enabled: !!jobId && statusQuery.data?.status === 'completed',
+    queryFn: async () => {
+      const resumeResult = await clientSafeAction(getResumeResult(jobId!));
+
+      if (!resumeResult.success) {
+        throw resumeResult.error;
+      }
+
+      if (!resumeResult.data.data) {
+        throw { code: 'NOT_FOUND', message: 'Resume result is empty' } satisfies AppError;
+      }
+
+      return resumeResult.data.data;
+    },
+    retry: (failureCount) => failureCount < 3,
+  });
+
   useEffect(() => {
-    if (jobId && lastJobIdRef.current !== jobId) {
-      lastJobIdRef.current = jobId;
-      setReport(null);
-      polling.reset();
-    }
-  }, [jobId, polling]);
+    if (!statusQuery.error || statusQuery.fetchStatus !== 'idle') return;
+    const signature = `${statusQuery.error.code}:${statusQuery.error.message ?? ''}`;
+    if (lastStatusErrorRef.current === signature) return;
+    lastStatusErrorRef.current = signature;
+    onFailure(statusQuery.error);
+  }, [statusQuery.error, statusQuery.fetchStatus, onFailure]);
+
+  useEffect(() => {
+    if (!resultQuery.error || resultQuery.fetchStatus !== 'idle') return;
+    const signature = `${resultQuery.error.code}:${resultQuery.error.message ?? ''}`;
+    if (lastResultErrorRef.current === signature) return;
+    lastResultErrorRef.current = signature;
+    onFailure(resultQuery.error);
+  }, [resultQuery.error, resultQuery.fetchStatus, onFailure]);
+
+  useEffect(() => {
+    if (!jobId || !resultQuery.data || !statusQuery.data) return;
+    if (lastSuccessJobIdRef.current === jobId) return;
+    lastSuccessJobIdRef.current = jobId;
+    externalOnSuccess?.(statusQuery.data);
+  }, [jobId, resultQuery.data, statusQuery.data, externalOnSuccess]);
+
+  const hasFinalStatusError = !!statusQuery.error && statusQuery.fetchStatus === 'idle';
+  const finalStatusError = hasFinalStatusError ? statusQuery.error : null;
 
   const status = useMemo(() => {
-    if (isResumeFetching) return 'loading';
-    if (polling.data?.status) return polling.data.status;
-    if (polling.error) return 'failed';
+    if (resultQuery.isFetching) return 'loading';
+    if (statusQuery.data?.status) return statusQuery.data.status;
+    if (hasFinalStatusError) return 'failed';
     return 'loading';
-  }, [polling.data?.status, polling.error, isResumeFetching]);
+  }, [resultQuery.isFetching, statusQuery.data?.status, hasFinalStatusError]);
+
+  const retry = () => {
+    queryClient.resetQueries({ queryKey: statusQueryKey, exact: true });
+    queryClient.resetQueries({ queryKey: resultQueryKey, exact: true });
+  };
 
   return {
-    report,
+    report: resultQuery.data ?? null,
     status,
-    error: polling.error,
-    isProcessing: !!jobId && !polling.isFinished,
-    retry: polling.reset,
+    error: finalStatusError,
+    isProcessing:
+      !!jobId &&
+      statusQuery.data?.status !== 'completed' &&
+      statusQuery.data?.status !== 'failed' &&
+      !hasFinalStatusError,
+    retry,
   } as const;
 };

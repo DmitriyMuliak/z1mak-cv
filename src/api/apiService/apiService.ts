@@ -1,15 +1,18 @@
 import { devLogger } from '@/lib/devLogger';
 import { InterceptorManager } from './interceptorManager';
-import { ApiError } from './apiError';
+import { ApiError, ErrorBody } from './apiError';
 import type {
   ApiRequestOptions,
   MockHandler,
   ParamsType,
   ResponseParseType,
   RelativePath,
+  ApiInternalConfig,
 } from './types';
 import type { IApiService } from './apiServiceType';
 import { envType } from '@/utils/envType';
+import { BodyLimitExceededError, readLimitedBody } from './readLimitedBody';
+import { isAbortError } from './utils';
 
 interface ApiServiceOptions {
   baseUrl: string;
@@ -37,7 +40,17 @@ export class ApiService implements IApiService {
     this.mockHandlers.set(pattern, handler as MockHandler);
   }
 
-  // --- Main Request Method ---
+  public async retryRequest<R>(config: ApiInternalConfig): Promise<R> {
+    if (!config.url) {
+      throw new Error('[ApiService] Cannot retry request without a URL');
+    }
+
+    return this.execute<R>(config.url, config);
+  }
+
+  /**
+   * Main Request Pipeline
+   */
 
   private async request<R>(
     endpoint: RelativePath,
@@ -60,8 +73,14 @@ export class ApiService implements IApiService {
     config = await configPromise;
 
     // 3. Prepare Final URL
-    const { params, responseAs, ...fetchInit } = config;
+    const { params } = config;
     const finalUrl = this.buildUrl(this.baseUrl, endpoint, params);
+
+    return this.execute<R>(finalUrl, config);
+  }
+
+  private async execute<R>(finalUrl: string, config: ApiRequestOptions): Promise<R> {
+    const { params, responseAs, ...fetchInit } = config;
 
     // 4. Check Mocks
     const mockResponse = await this.tryMockRequest(finalUrl, config);
@@ -74,15 +93,25 @@ export class ApiService implements IApiService {
     try {
       response = await fetch(finalUrl, fetchInit);
     } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') {
+      // DNS error
+      // Connection refused
+      // TLS error
+      // Offline
+      // CORS failure
+      // Request aborted (AbortError)
+
+      if (isAbortError(error)) {
         throw error;
       }
 
       const errorMessage = error instanceof Error ? error.message : 'Unknown Request Error';
+      const internalConfig: ApiInternalConfig = {
+        ...config,
+        url: finalUrl,
+      };
       const apiError = new ApiError(errorMessage, {
         cause: error,
-        config,
-        url: finalUrl,
+        config: internalConfig,
         status: 0,
       });
 
@@ -93,7 +122,9 @@ export class ApiService implements IApiService {
     return this.handleResponseChain<R>(response, config, finalUrl);
   }
 
-  // --- Helpers for Request Preparation ---
+  /**
+   * Helpers for Request Preparation
+   */
 
   private prepareRequestConfig(options: ApiRequestOptions, body: unknown): ApiRequestOptions {
     const config: ApiRequestOptions = { ...options };
@@ -149,7 +180,9 @@ export class ApiService implements IApiService {
     return url.href;
   }
 
-  // --- Response Pipeline ---
+  /**
+   * Response Pipeline
+   */
 
   private async handleResponseChain<R>(
     initialResponseOrError: Response | Promise<Response>,
@@ -160,13 +193,13 @@ export class ApiService implements IApiService {
 
     promiseChain = promiseChain.then(async (response) => {
       if (!response.ok) {
+        const internalConfig: ApiInternalConfig = { ...config, url: requestUrl };
         const errorData = await this.safeParseError(response);
         throw new ApiError(response.statusText || 'API Error', {
           status: response.status,
           body: errorData,
           response,
-          config,
-          url: requestUrl,
+          config: internalConfig,
         });
       }
       return response;
@@ -182,8 +215,7 @@ export class ApiService implements IApiService {
         this.parseResponseData<R>(response, config.responseAs, requestUrl, config),
       )
       .catch((error) => {
-        const isAbort = error instanceof DOMException && error.name === 'AbortError';
-        if (!isAbort) {
+        if (!isAbortError(error)) {
           if (error instanceof ApiError) {
             devLogger.error(`[ApiService] ${error.status} ${error.message}`, error.body);
           } else {
@@ -230,32 +262,59 @@ export class ApiService implements IApiService {
           return await response.json();
       }
     } catch (error) {
+      const internalConfig: ApiInternalConfig = { ...config, url: requestUrl };
       throw new ApiError('Parsing Error', {
         status: response.status,
         cause: error,
         response,
-        config,
-        url: requestUrl,
+        config: internalConfig,
       });
     }
   }
 
-  private async safeParseError(response: Response): Promise<unknown> {
+  private async safeParseError(response: Response): Promise<ErrorBody> {
     try {
-      // Clone the response because the request body stream can only be read once.
-      // This prevents locking the stream for other consumers (e.g., interceptors).
-      const text = await response.clone().text();
+      // Why not response.json() or response.clone()?
+      // 1. Memory Safety: Standard methods buffer the *entire* stream into RAM.
+      //    If the error body is unexpectedly large (e.g., HTML dump, infinite stream), it causes OOM crashes.
+      // 2. Control: We need to enforce a size limit (e.g., 16KB) and strictly cancel()
+      //    the stream if exceeded to free up network resources immediately.
+      const text = await readLimitedBody(response);
       try {
-        return JSON.parse(text);
+        const json = JSON.parse(text);
+
+        if (json && typeof json === 'object' && !Array.isArray(json)) {
+          return { ...json, invalidFormat: false };
+        }
+
+        return {
+          invalidFormat: true,
+          message: 'Unexpected error format (not an object)',
+          data: json,
+        };
       } catch {
-        return text;
+        return {
+          invalidFormat: true,
+          message: 'Invalid JSON response',
+          raw: text,
+        };
       }
-    } catch {
-      return 'Could not read error body';
+    } catch (error) {
+      if (isAbortError(error)) throw error;
+      if (error instanceof BodyLimitExceededError) {
+        throw error;
+      }
+
+      return {
+        invalidFormat: true,
+        message: 'Could not read error body',
+      };
     }
   }
 
-  // --- Mocks ---
+  /**
+   * Mocks
+   */
 
   private async tryMockRequest(url: string, options: ApiRequestOptions): Promise<Response | null> {
     for (const [pattern, handler] of this.mockHandlers) {
@@ -300,7 +359,9 @@ export class ApiService implements IApiService {
     return null;
   }
 
-  // --- Public HTTP Methods ---
+  /**
+   * Public HTTP Methods
+   */
 
   public get<R, P extends ParamsType = ParamsType>(
     endpoint: RelativePath,
@@ -367,7 +428,7 @@ const validateBaseUrl = (baseUrl: string): void => {
     throw new Error(`[ApiService]: baseUrl can't contain hash. Got: ${baseUrl}`);
   }
 
-  const allowedProtocols = envType.isDev ? ['https:', 'wss:', 'http:', 'ws:'] : ['https:', 'wss:'];
+  const allowedProtocols = envType.isProd ? ['https:', 'wss:'] : ['https:', 'wss:', 'http:', 'ws:'];
 
   if (!allowedProtocols.includes(url.protocol)) {
     throw new Error(
