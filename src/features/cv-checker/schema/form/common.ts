@@ -5,6 +5,9 @@ export const cvFileTypes = {
   'application/pdf': ['.pdf'],
   'application/msword': ['.doc'],
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+  'image/jpeg': ['.jpeg', '.jpg'],
+  'image/png': ['.png'],
+  'text/plain': ['.txt'],
 } as const;
 
 export const allowedCvFilesMimeTypes = Object.keys(cvFileTypes);
