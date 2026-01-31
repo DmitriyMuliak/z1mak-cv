@@ -1,5 +1,3 @@
-'use server';
-
 import { ApiError } from '@/api/apiService';
 import { BodyLimitExceededError } from '@/api/apiService/readLimitedBody';
 import { isAbortError } from '@/api/apiService/utils';

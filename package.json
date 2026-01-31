@@ -45,6 +45,8 @@
     "@radix-ui/react-toggle-group": "^1.1.11",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.79.0",
+    "@tanstack/react-query": "^5.66.0",
+    "@tanstack/react-query-devtools": "^5.66.0",
     "@valibot/i18n": "^1.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -54,7 +56,7 @@
     "framer-motion": "^12.23.22",
     "immer": "^11.0.0",
     "lucide-react": "^0.544.0",
-    "next": "16.1.1",
+    "next": "^16.1.6",
     "next-intl": "^4.3.9",
     "next-mdx-remote": "^5.0.0",
     "next-themes": "^0.4.6",
@@ -114,6 +116,7 @@
     "supabase": {
       "tar": "^7.5.6"
     },
+    "fast-xml-parser": "^5.3.4",
     "elliptic": "^6.6.1"
   }
 }
