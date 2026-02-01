@@ -42,7 +42,7 @@ flowchart LR
 
 ## 🛠 Tech Stack
 
-- **Frontend:** Next.js 16 (App Router, Turbopack), React 19, next-intl, next-themes, Tailwind CSS v4.
+- **Frontend:** Next.js 16 (App Router, Turbopack), React 19, React-Query, next-intl, next-themes, Tailwind CSS v4.
 - **State & Forms:** Zustand, react-hook-form, valibot.
 - **File Processing:** pdfjs-dist, docx, tesseract.js, dropzone.
 - **Backend/API:** Supabase SSR (Auth/DB), Server Actions for analysis API.

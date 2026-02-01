@@ -17,16 +17,20 @@ export function LanguageSwitcher() {
   const locale = useLocale();
 
   const changeLanguage = (newLocale: string) => {
-    router.replace({ pathname }, { locale: newLocale });
+    const currentSearchParams = new URLSearchParams(window.location.search);
+    router.replace(
+      { pathname, query: Object.fromEntries(currentSearchParams.entries()) },
+      { locale: newLocale },
+    );
   };
 
   return (
-    <div className="absolute top-[20px] lg:top-[72px] right-0 text-white">
+    <div className="absolute top-5 lg:top-18 right-0 text-white">
       <Select onValueChange={changeLanguage} defaultValue={locale}>
         <SelectTrigger className="min-w-[124px] cursor-pointer frosted-card [&_svg:not([class*='text-'])]:text-white [&_svg:not([class*='text-'])]:opacity-100">
           <SelectValue placeholder="Language" className="ring-background" />
         </SelectTrigger>
-        <SelectContent className="frosted-card !rounded-[10px]">
+        <SelectContent className="frosted-card rounded-[10px]!">
           {routing.locales.map((l) => (
             <SelectItem key={l} value={l} className="cursor-pointer">
               {l === 'en' ? 'English' : 'Українська'}

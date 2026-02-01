@@ -77,7 +77,7 @@ export function HistoryModal() {
     return (
       isFetching &&
       history.length > 0 && (
-        <RefreshCw size={16} className="inline-block animate-spin duration-1500 ml-1 mr-1" />
+        <RefreshCw size={13} className="inline-block animate-spin duration-1500 ml-1 mr-1" />
       )
     );
   };
