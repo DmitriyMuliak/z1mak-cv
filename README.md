@@ -3,7 +3,7 @@
 A Next.js web application for CV analysis and enhancement. Users can upload or paste their resumes and vacancy descriptions, select analysis modes, and receive detailed reports featuring error lists, metrics, and export options (DOCX/HTML).
 
 - The platform includes multi-language support (next-intl), theme customization, and data persistence and auth flows via Supabase.
-- The application core functionality relies on integration with the [z1mak-cv-queue](https://www.google.com/search?q=https://github.com/DmitriyMuliak/z1mak-cv-queue) backend service for asynchronous analysis and task management.
+- The application core functionality relies on integration with the [z1mak-cv-queue](https://github.com/DmitriyMuliak/z1mak-cv-queue) backend service for asynchronous analysis and task management.
 
 ## ✨ Key Features
 
