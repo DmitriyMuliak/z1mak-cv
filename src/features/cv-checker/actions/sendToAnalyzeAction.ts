@@ -66,6 +66,13 @@ export const sendToAnalyzeAction = async (
       errors: { [jobFieldName]: [state.translateErrorFn('jobFileEmpty')] },
     };
 
+  if (shouldProcessJob && jobResult.data === cvResult.data) {
+    toast.error(state.translateErrorFn('jobDescAndCvAreEqual'));
+    return {
+      success: false,
+    };
+  }
+
   const response = await analyzeResume({
     mode: state.mode,
     locale: state.locale,

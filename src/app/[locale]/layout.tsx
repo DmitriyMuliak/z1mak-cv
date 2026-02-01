@@ -1,5 +1,4 @@
 import '../globals.css';
-import { Suspense } from 'react';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Toaster } from '@/components/ui/sonner';
@@ -16,7 +15,7 @@ import { Lamp } from '@/components/Lamp';
 import { getBaseUrl } from '@/utils/getBaseUrl';
 import { cn } from '@/lib/utils';
 import styles from './layout.module.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -61,19 +60,17 @@ export default async function LocaleLayout({ children, params }: Props) {
                 <div className={styles.mainContent}>
                   <Configurator />
                   <Lamp />
-                  <Suspense fallback={null}>
-                    <LanguageSwitcher />
-                  </Suspense>
+                  <LanguageSwitcher />
                   <Header />
                   <div className={cn('flex-1 flex w-full max-w-300 mx-auto md:px-4')}>
                     {children}
                   </div>
                 </div>
               </div>
-              <Toaster position="top-right" richColors closeButton />
             </ReactQueryProvider>
+            <Toaster position="top-right" richColors closeButton />
+            <BackgroundContainer />
           </ThemeProvider>
-          <BackgroundContainer />
         </NextIntlClientProvider>
       </body>
     </html>
@@ -85,6 +82,12 @@ export default async function LocaleLayout({ children, params }: Props) {
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+};
 
 export async function generateMetadata({
   params,
@@ -107,7 +110,7 @@ export async function generateMetadata({
       url: './',
       siteName: t('brandName'),
       images: ['/og-image.png'],
-      locale: locale,
+      locale,
       type: 'website',
     },
     icons: {
@@ -122,6 +125,11 @@ export async function generateMetadata({
         uk: '/uk',
         'x-default': '/en',
       },
+    },
+    appleWebApp: {
+      capable: false,
+      statusBarStyle: 'black-translucent',
+      title: t('title'),
     },
   };
 }

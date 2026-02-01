@@ -1,13 +1,11 @@
 import { AnalysisSchemaType } from '../schema/analysisSchema';
-// import { getFullLocale } from '@/i18n/getFullLocale';
 import type { IParagraphOptions, Paragraph as ParagraphType } from 'docx';
 import type { MessagesBase, NamespacedRelativeMessageKeys } from '@/types/translations';
-// import { formatToUserDate } from '@/utils/date';
 
 type ReportKeys = NamespacedRelativeMessageKeys<MessagesBase, 'pages.cvReport'>;
 
 export const generateAndDownloadDocxReport = async (
-  data: AnalysisSchemaType,
+  data: Omit<AnalysisSchemaType, 'metadata'>,
   _locale: string,
   t: (key: ReportKeys) => string,
 ) => {
@@ -662,7 +660,7 @@ export const generateAndDownloadDocxReport = async (
                       children: [
                         // Description
                         new TextRun({
-                          text: `Why ask: `,
+                          text: `${t('questions.whyAsk')}: `,
                           color: '000000',
                           size: 22,
                         }),

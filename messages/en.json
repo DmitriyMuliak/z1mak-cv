@@ -145,7 +145,8 @@
         "quantifyAchievements": "Quantify achievements"
       },
       "questions": {
-        "title": "Suggested Interview Questions"
+        "title": "Suggested Interview Questions",
+        "whyAsk": "Why ask"
       }
     },
     "login": {
@@ -272,7 +273,8 @@
       "jobFileEmpty": "Seems like your Job file is empty",
       "fileParsing": "We couldn't read this file",
       "cvProcessing": "Error processing CV description",
-      "jobProcessing": "Error processing Job description"
+      "jobProcessing": "Error processing Job description",
+      "jobDescAndCvAreEqual": "Job description and CV are equal"
     }
   },
   "examples": {

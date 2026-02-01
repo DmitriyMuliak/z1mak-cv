@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { useCvStore } from './store/useCvStore';
 import { ModeBar } from './components/ModeBar';
 import { SendToAnalyzeForm } from './components/SendToAnalyzeForm';
