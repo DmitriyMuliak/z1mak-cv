@@ -1,4 +1,5 @@
 import '../globals.css';
+import { Suspense } from 'react';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Toaster } from '@/components/ui/sonner';
@@ -60,7 +61,9 @@ export default async function LocaleLayout({ children, params }: Props) {
                 <div className={styles.mainContent}>
                   <Configurator />
                   <Lamp />
-                  <LanguageSwitcher />
+                  <Suspense fallback={null}>
+                    <LanguageSwitcher />
+                  </Suspense>
                   <Header />
                   <div className={cn('flex-1 flex w-full max-w-300 mx-auto md:px-4')}>
                     {children}
