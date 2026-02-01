@@ -117,9 +117,7 @@ root
 │   └── globals.d.ts
 ├── tests              // unit & e2e tests and utilities
 ├── supabase
-│   ├── Migrations.md
 │   ├── config.toml
-│   ├── migrations
 │   └── templates
 ├── messages
 │   ├── en.json
