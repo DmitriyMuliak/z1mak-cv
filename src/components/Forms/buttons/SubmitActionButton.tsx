@@ -39,7 +39,7 @@ export const SubmitActionButton: React.FC<SubmitActionButtonProps> = ({
   const isSubmitSuccessful = isSubmitSuccessfulProp ?? formIsSubmitSuccessful ?? false;
 
   const hasErrors = errors ? Object.keys(errors).length > 0 : false;
-  const isFormInvalid = isFormInvalidProp ?? hasErrors;
+  const _isFormInvalid = isFormInvalidProp ?? hasErrors;
 
   const { delayedIsLoading } = useDelayedSubmitting({
     isSubmitting,
@@ -51,7 +51,7 @@ export const SubmitActionButton: React.FC<SubmitActionButtonProps> = ({
 
   return (
     <Button
-      disabled={isSubmitting || isFormInvalid}
+      disabled={isSubmitting}
       type="submit"
       className={`!mt-0 w-full transition-colors duration-300 ${showSuccessState ? 'bg-green-500 hover:bg-green-500' : ''}`}
       {...rest}
