@@ -4,7 +4,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckIcon, RefreshCw } from 'lucide-react';
 import { useDelayedSubmitting } from '@/hooks/useDelayedSubmitting';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useFormState } from 'react-hook-form';
 
 interface SubmitActionButtonPropsBase {
   isSubmitting?: boolean;
@@ -27,13 +27,19 @@ export const SubmitActionButton: React.FC<SubmitActionButtonProps> = ({
   title,
   ...rest
 }) => {
-  const formContext = useFormContext();
-  const isSubmitting = isSubmittingProp ?? formContext?.formState?.isSubmitting ?? false;
-  const isSubmitSuccessful =
-    isSubmitSuccessfulProp ?? formContext?.formState?.isSubmitSuccessful ?? false;
-  const isFormInvalid =
-    isFormInvalidProp ??
-    (formContext ? Object.keys(formContext.formState?.errors ?? {}).length > 0 : undefined);
+  const { control } = useFormContext();
+
+  const {
+    isSubmitting: formIsSubmitting,
+    isSubmitSuccessful: formIsSubmitSuccessful,
+    errors,
+  } = useFormState({ control });
+
+  const isSubmitting = isSubmittingProp ?? formIsSubmitting ?? false;
+  const isSubmitSuccessful = isSubmitSuccessfulProp ?? formIsSubmitSuccessful ?? false;
+
+  const hasErrors = errors ? Object.keys(errors).length > 0 : false;
+  const isFormInvalid = isFormInvalidProp ?? hasErrors;
 
   const { delayedIsLoading } = useDelayedSubmitting({
     isSubmitting,
