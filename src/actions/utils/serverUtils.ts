@@ -70,7 +70,7 @@ async function serverFormAction<
 
     const submitResult = await onSubmit(result.output, formData, additionalFEData);
 
-    // 'errors' will be set as form errors, metaErrors and metaError will not affect form state
+    // 'errors' will be set as form errors, metaErrors and metaError will not effect form state
     if (submitResult?.errors || submitResult?.metaErrors || submitResult?.metaError)
       return { success: false, ...submitResult };
 
@@ -80,7 +80,7 @@ async function serverFormAction<
     unstable_rethrow(error);
     return {
       success: false,
-      errors: { 'root.unexpected': ['Unexpected error, please try again later.'] },
+      metaError: 'unexpectedTryLater',
     };
   }
 }

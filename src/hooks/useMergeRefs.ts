@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 export function useMergeRefs<T>(...refs: (React.Ref<T> | undefined)[]) {
   return useMemo(() => {
-    if (refs.every((ref) => ref == null)) {
+    if (refs.every((ref) => ref === null)) {
       return null;
     }
     return (node: T) => {

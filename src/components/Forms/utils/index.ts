@@ -103,6 +103,10 @@ const handleActionResponse = <TFieldValues extends FieldValues, TData extends Su
     );
   }
 
+  if (res.metaError || res.metaErrors) {
+    throw new Error('Form have metaError || metaErrors');
+  }
+
   if (res.success) {
     form.reset();
   }

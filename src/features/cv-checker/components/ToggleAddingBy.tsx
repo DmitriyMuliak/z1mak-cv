@@ -24,9 +24,8 @@ export const ToggleAddingBy: React.FC<Props> = (props) => {
     >
       <ToggleGroupItem
         value="file"
-        aria-label="Toggle star"
+        aria-label="Toggle text"
         className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500 transition-colors"
-        // className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500 data-[state=on]:*:[svg]:stroke-yellow-500"
       >
         <FileText />
         {t('fileTitle')}
@@ -34,7 +33,7 @@ export const ToggleAddingBy: React.FC<Props> = (props) => {
       <span>{t('orTitle')}</span>
       <ToggleGroupItem
         value="text"
-        aria-label="Toggle heart"
+        aria-label="Toggle files"
         className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:stroke-blue-500 transition-colors"
       >
         <TextInitial />
