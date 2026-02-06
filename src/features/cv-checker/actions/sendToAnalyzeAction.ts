@@ -70,6 +70,7 @@ export const sendToAnalyzeAction = async (
     toast.error(state.translateErrorFn('jobDescAndCvAreEqual'));
     return {
       success: false,
+      metaError: 'Job description and CV are equal',
     };
   }
 
