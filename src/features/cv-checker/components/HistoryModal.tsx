@@ -112,8 +112,13 @@ export function HistoryModal() {
       <DrawerContent className="z-50 frosted-card [&_[data-slot=drawer-handle]]:bg-primary">
         <DrawerHeader className="text-left">
           <DrawerTitle className="light:text-white">
-            {t('title')}
-            {renderUpdateIcon()}
+            <div className="relative w-fit mx-auto">
+              {t('title')}
+              {/* -right-X або translate-x-full */}
+              <span className="absolute top-1/2 -right-6 -translate-y-1/2">
+                {renderUpdateIcon()}
+              </span>
+            </div>
           </DrawerTitle>
           <DrawerDescription className="light:text-white">{t('description')}</DrawerDescription>
         </DrawerHeader>
@@ -146,7 +151,7 @@ function HistoryList({ tags, onItemClick }: { tags: HistoryTag[]; onItemClick: (
                 {tag.createdAt}
               </Link>
             </div>
-            <Separator className="my-2" />
+            <Separator className="my-2 last:hidden" />
           </React.Fragment>
         ))}
       </div>

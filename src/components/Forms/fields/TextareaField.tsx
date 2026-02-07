@@ -34,6 +34,10 @@ export function TextareaField<T extends FieldValues>({
                 {...field}
                 className={cn(
                   'placeholder:text-foreground border-stone-950 dark:border-slate-400/20 text-gray-900 dark:text-white',
+                  'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40',
+                  'aria-invalid:border-red-700',
+                  'dark:aria-invalid:border-red-700',
+                  'transition-colors',
                   className,
                 )}
               />

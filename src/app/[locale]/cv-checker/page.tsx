@@ -1,12 +1,8 @@
-import { CvCheckerStartFlow } from '@/features/cv-checker/CvCheckerStartFlow';
+import { CvCheckerStartFlow } from '@/features/cv-checker/components/CvCheckerStartFlow';
 import { getMetadata, MetadataBaseParams } from '@/utils/getPageMetadata';
 
 export default async function CVCheckerPage() {
-  return (
-    <>
-      <CvCheckerStartFlow />
-    </>
-  );
+  return <CvCheckerStartFlow />;
 }
 
 export async function generateMetadata({ params }: MetadataBaseParams) {

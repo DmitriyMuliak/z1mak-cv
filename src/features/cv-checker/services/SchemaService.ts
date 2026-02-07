@@ -57,8 +57,8 @@ export type UiSectionKey =
 
 const UI_SECTION_ORDER: UiSectionKey[] = [
   'header',
-  'skills',
   'experience',
+  'skills',
   'redFlags',
   'improvements',
   'questions',

@@ -21,7 +21,13 @@ import { clientSafeAction } from '@/actions/utils/clientUtils';
 
 const toastId = 'resume-error-toast';
 
-export const useResumePolling = (jobId: string | null) => {
+export const useResumePolling = (
+  jobId: string | null,
+  initialData?: {
+    status?: StatusResponse;
+    report?: AnalysisSchemaType;
+  },
+) => {
   const queryClient = useQueryClient();
   const statusQueryKey = ['resume:status', jobId] as const;
   const resultQueryKey = ['resume:result', jobId] as const;
@@ -65,6 +71,7 @@ export const useResumePolling = (jobId: string | null) => {
   const statusQuery = useQuery<StatusResponse, AppError>({
     queryKey: statusQueryKey,
     enabled: !!jobId,
+    initialData: initialData?.status,
     queryFn: async () => {
       const result = await clientSafeAction(getResumeStatus(jobId!));
       if (!result.success) {
@@ -93,6 +100,7 @@ export const useResumePolling = (jobId: string | null) => {
     staleTime: Infinity,
     gcTime: Infinity,
     enabled: !!jobId && statusQuery.data?.status === 'completed',
+    initialData: initialData?.report,
     queryFn: async () => {
       const resumeResult = await clientSafeAction(getResumeResult(jobId!));
 
