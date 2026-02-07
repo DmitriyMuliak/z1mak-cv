@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, PropsWithChildren } from 'react';
+import React, { useMemo, PropsWithChildren, use } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { Header } from './components/Header';
@@ -17,6 +17,8 @@ import { useRouter } from '@/i18n/navigation';
 import { paths } from '@/consts/routes';
 import type { AnalysisSchemaType } from '../../schema/analysisSchema';
 import { AnimationContainer } from '@/components/AnimatedContainer';
+import { StatusResponse } from '@/actions/resume/resumeActions';
+import { ReportSkeleton } from './components/ReportSkeleton';
 
 const SECTION_COMPONENTS: Record<UiSectionKey, React.FC<{ data: AnalysisSchemaType }>> = {
   header: Header,
@@ -27,13 +29,21 @@ const SECTION_COMPONENTS: Record<UiSectionKey, React.FC<{ data: AnalysisSchemaTy
   questions: InterviewQuestions,
 };
 
-export const ReportRenderer: React.FC = () => {
+interface ReportRendererProps {
+  pollingPromise: Promise<{
+    status?: StatusResponse;
+    report?: AnalysisSchemaType;
+  }>;
+}
+
+export const ReportRenderer: React.FC<ReportRendererProps> = ({ pollingPromise }) => {
+  const initialData = use(pollingPromise);
   const router = useRouter();
   const tReport = useTranslations('pages.cvReport.loadingTitle');
   const tCommon = useTranslations('common');
   const searchParams = useSearchParams();
   const jobId = searchParams.get('jobId');
-  const { status, isProcessing, report, error } = useResumePolling(jobId);
+  const { status, isProcessing, report, error } = useResumePolling(jobId, initialData);
 
   const activeSections = useMemo(() => {
     if (!report) return [];
@@ -44,14 +54,19 @@ export const ReportRenderer: React.FC = () => {
   // Handle updating status
   if (isProcessing && loadingStatuses.has(status)) {
     return (
-      <AnimationContainer id={`${jobId}:loading`}>
-        <Container>
-          <DotAndBarLoader />
-          <h3 className="text-md font-semibold text-center">
-            {tReport(status as LoadingStatus)}...
-          </h3>
-        </Container>
-      </AnimationContainer>
+      <div className="space-y-6 w-full">
+        <div className="opacity-50 pointer-events-none filter blur-[2px] ">
+          <ReportSkeleton />
+        </div>
+        <div className="absolute inset-0 full-screen-container-loader">
+          <div className="grid h-screen w-full place-items-center content-center gap-4">
+            <DotAndBarLoader />
+            <h3 className="text-md font-medium text-center animate-pulse">
+              {tReport(status as LoadingStatus)}...
+            </h3>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -91,7 +106,7 @@ export const ReportRenderer: React.FC = () => {
 
   return (
     <AnimationContainer id={`${jobId}:result`}>
-      <div className="space-y-6">
+      <div className="space-y-6 w-full">
         {activeSections.map((sectionKey) => {
           const Component = SECTION_COMPONENTS[sectionKey];
           return <Component key={sectionKey} data={report} />;

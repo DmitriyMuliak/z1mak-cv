@@ -130,17 +130,20 @@ function FileDropzoneTrigger({
       {...rootProps}
       ref={mergedRef}
       className={cn(
-        'flex flex-col items-center justify-center w-full rounded-md border p-3 mb-2 text-sm transition-all',
+        'flex flex-col items-center justify-center w-full rounded-md border p-3 mb-2 text-sm transition-colors',
         'cursor-pointer shadow-xs',
+        isDragActive && 'bg-accent',
+        'outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring',
         !hasError &&
           'border-stone-950 dark:border-slate-400/20 hover:bg-gray-600/10 dark:bg-input/30 dark:hover:bg-gray-600/10',
-        'outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring',
-        isDragActive && 'bg-accent', // 'bg-gray-600/10'
         hasError && [
-          'border-destructive',
+          'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40',
+          'border-red-700',
+          'dark:aria-invalid:border-red-700',
           'focus-visible:border-destructive',
           'focus-visible:ring-destructive/20',
           'dark:focus-visible:ring-destructive/40',
+          'transition-colors',
         ],
         className,
       )}

@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type Props = PropsWithChildren<{
-  title: string;
+  title: React.ReactNode;
   className?: string;
 }>;
 
