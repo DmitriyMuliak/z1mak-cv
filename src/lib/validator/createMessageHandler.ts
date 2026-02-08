@@ -2,9 +2,7 @@ import { ValidationKeys } from '@/types/translations';
 import { ValidatorPlaceholders } from './consts';
 import { createCustomKey, createTempCustomMessage } from './createTempCustomMessage';
 import type { BaseIssue } from 'valibot';
-type Writable<T> = {
-  -readonly [P in keyof T]: T[P];
-};
+import type { Writable } from '@/types/utils';
 
 const extractPlaceholdersFromIssue = <T>(issue: BaseIssue<T>): Partial<Writable<BaseIssue<T>>> => {
   return (Object.keys(issue) as (keyof BaseIssue<T>)[]).reduce(
