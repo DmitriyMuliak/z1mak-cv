@@ -22,6 +22,7 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 import { RefreshCw } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ResponsiveDialogProps {
   children: React.ReactNode;
@@ -44,13 +45,6 @@ export function ResponsiveDialog({
 }: ResponsiveDialogProps) {
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
-  const TitleWithLoader = () => (
-    <div className="flex items-center gap-2">
-      {title}
-      {isLoading && <RefreshCw size={13} className="animate-spin text-muted-foreground" />}
-    </div>
-  );
-
   if (isDesktop) {
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -58,7 +52,7 @@ export function ResponsiveDialog({
         <DialogContent className="sm:max-w-[425px] z-50 frosted-card">
           <DialogHeader>
             <DialogTitle className="light:text-white">
-              <TitleWithLoader />
+              <TitleWithLoader title={title} isLoading={isLoading} />
             </DialogTitle>
             {description && (
               <DialogDescription className="light:text-[#c7c7c7]">{description}</DialogDescription>
@@ -76,7 +70,7 @@ export function ResponsiveDialog({
       <DrawerContent className="z-50 frosted-card [&_[data-slot=drawer-handle]]:bg-primary">
         <DrawerHeader className="text-left">
           <DrawerTitle className="light:text-white">
-            <TitleWithLoader />
+            <TitleWithLoader title={title} isLoading={isLoading} isCenterPosition />
           </DrawerTitle>
           {description && (
             <DrawerDescription className="light:text-white">{description}</DrawerDescription>
@@ -92,3 +86,26 @@ export function ResponsiveDialog({
     </Drawer>
   );
 }
+
+const TitleWithLoader = ({
+  title,
+  isLoading,
+  isCenterPosition,
+}: {
+  title: string;
+  isLoading?: boolean;
+  isCenterPosition?: boolean;
+}) => (
+  <div className="relative inline-flex items-center">
+    {title}
+    {isLoading && (
+      <RefreshCw
+        size={13}
+        className={cn(
+          'ml-2 animate-spin text-foreground',
+          isCenterPosition && 'absolute -right-2 translate-x-full ',
+        )}
+      />
+    )}
+  </div>
+);

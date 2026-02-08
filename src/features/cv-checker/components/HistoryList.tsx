@@ -13,7 +13,7 @@ interface HistoryListProps {
 
 export function HistoryList({ tags, onItemClick }: HistoryListProps) {
   return (
-    <ScrollArea className="h-72 w-full rounded-md border">
+    <ScrollArea className="h-72 w-full rounded border">
       <div className="p-4">
         {tags.map((tag) => (
           <React.Fragment key={tag.id}>
