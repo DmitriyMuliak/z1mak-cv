@@ -1,9 +1,9 @@
 'use client';
 
 import { useCvStore } from '../store/useCvStore';
+import { HistoryModal } from './HistoryModal';
 import { ModeBar } from './ModeBar';
 import { SendToAnalyzeForm } from './SendToAnalyzeForm';
-import { HistoryModal } from './HistoryModal';
 
 export function CvCheckerStartFlow() {
   const { newJobMode, setNewJobMode } = useCvStore();

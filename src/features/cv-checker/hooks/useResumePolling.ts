@@ -80,6 +80,8 @@ export const useResumePolling = (
       return result.data;
     },
     refetchInterval: (query) => {
+      if (query.state.error) return false;
+
       const status = query.state.data?.status;
 
       if (!status) return 2000;
