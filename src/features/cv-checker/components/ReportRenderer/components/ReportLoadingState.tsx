@@ -14,8 +14,8 @@ export const ReportLoadingState: React.FC<Props> = ({ status, jobId }) => {
   const tReport = useTranslations('pages.cvReport.loadingTitle');
 
   return (
-    <AnimationContainer id={`${jobId}:loading`}>
-      <div className="space-y-6 w-full relative">
+    <div className="space-y-6 w-full relative">
+      <AnimationContainer id={`${jobId}:loading`}>
         <div className="opacity-50 pointer-events-none filter blur-[2px]">
           <ReportSkeleton />
         </div>
@@ -27,7 +27,7 @@ export const ReportLoadingState: React.FC<Props> = ({ status, jobId }) => {
             </h3>
           </div>
         </div>
-      </div>
-    </AnimationContainer>
+      </AnimationContainer>
+    </div>
   );
 };
