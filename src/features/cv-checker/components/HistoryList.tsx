@@ -1,47 +1,38 @@
-import React, { useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { useCvStore } from '../store/useCvStore';
-import { supabaseBrowser } from '@/lib/supabase/client';
+import React from 'react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { Link } from '@/i18n/navigation';
+import { FolderOpenDot } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { HistoryTag } from '@/features/cv-checker/types';
 
-export const HistoryList: React.FC<{ userId: string }> = ({ userId }) => {
-  const { jobs, setJobs, setCurrentJobId } = useCvStore();
+interface HistoryListProps {
+  tags: HistoryTag[];
+  onItemClick: () => void;
+}
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      const { data } = await supabaseBrowser
-        .from('cv_analyzes')
-        .select('*')
-        .eq('user_id', userId)
-        .in('status', ['completed', 'failed', 'processing'])
-        .order('created_at', { ascending: false })
-        .limit(5);
-      if (!mounted) return;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (data) setJobs(data as any);
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [userId, setJobs]);
-
+export function HistoryList({ tags, onItemClick }: HistoryListProps) {
   return (
-    <div className="space-y-2">
-      {jobs.map((j) => (
-        <div key={j.id} className="p-2 border rounded flex justify-between items-center">
-          <div>
-            <div className="text-sm font-medium">{j.id}</div>
-            <div className="text-xs text-muted-foreground">
-              {j.status} • {new Date(j.created_at).toLocaleString()}
+    <ScrollArea className="h-72 w-full rounded-md border">
+      <div className="p-4">
+        {tags.map((tag) => (
+          <React.Fragment key={tag.id}>
+            <div className={cn('text-sm', tag.status === 'failed' && 'opacity-50')}>
+              <Link
+                href={tag.link}
+                onClick={onItemClick}
+                className="flex h-full w-full flex-row items-center gap-2 hover:opacity-70 transition-opacity light:text-white"
+              >
+                <FolderOpenDot
+                  className={cn('w-4 h-4 ', tag.status === 'failed' && 'text-amber-700')}
+                />{' '}
+                {tag.createdAt}
+              </Link>
             </div>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="ghost" onClick={() => setCurrentJobId(j.id)}>
-              Open
-            </Button>
-          </div>
-        </div>
-      ))}
-    </div>
+            <Separator className="my-2 last:hidden" />
+          </React.Fragment>
+        ))}
+      </div>
+    </ScrollArea>
   );
-};
+}
