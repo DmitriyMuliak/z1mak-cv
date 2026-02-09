@@ -1,0 +1,49 @@
+name: Bump Version & Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Type of release'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      # 1. Checkout
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Configure Git User
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+      # 2. Increment Version
+      - name: Bump Version
+        run: npm version ${{ inputs.release_type }} -m "chore: bump version to %s [skip ci]"
+
+      # 3. Push Changes (HEAD:master)
+      # actions/checkout will have "Detached HEAD",
+      # we need push to origin HEAD:master
+      - name: Push changes and tags
+        run: git push --follow-tags origin HEAD:master

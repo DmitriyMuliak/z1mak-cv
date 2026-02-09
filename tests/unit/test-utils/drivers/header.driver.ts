@@ -1,11 +1,11 @@
 import { Link } from '@interactors/html';
-import { BaseDriver } from './BaseDriver';
+import { BaseInteractor } from '../utils/BaseInteractor';
 
-const MenuButton = BaseDriver.extend<HTMLButtonElement>('icon button')
+const MenuButton = BaseInteractor.extend<HTMLButtonElement>('icon button')
   .selector('button')
   .locator((el) => el.getAttribute('aria-label') || '');
 
-export const HeaderInteractor = BaseDriver.extend('header')
+export const HeaderInteractor = BaseInteractor.extend('header')
   .selector('header')
   .actions({
     openMenu: async (interactor, label: string = 'openMenu') => {

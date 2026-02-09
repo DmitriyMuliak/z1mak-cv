@@ -1,6 +1,6 @@
 import { HTML } from '@interactors/html';
 
-export const BaseDriver = HTML.extend('component').filters({
+export const BaseInteractor = HTML.extend('component').filters({
   hasElement: (element: Element, selector: string): boolean => {
     return element.querySelector(selector) !== null;
   },
@@ -14,7 +14,7 @@ export const BaseDriver = HTML.extend('component').filters({
       return element.checkVisibility();
     }
 
-    // Fallback JSDOM
+    // Fallback JSDOM (inline styles)
     const style = window.getComputedStyle(element);
     return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
   },

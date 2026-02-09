@@ -1,0 +1,41 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  check:
+    name: Lint, Typecheck & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint Check
+        run: npm run lint-check
+
+      - name: TypeScript Check
+        run: npm run tsc
+
+      # Add .env.test, because of "test" script (dotenv -e .env.test)
+      # Add vars to this file like this:
+      # run: |
+      # touch .env.test
+      # echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" >> .env.test
+      # echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env.test
+      - name: Create dummy env file for tests
+        run: touch .env.test
+
+      - name: Run Unit Tests
+        run: npm run test:run

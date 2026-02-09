@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 import { render } from '@testing-library/react';
 import { Header } from '@/components/Header';
-import { HeaderDriver } from '../../drivers/header.driver';
+import { HeaderDriver } from '../test-utils/drivers/header.driver';
 
 describe('Header Component Driver', () => {
   it('should interact with menu buttons', async () => {

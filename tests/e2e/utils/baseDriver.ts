@@ -1,14 +1,16 @@
-// TODO: create utils for testing (examples below)
+// utils/BaseDriver.ts
+import { Locator, Page, expect } from '@playwright/test';
 
-// The Default Choice (Main use case)
-// Works in Unit and E2E tests.
-// - Use semanticInteractor
+export class BaseDriver {
+  readonly root: Locator;
+  readonly page: Page;
 
-// 2 - If you need to test something without semantic or expected text
-// - Use htmlInteractor
+  constructor(root: Locator) {
+    this.root = root;
+    this.page = root.page();
+  }
 
-// 3 - If you need
-// Browser Control - change Network, take screenshot, open new tab, .etc
-// Native OS Events - Drag-and-Drop, FileUpload
-// Native user behavior - with hovers, cursor moving .etc
-// - Use pure playwrightDriver (Chrome DevTools Protocol)
+  async shouldBeVisible() {
+    await expect(this.root).toBeVisible();
+  }
+}

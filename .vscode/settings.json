@@ -25,6 +25,6 @@
     "http",
     "net"
   ],
-  "cSpell.words": ["grecaptcha", "marsidev", "recaptcha", "supabase", "turbopack"],
+  "cSpell.words": ["grecaptcha", "interactor", "marsidev", "recaptcha", "supabase", "turbopack"],
   "typescript.tsdk": "node_modules/typescript/lib"
 }
