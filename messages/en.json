@@ -33,7 +33,9 @@
       "aboutTitle": "About Me",
       "skillsTitle": "Skills",
       "contactTitle": "Contact",
-      "cvCheckerTitle": "CV Checker"
+      "cvCheckerTitle": "CV Checker",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
     }
   },
   "pages": {

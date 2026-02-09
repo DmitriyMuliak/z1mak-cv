@@ -31,9 +31,9 @@ export const useResumePolling = (
   const queryClient = useQueryClient();
   const statusQueryKey = ['resume:status', jobId] as const;
   const resultQueryKey = ['resume:result', jobId] as const;
-  const tError = useTranslations('common.resumeErrors');
   const lastStatusErrorRef = useRef<string | null>(null);
   const lastResultErrorRef = useRef<string | null>(null);
+  const tError = useTranslations('common.resumeErrors');
 
   const onFailure = useCallback(
     (error: AppError) => {
