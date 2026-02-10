@@ -470,8 +470,10 @@ describe('ApiService', () => {
 
       const result = await apiService.get<Blob>('/file', undefined, { responseAs: 'blob' });
 
-      expect(result).toBeInstanceOf(Blob);
-      expect(result.type).toBe('application/pdf');
+      expect(result).toBeDefined();
+      expect(result).toHaveProperty('size');
+      expect(result).toHaveProperty('type', 'application/pdf');
+      expect(result.constructor.name).toBe('Blob');
     });
 
     it('should return undefined for 200 OK with empty body when expecting JSON', async () => {
