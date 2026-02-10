@@ -19,7 +19,7 @@ class DevLogger implements Logger {
   private isLoggingEnabled: boolean;
 
   constructor() {
-    this.isLoggingEnabled = Boolean(publicPrEnv.NEXT_PUBLIC_DEV_LOGGER);
+    this.isLoggingEnabled = !!publicPrEnv.NEXT_PUBLIC_DEV_LOGGER;
   }
 
   private logIfEnabled(method: keyof Console, ...args: unknown[]): void {

@@ -33,7 +33,9 @@
       "aboutTitle": "Про мене",
       "skillsTitle": "Навички",
       "contactTitle": "Контакт",
-      "cvCheckerTitle": "Перевірка CV"
+      "cvCheckerTitle": "Перевірка CV",
+      "openMenu": "Відкрити меню",
+      "closeMenu": "Закрити меню"
     }
   },
   "pages": {

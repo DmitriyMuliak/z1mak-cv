@@ -43,6 +43,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
   const tc = useTranslations('common');
   const tv = useTranslations('validator');
   const captchaRef = React.useRef<TurnstileCaptchaRef>(null);
+
   const form = useForm<SignInSchemaBaseType>({
     resolver: localizedValibotResolver(SignInSchemaBase, tv),
     mode: 'onBlur',
@@ -72,6 +73,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
       }
     }
   };
+
   const handleSubmitCb = createOnSubmitHandler(signInWithEmailAction, form, onResult, {
     getAdditionalFEData,
   });
@@ -86,10 +88,15 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
         </CardHeader>
         <CardContent className="px-2 sm:px-6">
           <Form {...form}>
-            <form onSubmit={onSubmit} className="flex-1 max-w-md space-y-5">
+            <form
+              data-testid="login-form"
+              onSubmit={onSubmit}
+              className="flex-1 max-w-md space-y-5"
+            >
               <FieldGroup>
                 <Field>
                   <Button
+                    data-testid="google-auth-button"
                     onClick={() => signInOrUpWithGoogleAction(getAdditionalFEData())}
                     variant="outline"
                     type="button"
@@ -98,9 +105,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                     {t('googleBtnTitle')}
                   </Button>
                 </Field>
+
                 <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card *:data-[slot=field-separator-content]:rounded-xl">
                   {t('otherAuthWayTitle')}
                 </FieldSeparator>
+
                 <TextField
                   control={form.control}
                   name="email"
@@ -109,6 +118,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                   placeholder={tf('email.placeholder')}
                   inputClassName={defaultInputStyles}
                 />
+
                 <TextField
                   control={form.control}
                   type="password"
@@ -118,6 +128,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                       <FieldLabel htmlFor="password">{tf('password.label')}</FieldLabel>
                       <Link
                         href={paths.resetPassword}
+                        data-testid="forgot-password-link"
                         className="ml-auto text-sm underline-offset-4 hover:underline"
                       >
                         {t('forgotPasswordTitle')}
@@ -127,6 +138,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                   placeholder={tf('password.placeholder')}
                   inputClassName={defaultInputStyles}
                 />
+
                 <TurnstileCaptchaField
                   control={form.control}
                   name="captchaToken"
@@ -134,15 +146,22 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                   containerClassName="sm:-ml-[6px]"
                   ref={captchaRef}
                 />
+
                 <Field>
                   <SubmitActionButton
+                    data-testid="submit-button"
                     title={t('loginTitle')}
                     onSuccessTitle={tc('formButtonSendSuccessTitle')}
                   />
                   <GlobalFormErrorMessage />
                   <FieldDescription className="text-center">
                     {t('dontHaveAccountTitle')}{' '}
-                    <Link href={`${paths.signUp}?${redirectedFromState}`}>{t('signUpTitle')}</Link>
+                    <Link
+                      href={`${paths.signUp}?${redirectedFromState}`}
+                      data-testid="sign-up-link"
+                    >
+                      {t('signUpTitle')}
+                    </Link>
                   </FieldDescription>
                 </Field>
               </FieldGroup>
@@ -150,11 +169,17 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
           </Form>
         </CardContent>
       </Card>
+
       <FieldDescription className="px-6 text-center">
         {t('termsAndPrivacyTitle')}{' '}
-        <Link href={paths.termsOfService}>{t('termsOfServiceTitle')}</Link>{' '}
+        <Link href={paths.termsOfService} data-testid="terms-link">
+          {t('termsOfServiceTitle')}
+        </Link>{' '}
         {t('termsAndPrivacySeparatorTitle')}{' '}
-        <Link href={paths.privacyPolicy}>{t('privacyPolicyTitle')}</Link>.
+        <Link href={paths.privacyPolicy} data-testid="privacy-link">
+          {t('privacyPolicyTitle')}
+        </Link>
+        .
       </FieldDescription>
     </div>
   );

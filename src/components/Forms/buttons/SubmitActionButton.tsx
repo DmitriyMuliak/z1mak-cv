@@ -57,8 +57,12 @@ export const SubmitActionButton: React.FC<SubmitActionButtonProps> = ({
       {...rest}
     >
       {showSuccessState ? onSuccessTitle : title}
-      {showSuccessState ? <CheckIcon className="w-5 h-5 mr-2" /> : null}
-      {isSubmitting ? <RefreshCw className="w-5 h-5 mr-2 animate-spin" /> : null}
+      {showSuccessState ? (
+        <CheckIcon data-testid="submit-button-success-icon" className="w-5 h-5 mr-2" />
+      ) : null}
+      {isSubmitting ? (
+        <RefreshCw data-testid="submit-button-loader-icon" className="w-5 h-5 mr-2 animate-spin" />
+      ) : null}
     </Button>
   );
 };

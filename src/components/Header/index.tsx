@@ -28,11 +28,19 @@ export const Header = () => {
 
   return (
     <header className={cn(styles.header)}>
-      <button onClick={() => setIsClosed(false)} className={styles.openBtn}>
+      <button
+        onClick={() => setIsClosed(false)}
+        className={styles.openBtn}
+        aria-label={t('openMenu')}
+      >
         <Hamburger size={30} />
       </button>
-      <nav className={cn(styles.nav, isClosed ? styles.navClosed : '')}>
-        <button onClick={() => setIsClosed(true)} className={styles.closeBtn}>
+      <nav className={cn(styles.nav, isClosed && styles.navClosed)}>
+        <button
+          onClick={() => setIsClosed(true)}
+          className={styles.closeBtn}
+          aria-label={t('closeMenu')}
+        >
           <SquareX size={30} />
         </button>
         {links.map((link) => (
