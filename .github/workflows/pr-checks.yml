@@ -29,13 +29,22 @@ jobs:
         run: npm run tsc
 
       # Add .env.test, because of "test" script (dotenv -e .env.test)
+      # environment:
+      #   name: Test
       # Add vars to this file like this:
       # run: |
       # touch .env.test
       # echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" >> .env.test
-      # echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env.test
       - name: Create dummy env file for tests
-        run: touch .env.test
+        run: |
+          touch .env.test
+          echo "NEXT_PUBLIC_API_URL=stub.com" >> .env.test
+          echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=stub" >> .env.test
+          echo "NEXT_PUBLIC_CLOUDFLARE_CAPTCHA_SITE_KEY=stub" >> .env.test
+          echo "NEXT_PUBLIC_SUPABASE_URL=stub.com" >> .env.test
+          echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=stub" >> .env.test
+          echo "NEXT_PUBLIC_DEV_LOGGER=false" >> .env.test
+          echo "NEXT_PUBLIC_SITE_URL=http://localhost:3000" >> .env.test
 
       - name: Run Unit Tests
         run: npm run test:run

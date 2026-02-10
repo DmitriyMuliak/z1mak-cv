@@ -7,7 +7,12 @@ export const EnvSchema = v.object({
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: v.pipe(v.string(), v.minLength(1)),
   NEXT_PUBLIC_RECAPTCHA_SITE_KEY: v.pipe(v.string(), v.minLength(1)),
   NEXT_PUBLIC_CLOUDFLARE_CAPTCHA_SITE_KEY: v.pipe(v.string(), v.minLength(1)),
-  NEXT_PUBLIC_DEV_LOGGER: v.optional(v.union([v.literal('true'), v.literal('false')])),
+  NEXT_PUBLIC_DEV_LOGGER: v.optional(
+    v.pipe(
+      v.string(),
+      v.transform((input) => input === 'true'),
+    ),
+  ),
   NEXT_PUBLIC_SITE_URL: v.pipe(v.string(), v.url()),
 });
 
