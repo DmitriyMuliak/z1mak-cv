@@ -14,44 +14,61 @@ env:
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
 jobs:
+
   deploy:
+
     name: Deploy ${{ inputs.tag }} to Production
+
     runs-on: ubuntu-latest
 
-  environment:
-    name: Production
-    # url: ${prod url}
+    environment:
 
-  steps:
-    - name: Verify Tag Exists Remotely
-      run: |
-        if git ls-remote --exit-code --tags origin "refs/tags/${{ inputs.tag }}" >/dev/null 2>&1; then
-          echo "✅ Tag '${{ inputs.tag }}' found on remote."
-        else
-          echo "❌ Error: Tag '${{ inputs.tag }}' does not exist."
-          exit 1
-        fi
+      name: Production
 
-    - name: Checkout Specific Tag
-      uses: actions/checkout@v4
-      with:
-        ref: ${{ inputs.tag }}
-        fetch-depth: 1
+      # url: ${prod url}
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22
-        cache: 'npm'
 
-    - name: Install dependencies
-      run: npm ci
 
-    - name: Pull Vercel Environment Information
-      run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+    steps:
 
-    - name: Build Project Artifacts
-      run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Verify Tag Exists Remotely
 
-    - name: Deploy Project Artifacts to Vercel
-      run: npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: |
+
+          if git ls-remote --exit-code --tags origin "refs/tags/${{ inputs.tag }}" >/dev/null 2>&1; then
+
+            echo "✅ Tag '${{ inputs.tag }}' found on remote."
+
+          else
+
+            echo "❌ Error: Tag '${{ inputs.tag }}' does not exist."
+
+            exit 1
+
+          fi
+
+
+
+      - name: Checkout Specific Tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Pull Vercel Environment Information
+        run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Project Artifacts
+        run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        run: npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}

@@ -40,7 +40,8 @@ jobs:
 
       # 2. Increment Version
       - name: Bump Version
-        run: npm version ${{ inputs.release_type }} -m "chore: bump version to %s [skip ci]"
+        run: |
+          npm version ${{ inputs.release_type }} -m "chore: bump version to %s [skip ci]"
 
       # 3. Push Changes (HEAD:master)
       # actions/checkout will have "Detached HEAD",
