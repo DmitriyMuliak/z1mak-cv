@@ -1,6 +1,7 @@
 name: PR Checks
 
 on:
+  # push: # Uncomment if you need Status Badge in README or Docker artifacts after merge
   pull_request:
     branches: [master]
 
