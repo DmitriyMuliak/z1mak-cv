@@ -64,6 +64,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
       const state = decodeURIComponent(result.data.redirectTo);
       const pathName = JSON.parse(state) as { redirectedFrom?: string } | null;
       if (pathName && pathName.redirectedFrom) {
+        // Do not use next-intl router here.
+        // After login, auth cookies are set on the server and middleware
+        // must re-evaluate the request with updated cookies.
+        // Full page navigation guarantees cookies are applied
+        // before accessing protected routes.
         window.location.assign(pathName.redirectedFrom);
       }
     }
