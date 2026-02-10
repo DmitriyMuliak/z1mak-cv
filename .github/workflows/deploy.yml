@@ -14,41 +14,17 @@ env:
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
 jobs:
-
   deploy:
-
     name: Deploy ${{ inputs.tag }} to Production
 
     runs-on: ubuntu-latest
 
     environment:
-
       name: Production
 
       # url: ${prod url}
 
-
-
     steps:
-
-      - name: Verify Tag Exists Remotely
-
-        run: |
-
-          if git ls-remote --exit-code --tags origin "refs/tags/${{ inputs.tag }}" >/dev/null 2>&1; then
-
-            echo "✅ Tag '${{ inputs.tag }}' found on remote."
-
-          else
-
-            echo "❌ Error: Tag '${{ inputs.tag }}' does not exist."
-
-            exit 1
-
-          fi
-
-
-
       - name: Checkout Specific Tag
         uses: actions/checkout@v4
         with:
