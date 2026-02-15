@@ -5,8 +5,8 @@ import { LightSwitch } from '@/components/LightSwitch';
 import styles from './styles.module.css';
 
 export const Lamp: React.FC = () => {
-  const { theme, setTheme } = useTheme();
-  const isDark = theme === 'dark';
+  const { resolvedTheme, setTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
 
   const toggleLamp = () => {
     setTheme(isDark ? 'light' : 'dark');

@@ -4,9 +4,9 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
 export default function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
-  const isDark = theme === 'dark';
+  const isDark = resolvedTheme === 'dark';
 
   return (
     <button
