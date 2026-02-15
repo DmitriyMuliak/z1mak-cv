@@ -98,9 +98,7 @@ export const getResumeStatus = createAsyncServerAction(async (jobId: string) => 
 });
 
 export const getResumeResult = createAsyncServerAction(async (jobId: string) => {
-  return apiCvAnalyser.get<ResultResponse>(ApiRoutes.CV_ANALYSER.result(jobId), undefined, {
-    cache: 'no-store',
-  });
+  return apiCvAnalyser.get<ResultResponse>(ApiRoutes.CV_ANALYSER.result(jobId));
 });
 
 export const getResentResumeBaseInfo = async (
