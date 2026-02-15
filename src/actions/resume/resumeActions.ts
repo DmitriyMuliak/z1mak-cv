@@ -92,11 +92,15 @@ export const analyzeResume = createAsyncServerAction(async (payload: AnalyzePayl
 });
 
 export const getResumeStatus = createAsyncServerAction(async (jobId: string) => {
-  return await apiCvAnalyser.get<StatusResponse>(ApiRoutes.CV_ANALYSER.status(jobId));
+  return await apiCvAnalyser.get<StatusResponse>(ApiRoutes.CV_ANALYSER.status(jobId), undefined, {
+    cache: 'no-store',
+  });
 });
 
 export const getResumeResult = createAsyncServerAction(async (jobId: string) => {
-  return apiCvAnalyser.get<ResultResponse>(ApiRoutes.CV_ANALYSER.result(jobId));
+  return apiCvAnalyser.get<ResultResponse>(ApiRoutes.CV_ANALYSER.result(jobId), undefined, {
+    cache: 'no-store',
+  });
 });
 
 export const getResentResumeBaseInfo = async (
