@@ -15,6 +15,7 @@ export type ModeOption = {
 
 type Props = {
   label: string;
+  name: string;
   value: string;
   options: ModeOption[];
   onValueChange: (value: string) => void;
@@ -23,6 +24,7 @@ type Props = {
 
 export const ModeSelect: React.FC<Props> = ({
   label,
+  name,
   value,
   options,
   onValueChange,
@@ -33,13 +35,21 @@ export const ModeSelect: React.FC<Props> = ({
       <span className="text-md">{label}</span>
 
       <Select value={value} onValueChange={onValueChange}>
-        <SelectTrigger className="min-w-[128px] cursor-pointer frosted-card w-full md:w-auto [&_svg:not([class*='text-'])]:text-current [&_svg:not([class*='text-'])]:opacity-100">
+        <SelectTrigger
+          data-testid={`mode-select-${name}`}
+          className="min-w-[128px] cursor-pointer frosted-card w-full md:w-auto [&_svg:not([class*='text-'])]:text-current [&_svg:not([class*='text-'])]:opacity-100"
+        >
           <SelectValue placeholder={value} />
         </SelectTrigger>
 
         <SelectContent className={cn('z-[9999] frosted-card !rounded-[10px]', contentClassName)}>
           {options.map((option) => (
-            <SelectItem key={option.value} value={option.value} className="cursor-pointer">
+            <SelectItem
+              key={option.value}
+              value={option.value}
+              data-testid={`mode-option-${name}-${option.value}`}
+              className="cursor-pointer"
+            >
               {option.label}
             </SelectItem>
           ))}

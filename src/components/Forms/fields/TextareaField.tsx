@@ -11,6 +11,7 @@ interface TextareaFieldProps<T extends FieldValues> {
   label: string;
   placeholder?: string;
   className?: string;
+  'data-testid'?: string;
 }
 
 export function TextareaField<T extends FieldValues>({
@@ -19,6 +20,7 @@ export function TextareaField<T extends FieldValues>({
   label,
   placeholder,
   className,
+  'data-testid': dataTestId,
 }: TextareaFieldProps<T>) {
   return (
     <div className="relative" data-form-field-id={name}>
@@ -31,6 +33,7 @@ export function TextareaField<T extends FieldValues>({
             <FormControl>
               <Textarea
                 placeholder={placeholder}
+                data-testid={dataTestId}
                 {...field}
                 className={cn(
                   'placeholder:text-foreground border-stone-950 dark:border-slate-400/20 text-gray-900 dark:text-white',

@@ -13,6 +13,7 @@ interface SubmitActionButtonPropsBase {
   loaderDelay?: number;
   onSuccessTitle?: string;
   title?: string;
+  'data-testid'?: string;
 }
 
 type ButtonProps = React.ComponentProps<typeof Button>;
@@ -53,6 +54,7 @@ export const SubmitActionButton: React.FC<SubmitActionButtonProps> = ({
     <Button
       disabled={isSubmitting}
       type="submit"
+      data-testid={rest['data-testid'] || 'submit-button'}
       className={`!mt-0 w-full transition-colors duration-300 ${showSuccessState ? 'bg-green-500 hover:bg-green-500' : ''}`}
       {...rest}
     >

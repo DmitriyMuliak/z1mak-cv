@@ -49,7 +49,10 @@ export function ResponsiveDialog({
     return (
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogTrigger asChild>{trigger}</DialogTrigger>
-        <DialogContent className="sm:max-w-[425px] z-50 frosted-card">
+        <DialogContent
+          className="sm:max-w-[425px] z-50 frosted-card"
+          data-testid="responsive-dialog-content"
+        >
           <DialogHeader>
             <DialogTitle className="light:text-white">
               <TitleWithLoader title={title} isLoading={isLoading} />
@@ -67,7 +70,10 @@ export function ResponsiveDialog({
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-      <DrawerContent className="z-50 frosted-card [&_[data-slot=drawer-handle]]:bg-primary">
+      <DrawerContent
+        className="z-50 frosted-card [&_[data-slot=drawer-handle]]:bg-primary"
+        data-testid="responsive-drawer-content"
+      >
         <DrawerHeader className="text-left">
           <DrawerTitle className="light:text-white">
             <TitleWithLoader title={title} isLoading={isLoading} isCenterPosition />
@@ -79,7 +85,9 @@ export function ResponsiveDialog({
         <div className="p-4 pb-0">{children}</div>
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
-            <Button variant="outline">Close</Button>
+            <Button variant="outline" data-testid="drawer-close-button">
+              Close
+            </Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

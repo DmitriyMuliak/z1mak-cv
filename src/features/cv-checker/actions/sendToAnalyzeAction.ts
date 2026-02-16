@@ -1,3 +1,4 @@
+import React from 'react';
 import { toast } from 'sonner';
 import { ResultReturn } from '@/actions/utils/serverUtils';
 import { analyzeResume, ResumeErrorCode } from '@/actions/resume/resumeActions';
@@ -67,7 +68,7 @@ export const sendToAnalyzeAction = async (
     };
 
   if (shouldProcessJob && jobResult.data === cvResult.data) {
-    toast.error(state.translateErrorFn('jobDescAndCvAreEqual'));
+    toast.error(createToastContent(state.translateErrorFn('jobDescAndCvAreEqual')));
     return {
       success: false,
       metaError: 'Job description and CV are equal',
@@ -86,8 +87,10 @@ export const sendToAnalyzeAction = async (
   }
 
   toast.error(
-    state.translateErrorFn(
-      RESUME_ERROR_KEY_MAP[response.error.code as ResumeErrorCode] || DEFAULT_RESUME_ERROR_KEY,
+    createToastContent(
+      state.translateErrorFn(
+        RESUME_ERROR_KEY_MAP[response.error.code as ResumeErrorCode] || DEFAULT_RESUME_ERROR_KEY,
+      ),
     ),
   );
 
@@ -144,4 +147,8 @@ const extractContent = async (
   }
 
   return { data: '', isEmpty: true, isError: false };
+};
+
+const createToastContent = (message: string) => {
+  return React.createElement('span', { 'data-testid': 'error-toast' }, message);
 };

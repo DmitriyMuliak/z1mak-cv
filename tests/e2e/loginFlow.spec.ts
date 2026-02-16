@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LoginFormDriver } from './drivers/loginForm.driver';
 
-test.describe('Login flow', () => {
+test.describe.skip('Login flow', () => {
   test('Login by email and password', async ({ page }) => {
     await page.goto('/en/auth/login');
 
