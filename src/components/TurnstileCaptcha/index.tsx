@@ -30,7 +30,7 @@ export function TurnstileCaptcha({
   containerStyle,
   ref,
 }: CaptchaBoxProps) {
-  const theme = useTheme();
+  const { resolvedTheme } = useTheme();
   const language = useLocale();
   const captchaRef = useRef<TurnstileInstance | undefined>(undefined);
 
@@ -62,7 +62,7 @@ export function TurnstileCaptcha({
         onSuccess={handleChange}
         options={{
           action: `submit-${actionName}-form`,
-          theme: theme.theme as 'dark' | 'light',
+          theme: resolvedTheme as 'dark' | 'light',
           size: 'flexible',
           language,
         }}
