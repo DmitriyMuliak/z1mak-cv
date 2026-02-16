@@ -17,6 +17,7 @@ export async function getMdxContent(slug: string, locale: string) {
     options: {
       parseFrontmatter: true,
       scope: { paths },
+      blockJS: false,
       mdxOptions: {
         format: 'mdx',
         remarkPlugins: [remarkUnravelMdx], // remarkUnravelMdx: Prevent unnecessary paragraph wrapping.
