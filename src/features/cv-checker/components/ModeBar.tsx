@@ -34,6 +34,7 @@ export const ModeBar: React.FC<Props> = ({ mode, onChange }) => {
     <div className="flex flex-col gap-3 items-center md:flex-row">
       <ModeSelect
         label={t('evaluation.title')}
+        name="evaluation"
         value={mode.evaluationMode}
         options={EVALUATION_OPTIONS}
         onValueChange={(v) => updateMode('evaluationMode', v)}
@@ -41,6 +42,7 @@ export const ModeBar: React.FC<Props> = ({ mode, onChange }) => {
 
       <ModeSelect
         label={t('domain.title')}
+        name="domain"
         value={mode.domain}
         options={DOMAIN_OPTIONS}
         onValueChange={(v) => updateMode('domain', v)}
@@ -48,6 +50,7 @@ export const ModeBar: React.FC<Props> = ({ mode, onChange }) => {
 
       <ModeSelect
         label={t('depth.title')}
+        name="depth"
         value={mode.depth}
         options={DEPTH_OPTIONS}
         onValueChange={(v) => updateMode('depth', v)}

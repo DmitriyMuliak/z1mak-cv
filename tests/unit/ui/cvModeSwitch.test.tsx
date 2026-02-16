@@ -1,26 +1,10 @@
+import '../test-utils/global-mocks';
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ModeBar } from '@/features/cv-checker/components/ModeBar';
 import { SendToAnalyzeForm } from '@/features/cv-checker/components/SendToAnalyzeForm';
 import { Mode } from '@/features/cv-checker/store/useCvStore';
-
-vi.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => key,
-  useLocale: () => 'en',
-}));
-
-vi.mock('@/i18n/navigation', () => ({
-  useRouter: () => ({ push: vi.fn() }),
-}));
-
-// Radix add a lot of execution of time
-vi.mock('react-dropzone', () => ({
-  __esModule: true,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  default: ({ children }: any) =>
-    children({ getRootProps: () => ({}), getInputProps: () => ({}), isDragActive: false }),
-}));
 
 vi.mock('@/features/cv-checker/actions/sendToAnalyzeAction', () => ({
   sendToAnalyzeAction: vi.fn().mockResolvedValue({ success: true, data: { jobId: 'job-1' } }),

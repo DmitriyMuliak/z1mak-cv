@@ -20,10 +20,10 @@ export const Header = () => {
   }, [realPathname]);
 
   const links = [
-    { href: paths.home, label: t('aboutTitle') },
-    { href: paths.skills, label: t('skillsTitle') },
-    { href: paths.contact, label: t('contactTitle') },
-    { href: paths.cvChecker, label: t('cvCheckerTitle') },
+    { id: 'home', href: paths.home, label: t('aboutTitle') },
+    { id: 'skills', href: paths.skills, label: t('skillsTitle') },
+    { id: 'contact', href: paths.contact, label: t('contactTitle') },
+    { id: 'cv-checker', href: paths.cvChecker, label: t('cvCheckerTitle') },
   ];
 
   return (
@@ -44,7 +44,12 @@ export const Header = () => {
           <SquareX size={30} />
         </button>
         {links.map((link) => (
-          <Link key={link.href} href={link.href} className={styles.navLink}>
+          <Link
+            key={link.href}
+            href={link.href}
+            className={styles.navLink}
+            data-testid={`nav-link-${link.id}`}
+          >
             <span
               className={cn(
                 styles.linkText,

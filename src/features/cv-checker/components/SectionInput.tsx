@@ -50,6 +50,7 @@ export const SectionInput: React.FC<SectionInputProps> = ({
           name={textName}
           label=""
           placeholder={textAreaPlaceHolder}
+          data-testid={`textarea-${textName}`}
           className="field-sizing-content resize-none min-h-[64px] max-h-[200px]"
         />
       </div>
@@ -60,6 +61,7 @@ export const SectionInput: React.FC<SectionInputProps> = ({
           name={fileName}
           multiple={false}
           accept={cvFileTypes}
+          data-testid={`dropzone-${fileName}`}
           className="min-h-[64px] mb-0"
         />
       </div>

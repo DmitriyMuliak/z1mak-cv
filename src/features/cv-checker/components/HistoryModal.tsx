@@ -20,7 +20,11 @@ export function HistoryModal() {
     <ResponsiveDialog
       isOpen={open}
       onOpenChange={setOpen}
-      trigger={<Button className="mb-8">{t('trigger')}</Button>}
+      trigger={
+        <Button className="mb-8" data-testid="history-button">
+          {t('trigger')}
+        </Button>
+      }
       title={t('title')}
       description={t('description')}
       isLoading={isRefreshing}

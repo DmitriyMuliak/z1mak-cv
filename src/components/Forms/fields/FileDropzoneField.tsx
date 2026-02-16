@@ -26,6 +26,7 @@ interface FileDropzoneFieldProps<T extends FieldValues> extends DropzoneOptions 
   control: Control<T>;
   name: ArrayPath<T>;
   className?: string;
+  'data-testid'?: string;
 }
 
 export function FileDropzoneField<T extends FieldValues>({
@@ -33,6 +34,7 @@ export function FileDropzoneField<T extends FieldValues>({
   name,
   className,
   multiple = true,
+  'data-testid': dataTestId,
   ...rest
 }: FileDropzoneFieldProps<T>) {
   type TFiles = FieldArray<T, ArrayPath<T>>;
@@ -84,6 +86,7 @@ export function FileDropzoneField<T extends FieldValues>({
                     label={t('mainAddFileTitle')}
                     className={className}
                     hasError={!!errors[name]}
+                    data-testid={dataTestId}
                   />
                 )}
               </Dropzone>
@@ -111,6 +114,7 @@ interface FileDropzoneTriggerProps extends Pick<
   label: string;
   className?: string;
   hasError?: boolean;
+  'data-testid'?: string;
 }
 
 function FileDropzoneTrigger({
@@ -121,6 +125,7 @@ function FileDropzoneTrigger({
   label,
   className,
   hasError,
+  'data-testid': dataTestId,
 }: FileDropzoneTriggerProps) {
   const { ref: dropzoneRef, ...rootProps } = getRootProps();
   const mergedRef = useMergeRefs(rhfRef, dropzoneRef);
@@ -129,6 +134,7 @@ function FileDropzoneTrigger({
     <div
       {...rootProps}
       ref={mergedRef}
+      data-testid={dataTestId}
       className={cn(
         'flex flex-col items-center justify-center w-full rounded-md border p-3 mb-2 text-sm transition-colors',
         'cursor-pointer shadow-xs',
