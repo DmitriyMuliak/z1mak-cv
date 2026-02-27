@@ -47,30 +47,30 @@ export const sendContactAction = createFormAction(
     // Normalize files into an array of File
     const files: File[] = Array.isArray(data.files) ? data.files : data.files ? [data.files] : [];
 
-    const uploadResult = await uploadFilesToBucket(files).catch(
-      (): UploadError => ({ success: false, uploaded: [], error: 'Problems with file uploading' }),
-    );
+    // Disabled until migrate to pro account
+    // const uploadResult = await uploadFilesToBucket(files).catch(
+    //   (): UploadError => ({ success: false, uploaded: [], error: 'Problems with file uploading' }),
+    // );
 
-    if (!uploadResult.success) {
-      // For granular error per file need to return errors: { files: [{ file: {message} }] } and check it in createOnSubmitHandler
-      return { success: false, errors: { files: [t('file_upload_base_error')] } };
-    }
+    // if (!uploadResult.success) {
+    //   // For granular error per file need to return errors: { files: [{ file: {message} }] } and check it in createOnSubmitHandler
+    //   return { success: false, errors: { files: [t('file_upload_base_error')] } };
+    // }
 
-    const html = getEmailBody(data, uploadResult.uploaded);
+    const html = getEmailBody(data);
 
     await mailTransport.sendMail({
       from: GMAIL_USER,
       to: GMAIL_USER,
       subject: 'Contact form from z1makCV',
       html,
-      // Commented for reduce outcome Vercel traffic
-      // attachments: await Promise.all(
-      //   files.map(async (file) => ({
-      //     filename: file.name,
-      //     content: Buffer.from(await file.arrayBuffer()),
-      //     contentType: file.type || requestContentTypes.octetStream,
-      //   })),
-      // ),
+      attachments: await Promise.all(
+        files.map(async (file) => ({
+          filename: file.name,
+          content: Buffer.from(await file.arrayBuffer()),
+          contentType: file.type || requestContentTypes.octetStream,
+        })),
+      ),
     });
   },
 );
@@ -87,6 +87,7 @@ function buildS3PublicUrl(key: string) {
   return `https://${AWS_S3_BUCKET}.s3.${AWS_REGION}.amazonaws.com/${encodeURIComponent(key)}`;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function uploadFilesToBucket(files: File[]): Promise<UploadSuccess> {
   const uploaded = [] as { key: string; url: string; name: string }[];
 
@@ -111,11 +112,13 @@ async function uploadFilesToBucket(files: File[]): Promise<UploadSuccess> {
 
 function getEmailBody(
   data: ContactSchemaBEType,
-  files: { key: string; url: string; name: string }[],
+  // files: { key: string; url: string; name: string }[],
 ) {
-  const filesListHtml = files.length
-    ? `<ul>${files.map((f) => `<li><a href="${f.url}">${f.name}</a></li>`).join('')}</ul>`
-    : '<p>No files uploaded.</p>';
+  // Disabled until migrate to pro account
+  // const filesListHtml = files.length
+  //   ? `<ul>${files.map((f) => `<li><a href="${f.url}">${f.name}</a></li>`).join('')}</ul>`
+  //   : '<p>No files uploaded.</p>';
+  const filesListHtml = '';
 
   const html = `
     <div>
@@ -150,6 +153,7 @@ interface UploadSuccess {
   }[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface UploadError {
   success: false;
   uploaded: never[];
