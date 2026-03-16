@@ -6,7 +6,7 @@ import { useRouter } from '@/i18n/navigation';
 import { paths } from '@/consts/routes';
 import { StatusResponse } from '@/actions/resume/resumeActions';
 import { useResumePolling } from '@/features/cv-checker/hooks/useResumePolling';
-// import { useResumeStreamingEventSource } from '@/features/cv-checker/hooks/useResumeStreamingEventSource';
+import { useResumeStreamingV2 } from '@/features/cv-checker/hooks/useResumeStreamingV2';
 import { isLoadingStatus } from './config';
 import { ReportLoadingState } from './components/ReportLoadingState';
 import { ReportErrorState } from './components/ReportErrorState';
@@ -38,13 +38,13 @@ export const ReportRenderer: React.FC<ReportRendererProps> = ({
     !useStreaming ? initialData : undefined,
     !useStreaming,
   );
-  // const streamingData = useResumeStreamingEventSource(
-  //   jobId,
-  //   useStreaming ? initialData : undefined,
-  //   useStreaming,
-  // );
+  const streamingData = useResumeStreamingV2(
+    jobId,
+    useStreaming ? initialData : undefined,
+    useStreaming,
+  );
 
-  const { status, isProcessing, report, error } = useStreaming ? { ...pollingData } : pollingData;
+  const { status, isProcessing, report, error } = useStreaming ? streamingData : pollingData;
 
   let viewState: ViewState = 'loading';
   if (isProcessing && isLoadingStatus(status)) {

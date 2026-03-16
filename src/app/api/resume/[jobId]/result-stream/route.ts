@@ -63,7 +63,10 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     }
 
     if (error instanceof ApiError) {
-      return NextResponse.json(error.body, { status: error.status });
+      // status: 0 means a network-level failure (ECONNREFUSED, DNS error, etc.) —
+      // not a real HTTP status. Map it to 502 Bad Gateway so the response is valid.
+      const status = error.status >= 200 && error.status <= 599 ? error.status : 502;
+      return NextResponse.json(error.body, { status });
     }
 
     console.error('API Result Stream Route Error:', error);
