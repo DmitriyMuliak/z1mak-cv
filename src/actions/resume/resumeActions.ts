@@ -83,6 +83,7 @@ export const getUserAuthData = async () => {
 export const analyzeResume = createAsyncServerAction(async (payload: AnalyzePayload) => {
   const body = {
     payload,
+    streaming: true,
   };
 
   return await apiCvAnalyser.post<AnalyzeResponse, AnalyzeRequest>(

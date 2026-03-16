@@ -14,6 +14,7 @@ export const EnvSchema = v.object({
     ),
   ),
   NEXT_PUBLIC_SITE_URL: v.pipe(v.string(), v.url()),
+  NEXT_PUBLIC_API_URL: v.pipe(v.string(), v.url()),
 });
 
 const parsedEnv = v.safeParse(EnvSchema, {
@@ -24,6 +25,7 @@ const parsedEnv = v.safeParse(EnvSchema, {
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   NEXT_PUBLIC_DEV_LOGGER: process.env.NEXT_PUBLIC_DEV_LOGGER,
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
 });
 
 if (!parsedEnv.success) {

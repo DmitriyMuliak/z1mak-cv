@@ -6,13 +6,14 @@ import { ReportSection } from './ui/ReportSection';
 export const Skills: React.FC<{ data: AnalysisSchemaType }> = ({ data }) => {
   const t = useTranslations('pages.cvReport');
   const skills = data.detailedSkillAnalysis?.skills;
+  const safeSkills = Array.isArray(skills) ? skills : [];
 
-  if (!skills || skills.length === 0) return null;
+  if (safeSkills.length === 0) return null;
 
   return (
     <ReportSection title={t('skills.analysisTitle')}>
       <div className="space-y-3">
-        {skills.map((s, idx) => (
+        {safeSkills.map((s, idx) => (
           <div key={idx} className="p-3 border rounded hover:bg-muted/50 transition-colors">
             <div className="flex justify-between items-center">
               <div>

@@ -1,17 +1,15 @@
 import { AnalysisSchemaType } from '../schema/analysisSchema';
 
 export class SchemaService {
-  private analysis: AnalysisSchemaType;
+  private analysis: Partial<AnalysisSchemaType>;
 
-  constructor(analysis: AnalysisSchemaType) {
-    this.analysis = analysis;
+  constructor(analysis: Partial<AnalysisSchemaType> | null | undefined) {
+    this.analysis = analysis ?? {};
   }
 
   private get includeSkills() {
-    return (
-      this.analysis.detailedSkillAnalysis?.skills &&
-      this.analysis.detailedSkillAnalysis.skills.length > 0
-    );
+    const skills = this.analysis.detailedSkillAnalysis?.skills;
+    return Array.isArray(skills) && skills.length > 0;
   }
 
   private get includeExperience() {
@@ -26,17 +24,30 @@ export class SchemaService {
     return !!this.analysis.actionableImprovementPlan;
   }
 
+  private get includeHeader() {
+    return !!(
+      this.analysis.overallAnalysis ||
+      this.analysis.quantitativeMetrics ||
+      this.analysis.metadata
+    );
+  }
+
+  private get includeRedFlags() {
+    const flags = this.analysis.redFlagsAndConcerns?.flags;
+    return Array.isArray(flags) && flags.length > 0;
+  }
+
   public getUiSections(): UiSectionKey[] {
     const activeSections = new Set<UiSectionKey>();
 
-    if (this.analysis && !this.analysis.metadata.isValidCv) {
-      activeSections.add('header');
-      activeSections.add('redFlags');
+    if (this.analysis.metadata?.isValidCv === false) {
+      if (this.includeHeader) activeSections.add('header');
+      if (this.includeRedFlags) activeSections.add('redFlags');
       return UI_SECTION_ORDER.filter((section) => activeSections.has(section));
     }
 
-    activeSections.add('header');
-    activeSections.add('redFlags');
+    if (this.includeHeader) activeSections.add('header');
+    if (this.includeRedFlags) activeSections.add('redFlags');
 
     if (this.includeSkills) activeSections.add('skills');
     if (this.includeExperience) activeSections.add('experience');

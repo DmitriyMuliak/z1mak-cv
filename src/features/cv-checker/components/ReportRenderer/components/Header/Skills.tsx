@@ -6,6 +6,10 @@ import { ScoreBar } from '../../../ScoreBar';
 export const Skills: React.FC<{ data: AnalysisSchemaType }> = ({ data }) => {
   const t = useTranslations('pages.cvReport');
   const qm = data.quantitativeMetrics;
+  if (!qm) {
+    return null;
+  }
+
   const isKeyCoverage = qm.keySkillCoveragePercent !== undefined;
   const isStackRecency = qm.stackRecencyScore !== undefined;
   const isSoftMatch = qm.softSkillsScore !== undefined;

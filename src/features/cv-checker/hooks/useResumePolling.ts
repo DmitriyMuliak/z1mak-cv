@@ -27,6 +27,7 @@ export const useResumePolling = (
     status?: StatusResponse;
     report?: AnalysisSchemaType;
   },
+  enabled = true,
 ) => {
   const queryClient = useQueryClient();
   const statusQueryKey = ['resume:status', jobId] as const;
@@ -70,7 +71,7 @@ export const useResumePolling = (
 
   const statusQuery = useQuery<StatusResponse, AppError>({
     queryKey: statusQueryKey,
-    enabled: !!jobId,
+    enabled: enabled && !!jobId,
     initialData: initialData?.status,
     queryFn: async () => {
       const result = await clientSafeAction(getResumeStatus(jobId!));
@@ -101,7 +102,7 @@ export const useResumePolling = (
     refetchOnReconnect: false,
     staleTime: Infinity,
     gcTime: Infinity,
-    enabled: !!jobId && statusQuery.data?.status === 'completed',
+    enabled: enabled && !!jobId && statusQuery.data?.status === 'completed',
     initialData: initialData?.report,
     queryFn: async () => {
       const resumeResult = await clientSafeAction(getResumeResult(jobId!));
@@ -150,6 +151,7 @@ export const useResumePolling = (
     status,
     error: finalStatusError,
     isProcessing:
+      enabled &&
       !!jobId &&
       statusQuery.data?.status !== 'completed' &&
       statusQuery.data?.status !== 'failed' &&

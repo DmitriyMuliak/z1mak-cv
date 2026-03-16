@@ -5,6 +5,9 @@ import { AnalysisSchemaType } from '../../../../schema/analysisSchema';
 export const Metrics: React.FC<{ data: AnalysisSchemaType }> = ({ data }) => {
   const t = useTranslations('pages.cvReport');
   const qm = data.quantitativeMetrics;
+  if (!qm) {
+    return null;
+  }
 
   return (
     <div className="grid items-start">

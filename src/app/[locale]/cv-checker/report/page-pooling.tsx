@@ -11,7 +11,7 @@ type Props = {
   searchParams: Promise<{ jobId?: string }>;
 };
 
-export async function fetchInitialResumeData(jobId: string) {
+async function fetchInitialResumeData(jobId: string) {
   const statusRes = await getResumeStatus(jobId);
 
   if (!statusRes.success) return {};
@@ -38,11 +38,11 @@ export default async function CVCheckerAnalysis(props: Props) {
     return redirect({ href: paths.cvChecker, locale });
   }
 
-  const pollingPromise = Promise.resolve({}); // fetchInitialResumeData(jobId)
+  const pollingPromise = fetchInitialResumeData(jobId);
 
   return (
     <Suspense fallback={<ReportSkeleton />}>
-      <ReportRenderer pollingPromise={pollingPromise} useStreaming={true} />
+      <ReportRenderer pollingPromise={pollingPromise} />
     </Suspense>
   );
 }

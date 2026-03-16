@@ -3,6 +3,21 @@ import { cleanup } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
 import React, { ComponentPropsWithoutRef } from 'react';
 
+// Ensure modules that validate env on import have stable defaults in unit tests.
+const TEST_PUBLIC_ENV_DEFAULTS: Record<string, string> = {
+  NEXT_PUBLIC_SUPABASE_URL: 'https://example.supabase.co',
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'test-anon-key',
+  NEXT_PUBLIC_RECAPTCHA_SITE_KEY: 'test-recaptcha-key',
+  NEXT_PUBLIC_CLOUDFLARE_CAPTCHA_SITE_KEY: 'test-turnstile-key',
+  NEXT_PUBLIC_SITE_URL: 'http://localhost:3000',
+};
+
+for (const [key, value] of Object.entries(TEST_PUBLIC_ENV_DEFAULTS)) {
+  process.env[key] ??= value;
+}
+
+process.env.NEXT_PUBLIC_DEV_LOGGER ??= 'false';
+
 // Translations
 vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
