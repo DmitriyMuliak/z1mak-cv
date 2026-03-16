@@ -6,8 +6,11 @@ import { ModeBar } from '@/features/cv-checker/components/ModeBar';
 import { SendToAnalyzeForm } from '@/features/cv-checker/components/SendToAnalyzeForm';
 import { Mode } from '@/features/cv-checker/store/useCvStore';
 
-vi.mock('@/features/cv-checker/actions/sendToAnalyzeAction', () => ({
-  sendToAnalyzeAction: vi.fn().mockResolvedValue({ success: true, data: { jobId: 'job-1' } }),
+vi.mock('@/features/cv-checker/actions/sendToAnalyzeStreamAction', () => ({
+  sendToAnalyzeStreamAction: vi.fn().mockResolvedValue({
+    success: true,
+    data: { jobId: 'job-1' },
+  }),
 }));
 
 const Wrapper = () => {

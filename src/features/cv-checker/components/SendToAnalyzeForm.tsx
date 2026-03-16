@@ -13,7 +13,7 @@ import { paths } from '@/consts/routes';
 import { SectionInput } from './SectionInput';
 import { AddDescriptionBy, Mode } from '../store/useCvStore';
 import { SendToAnalyzeFEType, getSendToAnalyzeSchema } from '../schema/form/toAnalyzeSchemaFE';
-import { sendToAnalyzeAction } from '../actions/sendToAnalyzeAction';
+import { sendToAnalyzeStreamAction } from '../actions/sendToAnalyzeStreamAction';
 import { useTabValidation, validateIfActive } from '../hooks/useTabValidation';
 
 interface Props {
@@ -65,14 +65,14 @@ export const SendToAnalyzeForm: React.FC<Props> = ({ mode }) => {
   const handleCvTabChange = (value: AddDescriptionBy) => setAddCvBy(value);
   const handleJobTabChange = (value: AddDescriptionBy) => setAddJobBy(value);
 
-  const onResult = async (out: Awaited<ReturnType<typeof sendToAnalyzeAction>>) => {
+  const onResult = async (out: Awaited<ReturnType<typeof sendToAnalyzeStreamAction>>) => {
     if (out.success && out.data?.jobId) {
       router.push(paths.cvReport + `?jobId=${out.data?.jobId}`);
       return;
     }
   };
 
-  const handleSubmitCb = createBaseOnSubmitHandler(sendToAnalyzeAction, form, onResult, {
+  const handleSubmitCb = createBaseOnSubmitHandler(sendToAnalyzeStreamAction, form, onResult, {
     getAdditionalFEData: () => ({
       translateErrorFn: tre,
       locale,

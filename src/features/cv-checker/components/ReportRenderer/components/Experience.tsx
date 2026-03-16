@@ -12,8 +12,9 @@ type Props = {
 export const Experience: React.FC<Props> = ({ data }) => {
   const t = useTranslations('pages.cvReport');
   const expData = data.experienceRelevanceAnalysis;
+  const jobs = Array.isArray(expData?.jobs) ? expData.jobs : [];
 
-  if (!expData) return null;
+  if (!expData || jobs.length === 0) return null;
 
   return (
     <Card className="frosted-card">
@@ -23,7 +24,7 @@ export const Experience: React.FC<Props> = ({ data }) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {expData.jobs.map((j, i) => (
+          {jobs.map((j, i) => (
             <div key={i} className="p-3 border rounded hover:bg-muted/50 transition-colors">
               <div className="flex justify-between">
                 <div>

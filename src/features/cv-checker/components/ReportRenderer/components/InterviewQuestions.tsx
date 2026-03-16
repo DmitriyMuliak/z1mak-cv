@@ -12,8 +12,9 @@ type Props = {
 export const InterviewQuestions: React.FC<Props> = ({ data }) => {
   const t = useTranslations('pages.cvReport');
   const questionsData = data.suggestedInterviewQuestions; // Optional
+  const questions = Array.isArray(questionsData?.questions) ? questionsData.questions : [];
 
-  if (!questionsData) return null;
+  if (!questionsData || questions.length === 0) return null;
   return (
     <Card className="frosted-card">
       <CardHeader>
@@ -22,7 +23,7 @@ export const InterviewQuestions: React.FC<Props> = ({ data }) => {
       </CardHeader>
       <CardContent>
         <ol className="list-decimal ml-5 space-y-2">
-          {questionsData.questions.map((q, i) => (
+          {questions.map((q, i) => (
             <li key={i}>
               <div className="text-sm">{q.question}</div>
               <div className="text-sm text-muted-foreground">{q.reason}</div>

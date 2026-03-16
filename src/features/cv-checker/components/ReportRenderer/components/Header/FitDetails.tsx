@@ -4,8 +4,13 @@ import { AnalysisSchemaType } from '../../../../schema/analysisSchema';
 import { InfoRow } from '../ui/InfoRow';
 import { BooleanRow } from '../ui/BooleanRow';
 
-export const FitDetails: React.FC<{ data: AnalysisSchemaType['overallAnalysis'] }> = ({ data }) => {
+export const FitDetails: React.FC<{ data?: AnalysisSchemaType['overallAnalysis'] }> = ({
+  data,
+}) => {
   const t = useTranslations('pages.cvReport.overall');
+  if (!data) {
+    return null;
+  }
 
   return (
     <div>

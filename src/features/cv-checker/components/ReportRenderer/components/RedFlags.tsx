@@ -11,6 +11,11 @@ type Props = {
 
 export const RedFlags: React.FC<Props> = ({ data }) => {
   const t = useTranslations('pages.cvReport');
+  const flags = data.redFlagsAndConcerns?.flags;
+
+  if (!flags || flags.length === 0) {
+    return null;
+  }
 
   return (
     <Card className="frosted-card">
@@ -20,7 +25,7 @@ export const RedFlags: React.FC<Props> = ({ data }) => {
       </CardHeader>
       <CardContent>
         <ul className="list-disc ml-5 space-y-2">
-          {data.redFlagsAndConcerns.flags.map((f, i) => (
+          {flags.map((f, i) => (
             <li key={i}>
               <div className="font-medium">
                 {f.concern} <span className="text-xs text-muted-foreground">({f.severity})</span>

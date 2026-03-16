@@ -9,37 +9,58 @@ export const Improvements: React.FC<{ data: AnalysisSchemaType }> = ({ data }) =
 
   if (!plan) return null;
 
+  const summarySuggestion = plan.summaryRewrite?.suggestion;
+  const summaryExample = plan.summaryRewrite?.example;
+  const keywordSuggestion = plan.keywordOptimization?.suggestion;
+  const missingKeywords = Array.isArray(plan.keywordOptimization?.missingKeywords)
+    ? plan.keywordOptimization.missingKeywords
+    : [];
+  const quantifySuggestion = plan.quantifyAchievements?.suggestion;
+  const examplesToImprove = Array.isArray(plan.quantifyAchievements?.examplesToImprove)
+    ? plan.quantifyAchievements.examplesToImprove
+    : [];
+  const hasAnySection =
+    !!summarySuggestion ||
+    !!summaryExample ||
+    !!keywordSuggestion ||
+    missingKeywords.length > 0 ||
+    !!quantifySuggestion ||
+    examplesToImprove.length > 0;
+
+  if (!hasAnySection) return null;
+
   return (
     <ReportSection title={t('title')}>
       <div className="space-y-6 text-sm">
-        <SuggestionBlock title={t('summaryRewrite')} text={plan.summaryRewrite.suggestion}>
-          <CodeBox>{`"${plan.summaryRewrite.example}"`}</CodeBox>
-        </SuggestionBlock>
+        {(summarySuggestion || summaryExample) && (
+          <SuggestionBlock title={t('summaryRewrite')} text={summarySuggestion}>
+            {summaryExample && <CodeBox>{`"${summaryExample}"`}</CodeBox>}
+          </SuggestionBlock>
+        )}
 
-        {plan.keywordOptimization && (
+        {(keywordSuggestion || missingKeywords.length > 0) && (
           <SuggestionBlock title={t('keywordOptimization')}>
             <div className="mb-2">
               <span className="text-muted-foreground">{t('missing')}</span>{' '}
               <span className="font-mono text-xs bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-1 py-0.5 rounded">
-                {plan.keywordOptimization.missingKeywords.join(', ') || '-'}
+                {missingKeywords.join(', ') || '-'}
               </span>
             </div>
-            <CodeBox>{plan.keywordOptimization.suggestion}</CodeBox>
+            {keywordSuggestion && <CodeBox>{keywordSuggestion}</CodeBox>}
           </SuggestionBlock>
         )}
 
-        <SuggestionBlock
-          title={t('quantifyAchievements')}
-          text={plan.quantifyAchievements.suggestion}
-        >
-          {plan.quantifyAchievements.examplesToImprove.length > 0 && (
-            <ul className="list-disc ml-5 space-y-1">
-              {plan.quantifyAchievements.examplesToImprove.map((ex, i) => (
-                <li key={i}>{`"${ex}"`}</li>
-              ))}
-            </ul>
-          )}
-        </SuggestionBlock>
+        {(quantifySuggestion || examplesToImprove.length > 0) && (
+          <SuggestionBlock title={t('quantifyAchievements')} text={quantifySuggestion}>
+            {examplesToImprove.length > 0 && (
+              <ul className="list-disc ml-5 space-y-1">
+                {examplesToImprove.map((ex, i) => (
+                  <li key={i}>{`"${ex}"`}</li>
+                ))}
+              </ul>
+            )}
+          </SuggestionBlock>
+        )}
 
         {/* <SuggestionBlock title="Remove Irrelevant" text={plan.removeIrrelevant.suggestion} /> */}
       </div>

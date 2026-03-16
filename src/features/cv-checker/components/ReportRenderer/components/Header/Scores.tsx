@@ -2,8 +2,12 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { AnalysisSchemaType } from '../../../../schema/analysisSchema';
 
-export const Scores: React.FC<{ data: AnalysisSchemaType['overallAnalysis'] }> = ({ data }) => {
+export const Scores: React.FC<{ data?: AnalysisSchemaType['overallAnalysis'] }> = ({ data }) => {
   const t = useTranslations('pages.cvReport.overall');
+  if (!data) {
+    return null;
+  }
+
   const scoreList = [
     { key: 'matchScore', tKey: 'matchScore', value: data.matchScore } as const,
     {

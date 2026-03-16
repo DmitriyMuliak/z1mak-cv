@@ -4,6 +4,8 @@ export const ApiRoutes = {
   CV_ANALYSER: {
     baseUrl: privatePrEnv.CV_ANALYSER_BASE_URL,
     analyze: '/resume/analyze' as const,
+    analyzeStream: '/resume/analyze-stream' as const,
+    resultStream: (jobId: string) => `/resume/${encodeURIComponent(jobId)}/result-stream` as const,
     status: (jobId: string) => `/resume/${encodeURIComponent(jobId)}/status` as const,
     result: (jobId: string) => `/resume/${encodeURIComponent(jobId)}/result` as const,
     recent: (userId: string) => `/resume/user/${encodeURIComponent(userId)}/recent` as const,
