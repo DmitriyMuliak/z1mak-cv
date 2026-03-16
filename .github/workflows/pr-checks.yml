@@ -39,10 +39,10 @@ jobs:
       - name: Create dummy env file for tests
         run: |
           touch .env.test
-          echo "NEXT_PUBLIC_API_URL=stub.com" >> .env.test
+          echo "NEXT_PUBLIC_API_URL=https://stub.com" >> .env.test
           echo "NEXT_PUBLIC_RECAPTCHA_SITE_KEY=stub" >> .env.test
           echo "NEXT_PUBLIC_CLOUDFLARE_CAPTCHA_SITE_KEY=stub" >> .env.test
-          echo "NEXT_PUBLIC_SUPABASE_URL=stub.com" >> .env.test
+          echo "NEXT_PUBLIC_SUPABASE_URL=https://stub.com" >> .env.test
           echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=stub" >> .env.test
           echo "NEXT_PUBLIC_DEV_LOGGER=false" >> .env.test
           echo "NEXT_PUBLIC_SITE_URL=http://localhost:3000" >> .env.test
