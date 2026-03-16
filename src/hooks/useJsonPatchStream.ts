@@ -34,6 +34,7 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { applyPatch } from 'fast-json-patch';
 import type { Operation } from 'fast-json-patch';
 import { isAbortError } from '@/api/apiService/utils';
+import { useLatest } from './useLatest';
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -152,6 +153,35 @@ export type UseJsonPatchStreamOptions<TData> = {
    * Use this to show a toast or log the error — the hook handles reconnect logic.
    */
   onError?: (payload: { code: string; message: string; retryable?: boolean }) => void;
+
+  // ── Store adapter callbacks ─────────────────────────────────────────────
+  // When provided, these are called alongside the internal dispatch so an
+  // external Zustand store (or any other state manager) can stay in sync.
+  // React 18 batches both updates into one render since they fire synchronously
+  // inside the same `onmessage` call.
+
+  /**
+   * Called when a `snapshot` SSE event arrives.
+   * Receives the full content (null when job is queued) and the current status.
+   */
+  onSnapshot?: (data: Partial<TData> | null, status: JsonPatchStreamStatus) => void;
+
+  /**
+   * Called when a `patch` SSE event arrives, with the raw RFC 6902 ops array.
+   * Apply these to your external store (e.g., `store().applyPatches(ops)`).
+   */
+  onPatch?: (ops: Operation[]) => void;
+
+  /**
+   * Called when the `done` SSE event arrives — stream is complete.
+   */
+  onDone?: (status: JsonPatchStreamStatus, usedModel?: string) => void;
+
+  /**
+   * Called when a status-only transition occurs (e.g., first patch triggers
+   * `in_progress` while data already exists in the external store).
+   */
+  onStatusChange?: (status: JsonPatchStreamStatus) => void;
 };
 
 // ── Hook ──────────────────────────────────────────────────────────────────
@@ -166,6 +196,10 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
   initialData,
   isFatalError,
   onError,
+  onSnapshot,
+  onPatch,
+  onDone,
+  onStatusChange,
 }: UseJsonPatchStreamOptions<TData>) => {
   const reducerFn = useRef(createReducer<TData>()).current;
 
@@ -183,28 +217,16 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
   const lastEventIdRef = useRef<string | null>(null);
   const disposedRef = useRef(false);
 
-  // Stable callback refs — re-read at call time, never captured in stale closures
-  const buildHeadersRef = useRef(buildHeaders);
-  const buildBodyRef = useRef(buildBody);
-  const isFatalErrorRef = useRef(isFatalError);
-  const onErrorRef = useRef(onError);
-  const initialDataRef = useRef(initialData);
-
-  useEffect(() => {
-    buildHeadersRef.current = buildHeaders;
-  }, [buildHeaders]);
-  useEffect(() => {
-    buildBodyRef.current = buildBody;
-  }, [buildBody]);
-  useEffect(() => {
-    isFatalErrorRef.current = isFatalError;
-  }, [isFatalError]);
-  useEffect(() => {
-    onErrorRef.current = onError;
-  }, [onError]);
-  useEffect(() => {
-    initialDataRef.current = initialData;
-  }, [initialData]);
+  // Stable callback refs — always hold the latest value, never stale in closures
+  const buildHeadersRef = useLatest(buildHeaders);
+  const buildBodyRef = useLatest(buildBody);
+  const isFatalErrorRef = useLatest(isFatalError);
+  const onErrorRef = useLatest(onError);
+  const initialDataRef = useLatest(initialData);
+  const onSnapshotRef = useLatest(onSnapshot);
+  const onPatchRef = useLatest(onPatch);
+  const onDoneRef = useLatest(onDone);
+  const onStatusChangeRef = useLatest(onStatusChange);
 
   // ── Helpers ─────────────────────────────────────────────────────────────
   const clearReconnectTimer = useCallback(() => {
@@ -301,6 +323,7 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
                 data: (payload.content ?? {}) as Partial<TData>,
                 status: payload.status,
               });
+              onSnapshotRef.current?.(payload.content as Partial<TData> | null, payload.status);
 
               if (payload.status === 'failed') {
                 streamTerminated = true;
@@ -318,6 +341,8 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
             if (ev.event === 'patch') {
               const payload = JSON.parse(ev.data) as PatchPayload;
               dispatch({ type: 'PATCH', ops: payload.ops });
+              onPatchRef.current?.(payload.ops);
+              onStatusChangeRef.current?.('in_progress');
               return;
             }
 
@@ -326,6 +351,7 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
               const payload = JSON.parse(ev.data) as DonePayload;
               streamTerminated = true;
               dispatch({ type: 'DONE', status: payload.status });
+              onDoneRef.current?.(payload.status, payload.usedModel);
               if (storageKey) sessionStorage.removeItem(storageKey);
               lastEventIdRef.current = null;
               return;

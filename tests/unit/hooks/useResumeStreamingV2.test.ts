@@ -113,7 +113,9 @@ describe('useResumeStreamingV2', () => {
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({
-          Authorization: 'Bearer test-token',
+          // buildHeaders() output is normalized to lowercase by flattenHeaders (new Headers())
+          authorization: 'Bearer test-token',
+          // base headers are set directly in useJsonPatchStream — original case preserved
           'Content-Type': 'application/json',
         }),
         body: JSON.stringify({}),
