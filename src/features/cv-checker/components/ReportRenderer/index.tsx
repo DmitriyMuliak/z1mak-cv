@@ -64,7 +64,7 @@ export const ReportRenderer: React.FC<ReportRendererProps> = ({
   switch (viewState) {
     case 'loading':
       if (report) {
-        return <ReportContent report={report} jobId={jobId} />;
+        return <ReportContent report={report} />;
       }
       return <ReportLoadingState status={status} jobId={jobId} />;
 
@@ -75,6 +75,6 @@ export const ReportRenderer: React.FC<ReportRendererProps> = ({
       return <ReportEmptyState jobId={jobId} />;
 
     case 'success':
-      return <ReportContent report={report!} jobId={jobId} />;
+      return <ReportContent report={report!} />;
   }
 };
