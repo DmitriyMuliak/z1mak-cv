@@ -3,6 +3,7 @@
 import { EventSourceMessage, fetchEventSource } from '@microsoft/fetch-event-source';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { isAbortError } from '@/api/apiService/utils';
+import { useLatest } from './useLatest';
 
 export type StreamErrorAction = 'reconnect' | 'fatal' | 'ignore';
 
@@ -77,41 +78,13 @@ export const useFetchEventSourceStream = ({
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastEventIdRef = useRef<string | null>(null);
 
-  const requestRef = useRef<RequestOptions | undefined>(request);
-  const buildRequestBodyRef = useRef<BuildRequestBodyFn | undefined>(buildRequestBody);
-  const shouldReconnectRef = useRef<(() => boolean) | undefined>(shouldReconnect);
-  const onOpenRef = useRef(onOpen);
-  const onMessageRef = useRef(onMessage);
-  const onCloseRef = useRef(onClose);
-  const onErrorRef = useRef(onError);
-
-  useEffect(() => {
-    requestRef.current = request;
-  }, [request]);
-
-  useEffect(() => {
-    buildRequestBodyRef.current = buildRequestBody;
-  }, [buildRequestBody]);
-
-  useEffect(() => {
-    shouldReconnectRef.current = shouldReconnect;
-  }, [shouldReconnect]);
-
-  useEffect(() => {
-    onOpenRef.current = onOpen;
-  }, [onOpen]);
-
-  useEffect(() => {
-    onMessageRef.current = onMessage;
-  }, [onMessage]);
-
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
-
-  useEffect(() => {
-    onErrorRef.current = onError;
-  }, [onError]);
+  const requestRef = useLatest(request);
+  const buildRequestBodyRef = useLatest(buildRequestBody);
+  const shouldReconnectRef = useLatest(shouldReconnect);
+  const onOpenRef = useLatest(onOpen);
+  const onMessageRef = useLatest(onMessage);
+  const onCloseRef = useLatest(onClose);
+  const onErrorRef = useLatest(onError);
 
   const clearReconnectTimer = () => {
     if (reconnectTimerRef.current) {

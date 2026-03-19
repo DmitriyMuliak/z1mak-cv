@@ -384,4 +384,68 @@ describe('useJsonPatchStream', () => {
     expect(result.current.status).toBe('queued');
     await settle();
   });
+
+  // ── store adapter callbacks ───────────────────────────────────────────────
+
+  it('onSnapshot callback is called with content and status', async () => {
+    const onSnapshot = vi.fn();
+    const content = { score: 88 };
+
+    mockFes.mockImplementationOnce(async (_url, opts: FesOptions) => {
+      opts.onmessage!(sseMsg('snapshot', { content, status: 'in_progress' }));
+    });
+
+    renderHook(() => useJsonPatchStream({ url: '/api/stream/job-1', onSnapshot }));
+    await settle();
+
+    expect(onSnapshot).toHaveBeenCalledTimes(1);
+    expect(onSnapshot).toHaveBeenCalledWith(content, 'in_progress');
+  });
+
+  it('onPatch callback is called with the ops array', async () => {
+    const onPatch = vi.fn();
+    const ops = [{ op: 'add' as const, path: '/x', value: 1 }];
+
+    mockFes.mockImplementationOnce(async (_url, opts: FesOptions) => {
+      opts.onmessage!(sseMsg('snapshot', { content: {}, status: 'in_progress' }));
+      opts.onmessage!(sseMsg('patch', { ops }, '1'));
+      opts.onmessage!(sseMsg('done', { status: 'completed' }));
+    });
+
+    renderHook(() => useJsonPatchStream({ url: '/api/stream/job-1', onPatch }));
+    await settle();
+
+    expect(onPatch).toHaveBeenCalledTimes(1);
+    expect(onPatch).toHaveBeenCalledWith(ops);
+  });
+
+  it('onDone callback is called with status and usedModel', async () => {
+    const onDone = vi.fn();
+
+    mockFes.mockImplementationOnce(async (_url, opts: FesOptions) => {
+      opts.onmessage!(sseMsg('snapshot', { content: {}, status: 'in_progress' }));
+      opts.onmessage!(sseMsg('done', { status: 'completed', usedModel: 'gpt-4o' }));
+    });
+
+    renderHook(() => useJsonPatchStream({ url: '/api/stream/job-1', onDone }));
+    await settle();
+
+    expect(onDone).toHaveBeenCalledTimes(1);
+    expect(onDone).toHaveBeenCalledWith('completed', 'gpt-4o');
+  });
+
+  it('onStatusChange callback is called when patch triggers in_progress', async () => {
+    const onStatusChange = vi.fn();
+
+    mockFes.mockImplementationOnce(async (_url, opts: FesOptions) => {
+      opts.onmessage!(sseMsg('snapshot', { content: {}, status: 'queued' }));
+      opts.onmessage!(sseMsg('patch', { ops: [{ op: 'add', path: '/x', value: 1 }] }, '1'));
+      opts.onmessage!(sseMsg('done', { status: 'completed' }));
+    });
+
+    renderHook(() => useJsonPatchStream({ url: '/api/stream/job-1', onStatusChange }));
+    await settle();
+
+    expect(onStatusChange).toHaveBeenCalledWith('in_progress');
+  });
 });
