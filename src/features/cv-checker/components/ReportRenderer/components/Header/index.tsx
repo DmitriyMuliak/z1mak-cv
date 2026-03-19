@@ -8,6 +8,7 @@ import { Metrics } from './Metrics';
 import { Skills } from './Skills';
 import { ExportActions } from './ExportActions';
 import { Scores } from './Scores';
+import { TypewriterText } from '../TypewriterText';
 
 export const Header: React.FC<{ data: AnalysisSchemaType }> = ({ data }) => {
   const t = useTranslations('pages.cvReport');
@@ -28,7 +29,7 @@ export const Header: React.FC<{ data: AnalysisSchemaType }> = ({ data }) => {
             {oa.suitabilitySummary && (
               <>
                 <div className="text-sm font-medium">{t('overall.suitabilitySummary')}</div>
-                <div className="text-sm">{oa.suitabilitySummary}</div>
+                <TypewriterText text={oa.suitabilitySummary} className="text-sm" />
               </>
             )}
           </div>
