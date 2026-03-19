@@ -2,6 +2,7 @@
 
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
+import { produce } from 'immer';
 import { applyPatch } from 'fast-json-patch';
 import type { Operation } from 'fast-json-patch';
 import type { AppError } from '@/types/server-actions';
@@ -85,8 +86,11 @@ export const useAnalysisStore = create<AnalysisStoreState & AnalysisStoreActions
     ...INITIAL_STATE,
 
     applyPatches: (ops) => {
-      const next = applyPatch(get().data, ops, false, false).newDocument;
-      set({ data: next as AnalysisData });
+      set({
+        data: produce(get().data, (draft) => {
+          applyPatch(draft, ops, false, true);
+        }) as AnalysisData,
+      });
     },
 
     setSnapshot: (jobId, content, status) =>

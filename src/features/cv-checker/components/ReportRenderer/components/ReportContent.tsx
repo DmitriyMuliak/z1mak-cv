@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useMemo, useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion, Variants } from 'framer-motion';
+import { useShallow } from 'zustand/react/shallow';
 import {
   SchemaService,
   UI_SECTION_ORDER,
@@ -31,9 +32,26 @@ const sectionVariants = {
  *   - status === 'completed' on mount → page reload → initial={false}, no animation
  *   - status === 'in_progress' on mount → live stream → animate from 'hidden'
  */
+const SectionItem: React.FC<{ sectionKey: UiSectionKey; showImmediately: boolean }> = ({
+  sectionKey,
+  showImmediately,
+}) => {
+  const Component = SECTION_COMPONENTS[sectionKey];
+  return (
+    <motion.div
+      variants={sectionVariants}
+      initial={showImmediately ? false : 'hidden'}
+      animate="visible"
+    >
+      <Component />
+    </motion.div>
+  );
+};
+
 export const ReportContent: React.FC = () => {
-  const data = useAnalysisStore((s) => s.data);
-  const activeSections = useMemo(() => new SchemaService(data).getUiSections(), [data]);
+  const activeSections = useAnalysisStore(
+    useShallow((s) => new SchemaService(s.data).getUiSections()),
+  );
 
   const [showImmediately] = useState(() => useAnalysisStore.getState().status === 'completed');
 
@@ -52,19 +70,9 @@ export const ReportContent: React.FC = () => {
 
   return (
     <div className="space-y-6 w-full">
-      {displayedSections.map((sectionKey) => {
-        const Component = SECTION_COMPONENTS[sectionKey];
-        return (
-          <motion.div
-            key={sectionKey}
-            variants={sectionVariants}
-            initial={showImmediately ? false : 'hidden'}
-            animate="visible"
-          >
-            <Component />
-          </motion.div>
-        );
-      })}
+      {displayedSections.map((sectionKey) => (
+        <SectionItem key={sectionKey} sectionKey={sectionKey} showImmediately={showImmediately} />
+      ))}
     </div>
   );
 };
