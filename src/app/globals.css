@@ -220,3 +220,32 @@ html {
   height: 100lvh;
   transition: background-color 0.8s ease-in-out;
 }
+
+/* View Transitions — section reveal animation */
+@keyframes vt-section-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+::view-transition-old(*) {
+  animation: none;
+}
+
+::view-transition-new(*) {
+  animation: 450ms cubic-bezier(0.34, 1.2, 0.64, 1) both vt-section-in;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
+  }
+}
