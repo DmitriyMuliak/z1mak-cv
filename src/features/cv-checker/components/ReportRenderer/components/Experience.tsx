@@ -1,17 +1,13 @@
 'use client';
 
 import React from 'react';
-import { AnalysisSchemaType } from '../../../schema/analysisSchema';
+import { useAnalysisStore } from '@/features/cv-checker/store/analysisStore';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useTranslations } from 'next-intl';
 
-type Props = {
-  data: AnalysisSchemaType;
-};
-
-export const Experience: React.FC<Props> = ({ data }) => {
+export const Experience: React.FC = () => {
   const t = useTranslations('pages.cvReport');
-  const expData = data.experienceRelevanceAnalysis;
+  const expData = useAnalysisStore((s) => s.data.experienceRelevanceAnalysis);
   const jobs = Array.isArray(expData?.jobs) ? expData.jobs : [];
 
   if (!expData || jobs.length === 0) return null;
@@ -20,7 +16,6 @@ export const Experience: React.FC<Props> = ({ data }) => {
     <Card className="frosted-card">
       <CardHeader>
         <CardTitle>{t('experience.title')}</CardTitle>
-        {/* <CardTitle>{data.experienceRelevanceAnalysis.title}</CardTitle> */}
       </CardHeader>
       <CardContent>
         <div className="space-y-3">

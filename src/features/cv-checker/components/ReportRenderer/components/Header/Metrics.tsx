@@ -2,9 +2,12 @@ import React from 'react';
 import { useTranslations } from 'next-intl';
 import { AnalysisSchemaType } from '../../../../schema/analysisSchema';
 
-export const Metrics: React.FC<{ data: AnalysisSchemaType }> = ({ data }) => {
+type Props = {
+  qm: AnalysisSchemaType['quantitativeMetrics'] | undefined;
+};
+
+export const Metrics: React.FC<Props> = ({ qm }) => {
   const t = useTranslations('pages.cvReport');
-  const qm = data.quantitativeMetrics;
   if (!qm) {
     return null;
   }

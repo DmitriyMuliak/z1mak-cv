@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { AnalysisSchemaType } from '../../../schema/analysisSchema';
+import { useAnalysisStore } from '@/features/cv-checker/store/analysisStore';
 import { ReportSection } from './ui/ReportSection';
 // import { SkillRadar } from './SkillRadar';
 
@@ -49,9 +50,9 @@ function SkillCard({ s }: { s: Skill }) {
   );
 }
 
-export const Skills: React.FC<{ data: AnalysisSchemaType }> = ({ data }) => {
+export const Skills: React.FC = () => {
   const t = useTranslations('pages.cvReport');
-  const skills = data.detailedSkillAnalysis?.skills;
+  const skills = useAnalysisStore((s) => s.data.detailedSkillAnalysis?.skills);
   const safeSkills = Array.isArray(skills) ? skills : [];
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -86,12 +87,10 @@ export const Skills: React.FC<{ data: AnalysisSchemaType }> = ({ data }) => {
       {/* <SkillRadar skills={safeSkills} /> */}
 
       <div className="space-y-3">
-        {/* Always-visible preview items */}
         {previewSkills.map((s) => (
           <SkillCard key={s.skill} s={s} />
         ))}
 
-        {/* Collapsible rest */}
         <AnimatePresence initial={false}>
           {isExpanded && (
             <motion.div

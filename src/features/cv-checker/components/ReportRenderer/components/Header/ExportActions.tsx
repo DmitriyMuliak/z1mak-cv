@@ -1,12 +1,16 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
+import { useAnalysisStore } from '@/features/cv-checker/store/analysisStore';
 import { AnalysisSchemaType } from '@/features/cv-checker/schema/analysisSchema';
 import { generateAndDownloadDocxReport } from '@/features/cv-checker/utils/generateReportHtml';
 import { downloadJson } from '@/utils/downloadFiles/downloadJson';
 import { useLocale, useTranslations } from 'next-intl';
 
-export const ExportActions: React.FC<{ data: AnalysisSchemaType }> = ({ data }) => {
+export const ExportActions: React.FC = () => {
   const t = useTranslations('pages.cvReport');
   const locale = useLocale();
+  const data = useAnalysisStore((s) => s.data) as AnalysisSchemaType;
   const { metadata, ...result } = data;
 
   return (

@@ -2,7 +2,6 @@
 
 import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { motion, Variants } from 'framer-motion';
-import { AnalysisSchemaType } from '@/features/cv-checker/schema/analysisSchema';
 import {
   SchemaService,
   UI_SECTION_ORDER,
@@ -10,10 +9,6 @@ import {
 } from '@/features/cv-checker/services/SchemaService';
 import { useAnalysisStore } from '@/features/cv-checker/store/analysisStore';
 import { SECTION_COMPONENTS } from '../config';
-
-interface Props {
-  report: AnalysisSchemaType;
-}
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.98, filter: 'blur(4px)' },
@@ -29,16 +24,16 @@ const sectionVariants = {
 /**
  * Renders analysis sections as they arrive via SSE patches.
  *
- * Each new section key added to `activeSections` triggers a Framer Motion
- * enter animation (slide-up + scale + blur-clear). Sections already known
- * are ignored to prevent double-renders.
+ * Subscribes directly to the store for section detection.
+ * Each section component subscribes to its own slice — no prop drilling.
  *
- * Session detection (same pattern as TypewriterText):
- *   - status === 'completed' on mount  → page reload → initial={false}, no animation
+ * Session detection:
+ *   - status === 'completed' on mount → page reload → initial={false}, no animation
  *   - status === 'in_progress' on mount → live stream → animate from 'hidden'
  */
-export const ReportContent: React.FC<Props> = ({ report }) => {
-  const activeSections = useMemo(() => new SchemaService(report).getUiSections(), [report]);
+export const ReportContent: React.FC = () => {
+  const data = useAnalysisStore((s) => s.data);
+  const activeSections = useMemo(() => new SchemaService(data).getUiSections(), [data]);
 
   const [showImmediately] = useState(() => useAnalysisStore.getState().status === 'completed');
 
@@ -66,7 +61,7 @@ export const ReportContent: React.FC<Props> = ({ report }) => {
             initial={showImmediately ? false : 'hidden'}
             animate="visible"
           >
-            <Component data={report} />
+            <Component />
           </motion.div>
         );
       })}

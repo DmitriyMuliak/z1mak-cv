@@ -3,9 +3,12 @@ import { useTranslations } from 'next-intl';
 import { AnalysisSchemaType } from '../../../../schema/analysisSchema';
 import { ScoreBar } from '../../../ScoreBar';
 
-export const Skills: React.FC<{ data: AnalysisSchemaType }> = ({ data }) => {
+type Props = {
+  qm: AnalysisSchemaType['quantitativeMetrics'] | undefined;
+};
+
+export const Skills: React.FC<Props> = ({ qm }) => {
   const t = useTranslations('pages.cvReport');
-  const qm = data.quantitativeMetrics;
   if (!qm) {
     return null;
   }

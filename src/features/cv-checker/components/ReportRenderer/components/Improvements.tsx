@@ -1,11 +1,13 @@
+'use client';
+
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { AnalysisSchemaType } from '../../../schema/analysisSchema';
+import { useAnalysisStore } from '@/features/cv-checker/store/analysisStore';
 import { ReportSection } from './ui/ReportSection';
 
-export const Improvements: React.FC<{ data: AnalysisSchemaType }> = ({ data }) => {
+export const Improvements: React.FC = () => {
   const t = useTranslations('pages.cvReport.improvement');
-  const plan = data.actionableImprovementPlan;
+  const plan = useAnalysisStore((s) => s.data.actionableImprovementPlan);
 
   if (!plan) return null;
 
@@ -61,8 +63,6 @@ export const Improvements: React.FC<{ data: AnalysisSchemaType }> = ({ data }) =
             )}
           </SuggestionBlock>
         )}
-
-        {/* <SuggestionBlock title="Remove Irrelevant" text={plan.removeIrrelevant.suggestion} /> */}
       </div>
     </ReportSection>
   );
