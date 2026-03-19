@@ -126,7 +126,9 @@
         "keyCoverage": "Ключові навички",
         "stackRecency": "Актуальність стеку",
         "softMatch": "Soft skills",
-        "analysisTitle": "Аналіз навичок"
+        "analysisTitle": "Аналіз навичок",
+        "showAll": "Показати всі {count}",
+        "showLess": "Показати менше"
       },
       "export": {
         "title": "Експорт",

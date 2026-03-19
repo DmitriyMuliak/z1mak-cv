@@ -126,7 +126,9 @@
         "keyCoverage": "Key skills coverage",
         "stackRecency": "Stack recency",
         "softMatch": "Soft skills match",
-        "analysisTitle": "Skills Analysis"
+        "analysisTitle": "Skills Analysis",
+        "showAll": "Show all {count}",
+        "showLess": "Show less"
       },
       "export": {
         "title": "Export",
