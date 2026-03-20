@@ -5,6 +5,7 @@ import React, { ComponentPropsWithoutRef } from 'react';
 
 // Ensure modules that validate env on import have stable defaults in unit tests.
 const TEST_PUBLIC_ENV_DEFAULTS: Record<string, string> = {
+  NEXT_PUBLIC_API_URL: 'https://stub.com',
   NEXT_PUBLIC_SUPABASE_URL: 'https://example.supabase.co',
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'test-anon-key',
   NEXT_PUBLIC_RECAPTCHA_SITE_KEY: 'test-recaptcha-key',
