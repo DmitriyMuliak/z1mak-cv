@@ -24,7 +24,7 @@ export const Scores: React.FC<{ data?: AnalysisSchemaType['overallAnalysis'] }> 
   ].filter((v): v is typeof v & { value: number } => v.value !== undefined);
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-wrap mb-5 lg:mb-0 lg:justify-center gap-4">
       {scoreList.map((item) => (
         <ScoreRing key={item.key} value={item.value} label={t(item.tKey)} />
       ))}

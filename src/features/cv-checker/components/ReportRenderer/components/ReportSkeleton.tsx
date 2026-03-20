@@ -83,35 +83,59 @@ export const ReportSkeleton = () => {
           </div>
         </CardContent>
       </Card>
-      {/* --- SECTION 2: EXPERIENCE SKELETON --- */}
+      {/* --- SECTION 2: RED FLAGS SKELETON --- */}
       <Card className="frosted-card">
         <CardHeader>
-          <Skeleton className="h-7 w-40" /> {/* Title: Experience Analysis */}
+          <Skeleton className="h-7 w-32" />
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
+          <ul className="list-disc ml-5 space-y-4">
             {[1, 2, 3].map((item) => (
-              <div key={item} className="p-3 border rounded-lg space-y-3">
-                <div className="flex justify-between items-start gap-4">
-                  <div className="space-y-2 w-full">
-                    {/* Job Title & Company */}
-                    <Skeleton className="h-5 w-2/3" />
-                    {/* Period */}
-                    <Skeleton className="h-3 w-1/3" />
-                  </div>
-                  {/* Score */}
-                  <Skeleton className="h-6 w-10 shrink-0" />
+              <li key={item} className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-4 w-1/3" />
+                  <Skeleton className="h-3 w-12" />
                 </div>
-                {/* Comment */}
-                <div className="space-y-2 pt-1">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-5/6" />
-                </div>
-              </div>
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-4/5" />
+              </li>
             ))}
-          </div>
+          </ul>
         </CardContent>
       </Card>
     </div>
+  );
+};
+
+export const ExperienceSkeleton = () => {
+  return (
+    <Card className="frosted-card">
+      <CardHeader>
+        <Skeleton className="h-7 w-40" /> {/* Title: Experience Analysis */}
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {[1, 2, 3].map((item) => (
+            <div key={item} className="p-3 border rounded-lg space-y-3">
+              <div className="flex justify-between items-start gap-4">
+                <div className="space-y-2 w-full">
+                  {/* Job Title & Company */}
+                  <Skeleton className="h-5 w-2/3" />
+                  {/* Period */}
+                  <Skeleton className="h-3 w-1/3" />
+                </div>
+                {/* Score */}
+                <Skeleton className="h-6 w-10 shrink-0" />
+              </div>
+              {/* Comment */}
+              <div className="space-y-2 pt-1">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };

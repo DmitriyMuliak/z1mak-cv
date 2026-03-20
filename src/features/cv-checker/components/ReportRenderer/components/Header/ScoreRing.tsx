@@ -69,7 +69,7 @@ export const ScoreRing: React.FC<ScoreRingProps> = ({ value, label, size = 96 })
         </div>
       </div>
 
-      <span className="text-xs font-medium text-muted-foreground text-center leading-tight max-w-[96px]">
+      <span className="text-xs font-medium text-muted-foreground text-center leading-tight max-w-[120px]">
         {label}
       </span>
     </div>
