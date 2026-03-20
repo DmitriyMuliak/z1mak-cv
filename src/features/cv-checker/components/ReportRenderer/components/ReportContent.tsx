@@ -10,6 +10,7 @@ import {
 } from '@/features/cv-checker/services/SchemaService';
 import { useAnalysisStore } from '@/features/cv-checker/store/analysisStore';
 import { SECTION_COMPONENTS } from '../config';
+import { StreamingTail } from './StreamingTail';
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.98, filter: 'blur(4px)' },
@@ -73,6 +74,7 @@ export const ReportContent: React.FC = () => {
       {displayedSections.map((sectionKey) => (
         <SectionItem key={sectionKey} sectionKey={sectionKey} showImmediately={showImmediately} />
       ))}
+      <StreamingTail />
     </div>
   );
 };

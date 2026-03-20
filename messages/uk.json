@@ -94,6 +94,7 @@
     "cvReport": {
       "title": "Результат аналізу",
       "generatedOnTitle": "Згенеровано",
+      "generating": "Генерується...",
       "loadingTitle": {
         "loading": "Завантаження звіту",
         "queued": "Звіт у черзі",

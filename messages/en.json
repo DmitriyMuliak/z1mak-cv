@@ -94,6 +94,7 @@
     "cvReport": {
       "title": "Analysis Result",
       "generatedOnTitle": "Generated on",
+      "generating": "Generating...",
       "loadingTitle": {
         "loading": "Loading report",
         "queued": "Report is queued",

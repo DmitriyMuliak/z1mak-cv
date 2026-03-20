@@ -376,10 +376,11 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
 
             // ── done ──────────────────────────────────────────────────────
             if (ev.event === 'done') {
+              // TODO: BE should send status && usedModel on 'done' event
               const payload = JSON.parse(ev.data) as DonePayload;
               streamTerminated = true;
               dispatch({ type: 'DONE', status: payload.status });
-              onDoneRef.current?.(payload.status, payload.usedModel);
+              onDoneRef.current?.(payload.status || 'completed', payload.usedModel);
               if (storageKey) sessionStorage.removeItem(storageKey);
               lastEventIdRef.current = null;
               return;
