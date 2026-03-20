@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import { AnalysisSchemaType } from '../../../schema/analysisSchema';
 import { useAnalysisStore } from '@/features/cv-checker/store/analysisStore';
 import { ReportSection } from './ui/ReportSection';
+import { ExpandToggle } from './ui/ExpandToggle';
 // import { SkillRadar } from './SkillRadar';
 
 const PREVIEW_COUNT = 3;
@@ -64,22 +64,12 @@ export const Skills: React.FC = () => {
   const hasMore = hiddenSkills.length > 0;
 
   const toggleButton = hasMore ? (
-    <button
-      onClick={() => setIsExpanded((v) => !v)}
-      className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-      aria-expanded={isExpanded}
-    >
-      {isExpanded ? (
-        <>
-          {t('skills.showLess')} <ChevronUp className="w-3.5 h-3.5" />
-        </>
-      ) : (
-        <>
-          {t('skills.showAll', { count: safeSkills.length })}{' '}
-          <ChevronDown className="w-3.5 h-3.5" />
-        </>
-      )}
-    </button>
+    <ExpandToggle
+      isExpanded={isExpanded}
+      onToggle={() => setIsExpanded((v) => !v)}
+      showAllLabel={t('skills.showAll', { count: safeSkills.length })}
+      showLessLabel={t('skills.showLess')}
+    />
   ) : null;
 
   return (

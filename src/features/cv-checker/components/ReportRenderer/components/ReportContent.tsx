@@ -40,6 +40,7 @@ const SectionItem: React.FC<{ sectionKey: UiSectionKey; showImmediately: boolean
   const Component = SECTION_COMPONENTS[sectionKey];
   return (
     <motion.div
+      // layout
       variants={sectionVariants}
       initial={showImmediately ? false : 'hidden'}
       animate="visible"

@@ -137,7 +137,9 @@
         "downloadDoc": "Download DOC"
       },
       "experience": {
-        "title": "Experience Relevance"
+        "title": "Experience Relevance",
+        "showAll": "Show all {count}",
+        "showLess": "Show less"
       },
       "redFlags": {
         "title": "Red Flags and Concerns"

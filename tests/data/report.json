@@ -1,0 +1,189 @@
+{
+  "analysisTimestamp": "2024-07-30T12:00:00Z",
+  "overallAnalysis": {
+    "candidateLevel": "Senior",
+    "suitabilitySummary": "Кандидат є досвідченим Senior Frontend Engineer з більш ніж 10 роками досвіду, що відповідає вимогам вакансії. Він має глибокі знання React, TypeScript та сучасних інструментів фронтенду, а також досвід роботи з високопродуктивними системами та FinTech. Однак, є занепокоєння щодо частих змін місць роботи та відсутність явного підтвердження досвіду з \"pixel-perfect\" реалізацією дизайну з Figma.",
+    "jobTargetLevel": "Senior",
+    "levelMatch": true,
+    "educationMatch": true,
+    "jobHoppingFlag": true,
+    "independentTechCvScore": 88,
+    "matchScore": 87
+  },
+  "quantitativeMetrics": {
+    "totalYearsInCV": 10.9,
+    "requiredYearsInJob": 5,
+    "stackRecencyScore": 95,
+    "softSkillsScore": 85,
+    "keySkillCoveragePercent": 93,
+    "relevantYearsInCV": 10.9
+  },
+  "redFlagsAndConcerns": {
+    "title": "Виявлені недоліки та занепокоєння",
+    "flags": [
+      {
+        "concern": "Job Hopping",
+        "details": "Кандидат мав кілька короткострокових позицій (менше 1 року) між 2018 та 2021 роками, що може свідчити про нестабільність або швидку втрату інтересу до проектів.",
+        "severity": "High"
+      },
+      {
+        "concern": "Відсутність явного досвіду з 'pixel-perfect' UI та Figma",
+        "details": "У резюме не згадується досвід роботи з Figma або акцент на 'pixel-perfect' реалізації дизайну, що є важливою вимогою вакансії.",
+        "severity": "Medium"
+      },
+      {
+        "concern": "Специфічний домен AI Search Analytics",
+        "details": "Хоча кандидат має досвід з AI-assisted development та власний AI SaaS проект, у резюме немає прямої згадки про роботу з платформами AI search analytics або LLM-driven search у контексті маркетингу/SEO.",
+        "severity": "Low"
+      }
+    ]
+  },
+  "actionableImprovementPlan": {
+    "title": "План покращення резюме",
+    "summaryRewrite": {
+      "suggestion": "Перепишіть розділ 'SUMMARY', щоб він краще відображав відповідність вимогам вакансії, особливо щодо досвіду з 'pixel-perfect' UI та роботи з дизайн-системами.",
+      "example": "Senior Frontend Engineer з 10+ роками досвіду у створенні високопродуктивних, орієнтованих на користувача систем, включаючи FinTech. Спеціалізується на архітектурі React & TypeScript для високо-навантажених продуктів, надійності фронтенду та тестуванні в масштабі. Досвідчений у розробці та підтримці дизайн-систем, створенні 'pixel-perfect' UI з Figma та Node.js BFF шарів."
+    },
+    "quantifyAchievements": {
+      "targetSection": "PROFESSIONAL EXPERIENCE",
+      "suggestion": "Додайте більше кількісних показників до ваших досягнень, щоб продемонструвати реальний вплив вашої роботи.",
+      "examplesToImprove": [
+        "Led migration from Enzyme to React Testing Library and expanded E2E coverage with Puppeteer, significantly reducing regressions in payment flows.",
+        "Contributed to Node.js Backend-for-Frontend layer to optimize data aggregation and support A/B experiments.",
+        "Built an internal warehouse scanning tool that improved parcel tracking workflows."
+      ]
+    },
+    "removeIrrelevant": {
+      "suggestion": "Розгляньте можливість скорочення або переформулювання найдавнішого досвіду (наприклад, PHP, WordPress), щоб зосередитися на найбільш релевантних навичках для поточної вакансії."
+    },
+    "keywordOptimization": {
+      "missingKeywords": [
+        "Figma",
+        "pixel-perfect",
+        "AI search analytics",
+        "LLM-driven search",
+        "Looker Studio connector"
+      ],
+      "suggestion": "Інтегруйте ключові слова з опису вакансії, такі як 'Figma', 'pixel-perfect', 'AI search analytics' (якщо є релевантний досвід), у відповідні розділи резюме, щоб покращити його видимість для систем ATS та рекрутерів."
+    }
+  },
+  "detailedSkillAnalysis": {
+    "title": "Детальний аналіз навичок",
+    "skills": [
+      {
+        "skill": "React",
+        "type": "Required",
+        "status": "Strongly Present",
+        "evidenceFromCV": "Wix, Israel IT, IntellectSoft, GTM, ELEKS, N-iX, Independent Software Engineer",
+        "confidenceScore": 10
+      },
+      {
+        "skill": "TypeScript",
+        "type": "Required",
+        "status": "Strongly Present",
+        "evidenceFromCV": "Wix, Independent Software Engineer",
+        "confidenceScore": 9
+      },
+      {
+        "skill": "Tailwind CSS",
+        "type": "Required",
+        "status": "Strongly Present",
+        "evidenceFromCV": "Independent Software Engineer",
+        "confidenceScore": 8
+      },
+      {
+        "skill": "Node.js",
+        "type": "Required",
+        "status": "Strongly Present",
+        "evidenceFromCV": "Wix, Independent Software Engineer",
+        "confidenceScore": 8
+      },
+      {
+        "skill": "Component Library / Design System",
+        "type": "Required",
+        "status": "Strongly Present",
+        "evidenceFromCV": "GTM, IntellectSoft",
+        "confidenceScore": 8
+      },
+      {
+        "skill": "Testing (Vitest, Jest, React Testing Library, Playwright, Puppeteer)",
+        "type": "Required",
+        "status": "Strongly Present",
+        "evidenceFromCV": "Wix, Independent Software Engineer",
+        "confidenceScore": 9
+      },
+      {
+        "skill": "Frontend Architecture",
+        "type": "Required",
+        "status": "Strongly Present",
+        "evidenceFromCV": "Wix, Israel IT, IntellectSoft, Independent Software Engineer",
+        "confidenceScore": 9
+      }
+    ]
+  },
+  "suggestedInterviewQuestions": {
+    "title": "Запропоновані питання для співбесіди",
+    "questions": [
+      {
+        "question": "Ви мали кілька короткострокових позицій на початку вашої кар'єри. Чи могли б ви розповісти про причини цих змін і що ви шукаєте в довгостроковій перспективі?",
+        "reason": "Щоб з'ясувати причини частих змін місць роботи та оцінити стабільність кандидата."
+      },
+      {
+        "question": "Опис вакансії наголошує на 'pixel-perfect' реалізації дизайну з Figma. Чи можете ви навести приклади проектів, де ви тісно співпрацювали з дизайнерами та забезпечували бездоганну відповідність макетам?",
+        "reason": "Щоб перевірити досвід кандидата з 'pixel-perfect' UI та Figma, оскільки це не було явно зазначено в резюме."
+      },
+      {
+        "question": "Розкажіть про ваш досвід у створенні або підтримці дизайн-систем та компонентних бібліотек. Яку роль ви відігравали в їх еволюції?",
+        "reason": "Щоб глибше зрозуміти досвід кандидата з дизайн-системами, що є ключовою вимогою вакансії."
+      },
+      {
+        "question": "Ваш особистий проект AI CV Analyzer демонструє інтерес до AI. Чи бачите ви, як ваш досвід може бути застосований у контексті AI search analytics платформи для маркетингових команд?",
+        "reason": "Щоб оцінити, наскільки кандидат розуміє домен компанії та може застосувати свої AI-пов'язані навички."
+      },
+      {
+        "question": "Вакансія передбачає високий рівень автономії. Як ви забезпечуєте узгодженість з цілями команди, працюючи незалежно, і як ви підходите до вирішення складних архітектурних завдань від початку до кінця?",
+        "reason": "Щоб оцінити здатність кандидата працювати автономно, але в команді, та його підхід до архітектурного лідерства."
+      }
+    ]
+  },
+  "experienceRelevanceAnalysis": {
+    "title": "Аналіз релевантності досвіду",
+    "jobs": [
+      {
+        "jobTitle": "Software Engineer — Core Checkout Team",
+        "company": "Wix",
+        "period": "Nov 2021 – Apr 2024",
+        "relevanceToRoleScore": 10,
+        "comment": "Високорелевантний досвід роботи в місійно-критичній FinTech платформі з високим навантаженням, використання React/TypeScript, Node.js BFF, тестування та моніторингу. Це демонструє здатність працювати в складних, масштабних системах."
+      },
+      {
+        "jobTitle": "Independent Software Engineer",
+        "company": "(Freelance Consulting & SaaS Development)",
+        "period": "Apr 2024 – Present",
+        "relevanceToRoleScore": 9,
+        "comment": "Актуальний досвід розробки full-stack SaaS-додатку з фокусом на UX, продуктивність та масштабованість, а також використання Gemini API для AI-функціоналу, що є дуже релевантним для Peec AI."
+      },
+      {
+        "jobTitle": "Senior Frontend Developer",
+        "company": "Israel IT",
+        "period": "May 2021 – Oct 2021",
+        "relevanceToRoleScore": 7,
+        "comment": "Досвід архітектурної розробки React-базованої Admin Panel з нуля та менторства, що підтверджує лідерські та технічні навички на рівні Senior."
+      },
+      {
+        "jobTitle": "Senior Frontend Developer (Contract)",
+        "company": "IntellectSoft",
+        "period": "Nov 2020 – Apr 2021",
+        "relevanceToRoleScore": 7,
+        "comment": "Досвід проектування SPA архітектури, налаштування Webpack та CI, а також встановлення стандартів якості коду, що відповідає вимогам до еволюції архітектури фронтенду."
+      },
+      {
+        "jobTitle": "Frontend Developer",
+        "company": "GTM — Global Tech Makers",
+        "period": "Sep 2019 – Oct 2020",
+        "relevanceToRoleScore": 6,
+        "comment": "Досвід розробки внутрішньої бібліотеки UI компонентів, що безпосередньо відповідає вимозі до досвіду з компонентними бібліотеками та дизайн-системами."
+      }
+    ]
+  }
+}
