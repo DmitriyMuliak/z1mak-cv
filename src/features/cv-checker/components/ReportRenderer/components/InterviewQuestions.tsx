@@ -1,25 +1,21 @@
 'use client';
 
 import React from 'react';
-import { AnalysisSchemaType } from '../../../schema/analysisSchema';
+import { useAnalysisStore } from '@/features/cv-checker/store/analysisStore';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useTranslations } from 'next-intl';
 
-type Props = {
-  data: AnalysisSchemaType;
-};
-
-export const InterviewQuestions: React.FC<Props> = ({ data }) => {
+export const InterviewQuestions: React.FC = () => {
   const t = useTranslations('pages.cvReport');
-  const questionsData = data.suggestedInterviewQuestions; // Optional
+  const questionsData = useAnalysisStore((s) => s.data.suggestedInterviewQuestions);
   const questions = Array.isArray(questionsData?.questions) ? questionsData.questions : [];
 
   if (!questionsData || questions.length === 0) return null;
+
   return (
     <Card className="frosted-card">
       <CardHeader>
         <CardTitle>{t('questions.title')}</CardTitle>
-        {/* <CardTitle>{data.suggestedInterviewQuestions.title}</CardTitle> */}
       </CardHeader>
       <CardContent>
         <ol className="list-decimal ml-5 space-y-2">

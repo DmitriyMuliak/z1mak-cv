@@ -22,7 +22,7 @@ import type { AppError } from '@/types/server-actions';
 import type { AnalysisSchemaType } from '../schema/analysisSchema';
 import { DEFAULT_RESUME_ERROR_KEY, RESUME_ERROR_KEY_MAP } from '../consts/resumeErrors';
 import { useAnalysisStore } from '../store/analysisStore';
-import { useAuthStore } from '@/store/stores/useAuthStore';
+// import { useAuthStore } from '@/store/stores/useAuthStore';
 import { useJsonPatchStream } from '@/hooks/useJsonPatchStream';
 
 // ---------------------------------------------------------------------------
@@ -96,9 +96,10 @@ export const useResumeStreamingV2 = (
     enabled: enabled && !alreadyComplete,
     storageKey: jobId ? getStorageKey(jobId) : null,
 
-    buildHeaders: () => ({
-      Authorization: `Bearer ${useAuthStore.getState().accessToken ?? ''}`,
-    }),
+    // token will set by Next route (from cookie)
+    // buildHeaders: () => ({
+    //   Authorization: `Bearer ${useAuthStore.getState().accessToken ?? ''}`,
+    // }),
 
     buildBody: (lastId) => (lastId ? { lastEventId: lastId } : {}),
 

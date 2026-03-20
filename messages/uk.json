@@ -94,6 +94,7 @@
     "cvReport": {
       "title": "Результат аналізу",
       "generatedOnTitle": "Згенеровано",
+      "generating": "Генерується...",
       "loadingTitle": {
         "loading": "Завантаження звіту",
         "queued": "Звіт у черзі",
@@ -126,7 +127,9 @@
         "keyCoverage": "Ключові навички",
         "stackRecency": "Актуальність стеку",
         "softMatch": "Soft skills",
-        "analysisTitle": "Аналіз навичок"
+        "analysisTitle": "Аналіз навичок",
+        "showAll": "Показати всі {count}",
+        "showLess": "Показати менше"
       },
       "export": {
         "title": "Експорт",
@@ -134,7 +137,9 @@
         "downloadDoc": "Завантажити DOC"
       },
       "experience": {
-        "title": "Релевантність досвіду"
+        "title": "Релевантність досвіду",
+        "showAll": "Показати всі {count}",
+        "showLess": "Показати менше"
       },
       "redFlags": {
         "title": "Червоні прапорці та ризики"

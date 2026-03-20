@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { AnalysisSchemaType } from '../../../../schema/analysisSchema';
+import { ScoreRing } from './ScoreRing';
 
 export const Scores: React.FC<{ data?: AnalysisSchemaType['overallAnalysis'] }> = ({ data }) => {
   const t = useTranslations('pages.cvReport.overall');
@@ -20,18 +21,13 @@ export const Scores: React.FC<{ data?: AnalysisSchemaType['overallAnalysis'] }> 
       tKey: 'independentTechCvScore',
       value: data.independentTechCvScore,
     } as const,
-  ].filter((v) => v.value !== undefined);
+  ].filter((v): v is typeof v & { value: number } => v.value !== undefined);
 
   return (
-    <div className="grid sm:grid-cols-2 sm:gap-2 md:gap-4">
-      {scoreList.map((item) => {
-        return (
-          <div key={item.key} className="grid items-end">
-            <div className="text-sm font-medium">{t(item.tKey)}</div>
-            <div className="text-3xl font-bold mb-2">{item.value}</div>
-          </div>
-        );
-      })}
+    <div className="flex flex-wrap mb-5 lg:mb-0 lg:justify-center gap-4">
+      {scoreList.map((item) => (
+        <ScoreRing key={item.key} value={item.value} label={t(item.tKey)} />
+      ))}
     </div>
   );
 };

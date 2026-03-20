@@ -1,39 +1,102 @@
-import React from 'react';
-import { useTranslations } from 'next-intl';
-import { AnalysisSchemaType } from '../../../schema/analysisSchema';
-import { ReportSection } from './ui/ReportSection';
+'use client';
 
-export const Skills: React.FC<{ data: AnalysisSchemaType }> = ({ data }) => {
+import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { motion, AnimatePresence } from 'framer-motion';
+import { AnalysisSchemaType } from '../../../schema/analysisSchema';
+import { useAnalysisStore } from '@/features/cv-checker/store/analysisStore';
+import { ReportSection } from './ui/ReportSection';
+import { ExpandToggle } from './ui/ExpandToggle';
+// import { SkillRadar } from './SkillRadar';
+
+const PREVIEW_COUNT = 3;
+
+const STATUS_BORDER: Record<string, string> = {
+  'Strongly Present': 'var(--chart-2)',
+  Present: 'var(--chart-2)',
+  Mentioned: 'var(--chart-4)',
+  'Partially Present': 'var(--chart-4)',
+  Missing: 'var(--destructive)',
+  'Not Mentioned': 'var(--destructive)',
+};
+
+function getStatusColor(status: string): string {
+  return STATUS_BORDER[status] ?? 'var(--border)';
+}
+
+type Skill = NonNullable<AnalysisSchemaType['detailedSkillAnalysis']>['skills'][number];
+
+function SkillCard({ s }: { s: Skill }) {
+  return (
+    <div
+      className="p-3 border rounded hover:bg-muted/50 transition-colors"
+      style={{ borderLeft: `3px solid ${getStatusColor(s.status)}` }}
+    >
+      <div className="flex justify-between items-center">
+        <div>
+          <div className="font-medium flex items-center gap-2">{s.skill}</div>
+          <div className="text-xs text-muted-foreground mt-0.5">
+            {s.type} • {s.status}
+          </div>
+        </div>
+        <div className="text-sm font-semibold">{s.confidenceScore}/10</div>
+      </div>
+      {s.evidenceFromCV !== 'N/A' && (
+        <div className="mt-2 text-sm text-muted-foreground italic border-l-2 pl-2">
+          {`"${s.evidenceFromCV}"`}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export const Skills: React.FC = () => {
   const t = useTranslations('pages.cvReport');
-  const skills = data.detailedSkillAnalysis?.skills;
+  const skills = useAnalysisStore((s) => s.data.detailedSkillAnalysis?.skills);
   const safeSkills = Array.isArray(skills) ? skills : [];
+
+  const [isExpanded, setIsExpanded] = useState(false);
 
   if (safeSkills.length === 0) return null;
 
+  const previewSkills = safeSkills.slice(0, PREVIEW_COUNT);
+  const hiddenSkills = safeSkills.slice(PREVIEW_COUNT);
+  const hasMore = hiddenSkills.length > 0;
+
+  const toggleButton = hasMore ? (
+    <ExpandToggle
+      isExpanded={isExpanded}
+      onToggle={() => setIsExpanded((v) => !v)}
+      showAllLabel={t('skills.showAll', { count: safeSkills.length })}
+      showLessLabel={t('skills.showLess')}
+    />
+  ) : null;
+
   return (
-    <ReportSection title={t('skills.analysisTitle')}>
+    <ReportSection title={t('skills.analysisTitle')} action={toggleButton}>
+      {/* <SkillRadar skills={safeSkills} /> */}
+
       <div className="space-y-3">
-        {safeSkills.map((s, idx) => (
-          <div key={idx} className="p-3 border rounded hover:bg-muted/50 transition-colors">
-            <div className="flex justify-between items-center">
-              <div>
-                <div className="font-medium flex items-center gap-2">
-                  {s.skill}
-                  {/* Badge for status? */}
-                </div>
-                <div className="text-xs text-muted-foreground mt-0.5">
-                  {s.type} • {s.status}
-                </div>
-              </div>
-              <div className="text-sm font-semibold">{s.confidenceScore}/10</div>
-            </div>
-            {s.evidenceFromCV !== 'N/A' && (
-              <div className="mt-2 text-sm text-muted-foreground italic border-l-2 pl-2">
-                {`"${s.evidenceFromCV}"`}
-              </div>
-            )}
-          </div>
+        {previewSkills.map((s) => (
+          <SkillCard key={s.skill} s={s} />
         ))}
+
+        <AnimatePresence initial={false}>
+          {isExpanded && (
+            <motion.div
+              key="expanded-skills"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="space-y-3 overflow-hidden"
+            >
+              {hiddenSkills.map((s) => (
+                <SkillCard key={s.skill} s={s} />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </ReportSection>
   );

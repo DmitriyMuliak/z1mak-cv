@@ -1,8 +1,10 @@
 'use client';
 
 import { create } from 'zustand';
-import { subscribeWithSelector } from 'zustand/middleware';
+import { devtools, subscribeWithSelector } from 'zustand/middleware';
+import { produce } from 'immer';
 import { applyPatch } from 'fast-json-patch';
+import { envType } from '@/utils/envType';
 import type { Operation } from 'fast-json-patch';
 import type { AppError } from '@/types/server-actions';
 import type { AnalysisSchemaType } from '../schema/analysisSchema';
@@ -81,23 +83,29 @@ const INITIAL_STATE: AnalysisStoreState = {
  * const score = useAnalysisStore(s => s.data.overallAnalysis?.matchScore);
  */
 export const useAnalysisStore = create<AnalysisStoreState & AnalysisStoreActions>()(
-  subscribeWithSelector((set, get) => ({
-    ...INITIAL_STATE,
+  devtools(
+    subscribeWithSelector((set, get) => ({
+      ...INITIAL_STATE,
 
-    applyPatches: (ops) => {
-      const next = applyPatch(get().data, ops, false, false).newDocument;
-      set({ data: next as AnalysisData });
-    },
+      applyPatches: (ops) => {
+        set({
+          data: produce(get().data, (draft) => {
+            applyPatch(draft, ops, false, true);
+          }) as AnalysisData,
+        });
+      },
 
-    setSnapshot: (jobId, content, status) =>
-      set({ jobId, data: (content ?? {}) as AnalysisData, status }),
+      setSnapshot: (jobId, content, status) =>
+        set({ jobId, data: (content ?? {}) as AnalysisData, status }),
 
-    setStatus: (status) => set({ status }),
+      setStatus: (status) => set({ status }),
 
-    setDone: (status, usedModel) => set({ status, usedModel: usedModel ?? null }),
+      setDone: (status, usedModel) => set({ status, usedModel: usedModel ?? null }),
 
-    setError: (error) => set({ error, status: 'failed' }),
+      setError: (error) => set({ error, status: 'failed' }),
 
-    reset: (jobId) => set({ ...INITIAL_STATE, jobId: jobId ?? null }),
-  })),
+      reset: (jobId) => set({ ...INITIAL_STATE, jobId: jobId ?? null }),
+    })),
+    { name: 'AnalysisStore', enabled: envType.isDev },
+  ),
 );

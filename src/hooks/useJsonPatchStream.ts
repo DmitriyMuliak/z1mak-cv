@@ -306,6 +306,34 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
           signal: controller.signal,
           openWhenHidden: true,
 
+          async onopen(response) {
+            if (
+              response.ok &&
+              response.headers.get('content-type')?.includes('text/event-stream')
+            ) {
+              return; // healthy SSE connection
+            }
+
+            const status = response.status;
+            // 4xx errors are permanent — retrying without user action won't help.
+            // 5xx errors are transient and should be retried.
+            const fatal = status >= 400 && status < 500;
+            const code = `HTTP_${status}`;
+
+            dispatch({ type: 'ERROR', code, message: `HTTP error ${status}` });
+            onErrorRef.current?.({ code, message: `HTTP error ${status}`, retryable: !fatal });
+
+            if (fatal) {
+              streamTerminated = true;
+              disposedRef.current = true;
+              // Clear stale cursor — a 400 often means the stored lastEventId
+              // failed server-side validation; fresh connect should start clean.
+              if (storageKey) sessionStorage.removeItem(storageKey);
+            }
+
+            throw new Error(code);
+          },
+
           onmessage(ev) {
             if (disposedRef.current) return;
 
@@ -348,10 +376,11 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
 
             // ── done ──────────────────────────────────────────────────────
             if (ev.event === 'done') {
+              // TODO: BE should send status && usedModel on 'done' event
               const payload = JSON.parse(ev.data) as DonePayload;
               streamTerminated = true;
               dispatch({ type: 'DONE', status: payload.status });
-              onDoneRef.current?.(payload.status, payload.usedModel);
+              onDoneRef.current?.(payload.status || 'completed', payload.usedModel);
               if (storageKey) sessionStorage.removeItem(storageKey);
               lastEventIdRef.current = null;
               return;

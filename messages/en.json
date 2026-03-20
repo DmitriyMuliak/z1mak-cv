@@ -94,6 +94,7 @@
     "cvReport": {
       "title": "Analysis Result",
       "generatedOnTitle": "Generated on",
+      "generating": "Generating...",
       "loadingTitle": {
         "loading": "Loading report",
         "queued": "Report is queued",
@@ -126,7 +127,9 @@
         "keyCoverage": "Key skills coverage",
         "stackRecency": "Stack recency",
         "softMatch": "Soft skills match",
-        "analysisTitle": "Skills Analysis"
+        "analysisTitle": "Skills Analysis",
+        "showAll": "Show all {count}",
+        "showLess": "Show less"
       },
       "export": {
         "title": "Export",
@@ -134,7 +137,9 @@
         "downloadDoc": "Download DOC"
       },
       "experience": {
-        "title": "Experience Relevance"
+        "title": "Experience Relevance",
+        "showAll": "Show all {count}",
+        "showLess": "Show less"
       },
       "redFlags": {
         "title": "Red Flags and Concerns"

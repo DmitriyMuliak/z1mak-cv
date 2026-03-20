@@ -5,9 +5,8 @@ import { RedFlags } from './components/RedFlags';
 import { Improvements } from './components/Improvements';
 import { InterviewQuestions } from './components/InterviewQuestions';
 import { UiSectionKey } from '../../services/SchemaService';
-import { AnalysisSchemaType } from '../../schema/analysisSchema';
 
-export const SECTION_COMPONENTS: Record<UiSectionKey, React.FC<{ data: AnalysisSchemaType }>> = {
+export const SECTION_COMPONENTS: Record<UiSectionKey, React.FC> = {
   header: Header,
   skills: Skills,
   experience: Experience,
