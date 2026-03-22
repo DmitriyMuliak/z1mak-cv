@@ -88,11 +88,16 @@ export const useAnalysisStore = create<AnalysisStoreState & AnalysisStoreActions
       ...INITIAL_STATE,
 
       applyPatches: (ops) => {
-        set({
-          data: produce(get().data, (draft) => {
-            applyPatch(draft, ops, false, true);
-          }) as AnalysisData,
-        });
+        try {
+          set({
+            data: produce(get().data, (draft) => {
+              applyPatch(draft, ops, false, true);
+            }) as AnalysisData,
+          });
+        } catch (e) {
+          console.error('[analysisStore] Invalid patches rejected:', e);
+          set({ error: { code: 'INVALID_PATCH', message: String(e) } });
+        }
       },
 
       setSnapshot: (jobId, content, status) =>

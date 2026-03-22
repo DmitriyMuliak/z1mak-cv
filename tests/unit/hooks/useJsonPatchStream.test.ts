@@ -196,6 +196,34 @@ describe('useJsonPatchStream', () => {
     expect(data.sectionB).toBe(2);
   });
 
+  // ── invalid patch → onError ──────────────────────────────────────────────
+
+  it('calls onError with INVALID_PATCH when patch application fails', async () => {
+    const onError = vi.fn();
+
+    mockFes.mockImplementationOnce(async (_url, opts: FesOptions) => {
+      opts.onmessage!(sseMsg('snapshot', { content: { x: 1 }, status: 'in_progress' }));
+      // 'replace' on a non-existent path will throw
+      opts.onmessage!(
+        sseMsg(
+          'patch',
+          { ops: [{ op: 'replace', path: '/nonexistent/deep/path', value: 99 }] },
+          '1',
+        ),
+      );
+    });
+
+    const { result } = renderHook(() => useJsonPatchStream({ url: '/api/stream/job-1', onError }));
+    await settle();
+
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 'INVALID_PATCH', retryable: false }),
+    );
+    expect(result.current.status).toBe('failed');
+    expect(result.current.error?.code).toBe('INVALID_PATCH');
+  });
+
   // ── error: retryable ──────────────────────────────────────────────────────
 
   it('handles retryable error — calls onError and reconnects after delay', async () => {
@@ -335,6 +363,88 @@ describe('useJsonPatchStream', () => {
       expect.any(String),
       expect.objectContaining({ body: JSON.stringify({}) }),
     );
+  });
+
+  // ── stall detection → reconnect ──────────────────────────────────────────
+
+  it('reconnects after stall detection timeout', async () => {
+    let capturedSignal: AbortSignal | undefined;
+
+    mockFes
+      .mockImplementationOnce(async (_url, opts: FesOptions) => {
+        capturedSignal = opts.signal!;
+        // Simulate: onopen succeeds, then server goes silent (no events)
+        await opts.onopen!(
+          new Response('', {
+            headers: { 'content-type': 'text/event-stream' },
+          }),
+        );
+        // Block until the signal is aborted (simulating a stalled connection)
+        await new Promise<void>((resolve) => {
+          capturedSignal!.addEventListener('abort', () => resolve());
+        });
+        // fetchEventSource throws AbortError when signal is aborted
+        throw new DOMException('The operation was aborted.', 'AbortError');
+      })
+      .mockResolvedValue(undefined);
+
+    renderHook(() =>
+      useJsonPatchStream({
+        url: '/api/stream/job-1',
+        stallTimeoutMs: 10_000,
+      }),
+    );
+    await settle();
+
+    expect(mockFes).toHaveBeenCalledTimes(1);
+
+    // Advance past stall timeout → triggers controller.abort('stall')
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(10_000);
+    });
+    await settle();
+
+    expect(capturedSignal?.aborted).toBe(true);
+    expect(capturedSignal?.reason).toBe('stall');
+
+    // Advance past reconnect backoff delay → should reconnect
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(5_000);
+    });
+    await settle();
+
+    expect(mockFes).toHaveBeenCalledTimes(2);
+  });
+
+  it('does NOT reconnect on manual abort (unmount) — only on stall', async () => {
+    let capturedSignal: AbortSignal | undefined;
+
+    mockFes.mockImplementation((_url, opts: FesOptions) => {
+      capturedSignal = opts.signal!;
+      return new Promise<void>((_, reject) => {
+        capturedSignal!.addEventListener('abort', () => {
+          reject(new DOMException('The operation was aborted.', 'AbortError'));
+        });
+      });
+    });
+
+    const { unmount } = renderHook(() => useJsonPatchStream({ url: '/api/stream/job-1' }));
+    await settle();
+
+    expect(mockFes).toHaveBeenCalledTimes(1);
+
+    unmount();
+
+    expect(capturedSignal?.aborted).toBe(true);
+    // reason is undefined for manual abort (not 'stall')
+    expect(capturedSignal?.reason).not.toBe('stall');
+
+    // Even after waiting, no reconnect should happen
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(120_000);
+    });
+
+    expect(mockFes).toHaveBeenCalledTimes(1);
   });
 
   // ── abort on unmount ──────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useLayoutEffect } from 'react';
+import { useRef, useLayoutEffect, useEffect } from 'react';
 
 /**
  * Returns a ref that always holds the latest value of the given argument.
@@ -9,9 +9,10 @@ import { useRef, useLayoutEffect } from 'react';
  *   const ref = useRef(value);
  *   useEffect(() => { ref.current = value }, [value]);
  *
- * Uses `useLayoutEffect` (fires synchronously after DOM mutations, before
- * paint) so the ref is guaranteed to be current before any downstream
- * `useEffect` callbacks that read it fire in the same commit.
+ * Uses `useLayoutEffect` on the client (fires synchronously after DOM mutations,
+ * before paint) so the ref is guaranteed to be current before any downstream
+ * `useEffect` callbacks that read it fire in the same commit. Falls back to
+ * `useEffect` on the server to avoid SSR warnings.
  *
  * @example
  * const onChangeRef = useLatest(onChange);
@@ -20,7 +21,9 @@ import { useRef, useLayoutEffect } from 'react';
 export function useLatest<T>(value: T): React.MutableRefObject<T> {
   const ref = useRef(value);
 
-  useLayoutEffect(() => {
+  const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
+  useIsomorphicLayoutEffect(() => {
     ref.current = value;
   });
 
