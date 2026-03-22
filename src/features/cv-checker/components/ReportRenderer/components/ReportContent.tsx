@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { motion, Variants } from 'framer-motion';
-import { useShallow } from 'zustand/react/shallow';
 import {
   SchemaService,
   UI_SECTION_ORDER,
@@ -11,6 +10,15 @@ import {
 import { useAnalysisStore } from '@/features/cv-checker/store/analysisStore';
 import { SECTION_COMPONENTS } from '../config';
 import { StreamingTail } from './StreamingTail';
+
+const containerVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] },
+  },
+} satisfies Variants;
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.98, filter: 'blur(4px)' },
@@ -51,9 +59,8 @@ const SectionItem: React.FC<{ sectionKey: UiSectionKey; showImmediately: boolean
 };
 
 export const ReportContent: React.FC = () => {
-  const activeSections = useAnalysisStore(
-    useShallow((s) => new SchemaService(s.data).getUiSections()),
-  );
+  const data = useAnalysisStore((s) => s.data);
+  const activeSections = useMemo(() => new SchemaService(data).getUiSections(), [data]);
 
   const [showImmediately] = useState(() => useAnalysisStore.getState().status === 'completed');
 
@@ -71,11 +78,16 @@ export const ReportContent: React.FC = () => {
   }, [activeSections]);
 
   return (
-    <div className="space-y-6 w-full">
+    <motion.div
+      className="space-y-6 w-full"
+      variants={containerVariants}
+      initial={showImmediately ? 'hidden' : false}
+      animate="visible"
+    >
       {displayedSections.map((sectionKey) => (
         <SectionItem key={sectionKey} sectionKey={sectionKey} showImmediately={showImmediately} />
       ))}
       <StreamingTail />
-    </div>
+    </motion.div>
   );
 };
