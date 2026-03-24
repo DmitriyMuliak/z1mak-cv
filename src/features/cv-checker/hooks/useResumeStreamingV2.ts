@@ -6,8 +6,6 @@
  * Domain wrapper around the generic `useJsonPatchStream` hook.
  * Owns the resume-specific concerns:
  *   - URL construction from jobId
- *   - Auth token injection (useAuthStore)
- *   - i18n error toasts (sonner)
  *   - Global state via useAnalysisStore (Zustand, subscribeWithSelector)
  *
  * All connection/reconnect/sessionStorage logic lives in useJsonPatchStream.
@@ -22,21 +20,12 @@ import type { AppError } from '@/types/server-actions';
 import type { AnalysisSchemaType } from '../schema/analysisSchema';
 import { DEFAULT_RESUME_ERROR_KEY, RESUME_ERROR_KEY_MAP } from '../consts/resumeErrors';
 import { useAnalysisStore } from '../store/analysisStore';
-// import { useAuthStore } from '@/store/stores/useAuthStore';
 import { useJsonPatchStream } from '@/hooks/useJsonPatchStream';
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
 
 type StreamInitialData = {
   status?: StatusResponse;
   report?: AnalysisSchemaType;
 };
-
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
 
 const STREAM_ERROR_TOAST_ID = 'resume-stream-v2-error';
 
@@ -44,15 +33,6 @@ const getStorageKey = (jobId: string) => `resume-stream-last-id-${jobId}`;
 
 const isResumeErrorCode = (v: string): v is ResumeErrorCode => v in RESUME_ERROR_KEY_MAP;
 
-// ---------------------------------------------------------------------------
-// Hook
-// ---------------------------------------------------------------------------
-
-/**
- * Returns the same `{ report, status, error, isProcessing, retry }` interface
- * as `useResumePolling` so the two are interchangeable behind the
- * `useStreaming` flag in `ReportRenderer`.
- */
 export const useResumeStreamingV2 = (
   jobId: string | null,
   initialData?: StreamInitialData,
@@ -85,7 +65,6 @@ export const useResumeStreamingV2 = (
     }
   }, [jobId, initialData]);
 
-  // ── Connect via generic hook ──────────────────────────────────────────
   const alreadyComplete =
     initialData?.status?.status === 'completed' && Boolean(initialData.report);
 

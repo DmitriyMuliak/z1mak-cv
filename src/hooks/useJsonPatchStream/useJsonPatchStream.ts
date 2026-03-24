@@ -1,5 +1,20 @@
 'use client';
 
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
+import { applyPatch } from 'fast-json-patch';
+import { isAbortError } from '@/api/apiService/utils';
+import { useLatest } from '../useLatest';
+import { calculateBackoffDelay } from './backoff';
+import { createReducer } from './reducer';
+import type {
+  UseJsonPatchStreamOptions,
+  SnapshotPayload,
+  PatchPayload,
+  DonePayload,
+  ErrorPayload,
+} from './types';
+
 /**
  * useJsonPatchStream
  *
@@ -28,186 +43,6 @@
  * received. Uses a synchronous `streamTerminatedRef` to avoid the stale-React-
  * state problem that would occur if the decision were based on derived status.
  */
-
-import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
-import { fetchEventSource } from '@microsoft/fetch-event-source';
-import { applyPatch } from 'fast-json-patch';
-import type { Operation } from 'fast-json-patch';
-import { isAbortError } from '@/api/apiService/utils';
-import { useLatest } from './useLatest';
-
-// ── Types ─────────────────────────────────────────────────────────────────
-
-export type JsonPatchStreamStatus = 'loading' | 'queued' | 'in_progress' | 'completed' | 'failed';
-
-type SnapshotPayload = {
-  content: Record<string, unknown> | null;
-  status: JsonPatchStreamStatus;
-  code?: string;
-  message?: string;
-};
-
-type PatchPayload = { ops: Operation[] };
-
-type DonePayload = {
-  status: JsonPatchStreamStatus;
-  usedModel?: string;
-};
-
-type ErrorPayload = {
-  code: string;
-  message: string;
-  retryable?: boolean;
-};
-
-export type StreamTelemetryEvent = {
-  type:
-    | 'connect'
-    | 'reconnect'
-    | 'snapshot_received'
-    | 'patch_received'
-    | 'done'
-    | 'error'
-    | 'stall_detected'
-    | 'aborted';
-  patchCount?: number;
-  durationMs?: number;
-  attemptNumber?: number;
-  metadata?: Record<string, unknown>;
-};
-
-type StreamState<TData> = {
-  data: Partial<TData>;
-  status: JsonPatchStreamStatus;
-  error: { code: string; message?: string } | null;
-};
-
-type StreamAction<TData> =
-  | { type: 'SNAPSHOT'; data: Partial<TData>; status: JsonPatchStreamStatus }
-  | { type: 'PATCH'; data: Partial<TData> }
-  | { type: 'DONE'; status: JsonPatchStreamStatus }
-  | { type: 'SET_STATUS'; status: JsonPatchStreamStatus }
-  | { type: 'ERROR'; code: string; message?: string }
-  | { type: 'RESET' };
-
-function createReducer<TData>() {
-  return function reducer(
-    state: StreamState<TData>,
-    action: StreamAction<TData>,
-  ): StreamState<TData> {
-    switch (action.type) {
-      case 'RESET':
-        return { data: {} as Partial<TData>, status: 'loading', error: null };
-      case 'SNAPSHOT':
-        return { data: (action.data ?? {}) as Partial<TData>, status: action.status, error: null };
-      case 'PATCH':
-        return { ...state, data: action.data };
-      case 'DONE':
-        return { ...state, status: action.status };
-      case 'SET_STATUS':
-        return { ...state, status: action.status };
-      case 'ERROR':
-        return {
-          ...state,
-          status: 'failed',
-          error: { code: action.code, message: action.message },
-        };
-      default:
-        return state;
-    }
-  };
-}
-
-// ── Options ───────────────────────────────────────────────────────────────
-
-export type JsonPatchStreamInitialData<TData> = {
-  status?: JsonPatchStreamStatus;
-  data?: TData;
-};
-
-export type UseJsonPatchStreamOptions<TData> = {
-  /**
-   * Full URL to the SSE endpoint (e.g., `/api/jobs/123/result-stream`).
-   * Set to null to suspend connecting.
-   */
-  url: string | null;
-  /** Defer connecting until true (default: true). */
-  enabled?: boolean;
-  /** sessionStorage key for the lastEventId cursor — enables mid-stream reconnect. */
-  storageKey?: string | null;
-  /** Delay between automatic reconnects in ms (default: 5 000). */
-  reconnectDelayMs?: number;
-  /** Timeout for stall detection — if no event arrives in this time, reconnect (default: 30 000 ms). */
-  stallTimeoutMs?: number;
-  /**
-   * Called at every (re)connect to build request headers.
-   * Runs fresh each time so auth tokens are never stale.
-   *
-   * @example
-   * buildHeaders: () => ({ Authorization: `Bearer ${useAuthStore.getState().accessToken}` })
-   */
-  buildHeaders?: () => HeadersInit;
-  /**
-   * Called at every (re)connect to build the request body.
-   * Receives the current lastEventId (null on first connect or after retry()).
-   * Defaults to `{}` or `{ lastEventId }` when storageKey is provided.
-   */
-  buildBody?: (lastEventId: string | null) => object;
-  /**
-   * Pre-populate state before the first connection.
-   * If status === 'completed' AND data is present the hook skips connecting entirely.
-   */
-  initialData?: JsonPatchStreamInitialData<TData>;
-  /**
-   * Return true for error codes that should permanently stop reconnecting.
-   * Codes like 'NOT_FOUND' or 'UNAUTHORIZED' are good candidates.
-   * When omitted, only `retryable: false` from the server stops reconnecting.
-   */
-  isFatalError?: (code: string) => boolean;
-  /**
-   * Called when an `error` SSE event is received.
-   * Use this to show a toast or log the error — the hook handles reconnect logic.
-   */
-  onError?: (payload: { code: string; message: string; retryable?: boolean }) => void;
-
-  // ── Store adapter callbacks ─────────────────────────────────────────────
-  // When provided, these are called alongside the internal dispatch so an
-  // external Zustand store (or any other state manager) can stay in sync.
-  // React 18 batches both updates into one render since they fire synchronously
-  // inside the same `onmessage` call.
-
-  /**
-   * Called when a `snapshot` SSE event arrives.
-   * Receives the full content (null when job is queued) and the current status.
-   */
-  onSnapshot?: (data: Partial<TData> | null, status: JsonPatchStreamStatus) => void;
-
-  /**
-   * Called when a `patch` SSE event arrives, with the raw RFC 6902 ops array.
-   * Apply these to your external store (e.g., `store().applyPatches(ops)`).
-   */
-  onPatch?: (ops: Operation[]) => void;
-
-  /**
-   * Called when the `done` SSE event arrives — stream is complete.
-   */
-  onDone?: (status: JsonPatchStreamStatus, usedModel?: string) => void;
-
-  /**
-   * Called when a status-only transition occurs (e.g., first patch triggers
-   * `in_progress` while data already exists in the external store).
-   */
-  onStatusChange?: (status: JsonPatchStreamStatus) => void;
-
-  /**
-   * Optional callback for structured telemetry on key stream lifecycle events.
-   * Fires on: connect, reconnect, snapshot_received, patch_received, done, error, stall_detected, aborted.
-   */
-  onTelemetry?: (event: StreamTelemetryEvent) => void;
-};
-
-// ── Hook ──────────────────────────────────────────────────────────────────
-
 export const useJsonPatchStream = <TData extends Record<string, unknown>>({
   url,
   enabled = true,
@@ -235,7 +70,7 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
 
   const [retryVersion, setRetryVersion] = useState(0);
 
-  // ── Refs ────────────────────────────────────────────────────────────────
+  // ── Refs ─────────────────────────────────────────────────────────────────
   const abortRef = useRef<AbortController | null>(null);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastEventIdRef = useRef<string | null>(null);
@@ -245,8 +80,10 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
   const connectionStartTimeRef = useRef<number | null>(null);
   const patchCountRef = useRef(0);
   const lastRetryTimeRef = useRef<number>(0);
-  const dataRef = useRef(state.data);
-  dataRef.current = state.data;
+
+  // Authoritative data accumulator — updated synchronously in onmessage so
+  // each applyPatch has the correct base. Never mutated in the render body.
+  const dataRef = useRef((initialData?.data ?? {}) as Partial<TData>);
 
   // Stable callback refs — always hold the latest value, never stale in closures
   const buildHeadersRef = useLatest(buildHeaders);
@@ -260,67 +97,54 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
   const onStatusChangeRef = useLatest(onStatusChange);
   const onTelemetryRef = useLatest(onTelemetry);
 
-  // ── Helpers ─────────────────────────────────────────────────────────────
-  const clearReconnectTimer = useCallback(() => {
-    if (reconnectTimerRef.current) {
-      clearTimeout(reconnectTimerRef.current);
-      reconnectTimerRef.current = null;
-    }
-  }, []);
-
-  const clearStallTimer = useCallback(() => {
-    if (stallTimerRef.current) {
-      clearTimeout(stallTimerRef.current);
-      stallTimerRef.current = null;
-    }
-  }, []);
-
-  const calculateBackoffDelay = useCallback(
-    (attempt: number): number => {
-      const baseDelay = reconnectDelayMs;
-      const maxDelay = 120_000; // 2 minutes max
-      // Start from baseDelay and exponentially increase
-      const exponentialDelay = baseDelay * Math.pow(2, attempt);
-      // Jitter: random value from 0 to jitterMax (20% of base), but skip for first attempt
-      const jitter = attempt > 0 ? Math.random() * (baseDelay * 0.2) : 0;
-      return Math.min(exponentialDelay + jitter, maxDelay);
-    },
-    [reconnectDelayMs],
-  );
-
-  const resetStallTimer = useCallback(
-    (controller: AbortController) => {
-      clearStallTimer();
-      stallTimerRef.current = setTimeout(() => {
-        if (!disposedRef.current && !controller.signal.aborted) {
-          console.warn('[useJsonPatchStream] Stall detected, aborting connection');
-          const durationMs = connectionStartTimeRef.current
-            ? Date.now() - connectionStartTimeRef.current
-            : undefined;
-          onTelemetryRef.current?.({
-            type: 'stall_detected',
-            durationMs,
-            patchCount: patchCountRef.current,
-          });
-          controller.abort('stall');
-        }
-      }, stallTimeoutMs);
-    },
-    [stallTimeoutMs, clearStallTimer],
-  );
-
-  // ── Main connection effect ───────────────────────────────────────────────
+  // ── Main connection effect ────────────────────────────────────────────────
   useEffect(() => {
     if (!url || !enabled) return;
 
     disposedRef.current = false;
 
+    // ── Inline helpers ────────────────────────────────────────────────────
+    // Defined inside the effect so they close over the right refs without
+    // needing useCallback, keeping the dependency array minimal.
+
+    function clearReconnectTimer() {
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
+        reconnectTimerRef.current = null;
+      }
+    }
+
+    function clearStallTimer() {
+      if (stallTimerRef.current) {
+        clearTimeout(stallTimerRef.current);
+        stallTimerRef.current = null;
+      }
+    }
+
+    function resetStallTimer(controller: AbortController) {
+      clearStallTimer();
+      stallTimerRef.current = setTimeout(() => {
+        if (!disposedRef.current && !controller.signal.aborted) {
+          console.warn('[useJsonPatchStream] Stall detected, aborting connection');
+          onTelemetryRef.current?.({
+            type: 'stall_detected',
+            durationMs: connectionStartTimeRef.current
+              ? Date.now() - connectionStartTimeRef.current
+              : undefined,
+            patchCount: patchCountRef.current,
+          });
+          controller.abort('stall');
+        }
+      }, stallTimeoutMs);
+    }
+
     // Restore cursor for mid-stream reconnect
     lastEventIdRef.current = storageKey ? (sessionStorage.getItem(storageKey) ?? null) : null;
 
-    // Initialise state from initialData
+    // Initialize state from initialData
     const startData = initialDataRef.current;
     if (startData?.status && startData.data) {
+      dataRef.current = startData.data as Partial<TData>;
       dispatch({
         type: 'SNAPSHOT',
         data: startData.data as Partial<TData>,
@@ -329,6 +153,7 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
     } else if (startData?.status) {
       dispatch({ type: 'SET_STATUS', status: startData.status });
     } else {
+      dataRef.current = {} as Partial<TData>;
       dispatch({ type: 'RESET' });
     }
 
@@ -341,7 +166,7 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
       };
     }
 
-    // ── connect ─────────────────────────────────────────────────────────
+    // ── connect ───────────────────────────────────────────────────────────
     const connect = async (): Promise<void> => {
       if (disposedRef.current) return;
 
@@ -354,9 +179,8 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
       connectionStartTimeRef.current = Date.now();
       patchCountRef.current = 0;
 
-      const telemetryType = reconnectAttemptRef.current === 0 ? 'connect' : 'reconnect';
       onTelemetryRef.current?.({
-        type: telemetryType,
+        type: reconnectAttemptRef.current === 0 ? 'connect' : 'reconnect',
         attemptNumber: reconnectAttemptRef.current,
       });
 
@@ -434,12 +258,13 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
               lastEventIdRef.current = ev.id;
             }
 
-            // ── snapshot ──────────────────────────────────────────────────
+            // ── snapshot ────────────────────────────────────────────────
             if (ev.event === 'snapshot') {
               const payload = JSON.parse(ev.data) as SnapshotPayload;
+              dataRef.current = (payload.content ?? {}) as Partial<TData>;
               dispatch({
                 type: 'SNAPSHOT',
-                data: (payload.content ?? {}) as Partial<TData>,
+                data: dataRef.current,
                 status: payload.status,
               });
               onSnapshotRef.current?.(payload.content as Partial<TData> | null, payload.status);
@@ -461,12 +286,18 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
               return;
             }
 
-            // ── patch ─────────────────────────────────────────────────────
+            // ── patch ────────────────────────────────────────────────────
             if (ev.event === 'patch') {
               const payload = JSON.parse(ev.data) as PatchPayload;
               patchCountRef.current += 1;
 
               try {
+                // mutateDocument: false (4th arg) — returns a new shallow-copied object
+                // instead of mutating in place. Required for React change detection:
+                // useReducer bails out when the reference is the same (Object.is),
+                // so mutating dataRef.current directly would silently skip re-renders.
+                // Shallow copy is sufficient — untouched nested objects keep their
+                // references, letting React.memo'd children skip unnecessary re-renders.
                 const next = applyPatch(dataRef.current as object, payload.ops, false, false)
                   .newDocument as Partial<TData>;
                 dataRef.current = next;
@@ -476,6 +307,17 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
                 const error = { code: 'INVALID_PATCH', message: String(e) };
                 dispatch({ type: 'ERROR', ...error });
                 onErrorRef.current?.({ ...error, retryable: false });
+                onTelemetryRef.current?.({
+                  type: 'error',
+                  durationMs: connectionStartTimeRef.current
+                    ? Date.now() - connectionStartTimeRef.current
+                    : undefined,
+                  patchCount: patchCountRef.current,
+                  metadata: { code: 'INVALID_PATCH', retryable: false },
+                });
+                streamTerminated = true;
+                controller.abort('invalid_patch');
+                return; // skip onPatch / onStatusChange / patch telemetry
               }
 
               onPatchRef.current?.(payload.ops);
@@ -487,7 +329,7 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
               return;
             }
 
-            // ── done ──────────────────────────────────────────────────────
+            // ── done ─────────────────────────────────────────────────────
             if (ev.event === 'done') {
               // TODO: BE should send status && usedModel on 'done' event
               const payload = JSON.parse(ev.data) as DonePayload;
@@ -497,29 +339,27 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
               onDoneRef.current?.(payload.status || 'completed', payload.usedModel);
               if (storageKey) sessionStorage.removeItem(storageKey);
               lastEventIdRef.current = null;
-              const durationMs = connectionStartTimeRef.current
-                ? Date.now() - connectionStartTimeRef.current
-                : undefined;
               onTelemetryRef.current?.({
                 type: 'done',
-                durationMs,
+                durationMs: connectionStartTimeRef.current
+                  ? Date.now() - connectionStartTimeRef.current
+                  : undefined,
                 patchCount: patchCountRef.current,
                 metadata: { status: payload.status, usedModel: payload.usedModel },
               });
               return;
             }
 
-            // ── error ─────────────────────────────────────────────────────
+            // ── error ────────────────────────────────────────────────────
             if (ev.event === 'error') {
               const payload = JSON.parse(ev.data) as ErrorPayload;
               dispatch({ type: 'ERROR', code: payload.code, message: payload.message });
               onErrorRef.current?.(payload);
-              const durationMs = connectionStartTimeRef.current
-                ? Date.now() - connectionStartTimeRef.current
-                : undefined;
               onTelemetryRef.current?.({
                 type: 'error',
-                durationMs,
+                durationMs: connectionStartTimeRef.current
+                  ? Date.now() - connectionStartTimeRef.current
+                  : undefined,
                 patchCount: patchCountRef.current,
                 metadata: { code: payload.code, retryable: payload.retryable },
               });
@@ -548,7 +388,7 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
         // Reconnect if: stream closed without a terminal event, OR server
         // marked the error as retryable.
         if (retryableFailure || !streamTerminated) {
-          const delay = calculateBackoffDelay(reconnectAttemptRef.current);
+          const delay = calculateBackoffDelay(reconnectAttemptRef.current, reconnectDelayMs);
           reconnectAttemptRef.current += 1;
           reconnectTimerRef.current = setTimeout(() => void connect(), delay);
         }
@@ -561,7 +401,7 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
           return;
 
         // Transient network error → reconnect after delay
-        const delay = calculateBackoffDelay(reconnectAttemptRef.current);
+        const delay = calculateBackoffDelay(reconnectAttemptRef.current, reconnectDelayMs);
         reconnectAttemptRef.current += 1;
         reconnectTimerRef.current = setTimeout(() => void connect(), delay);
       }
@@ -576,36 +416,19 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
       abortRef.current?.abort();
     };
     // retryVersion intentionally included to allow manual retry
-  }, [
-    url,
-    enabled,
-    retryVersion,
-    storageKey,
-    reconnectDelayMs,
-    stallTimeoutMs,
-    clearReconnectTimer,
-    clearStallTimer,
-    calculateBackoffDelay,
-    resetStallTimer,
-  ]);
+  }, [url, enabled, retryVersion, storageKey, reconnectDelayMs, stallTimeoutMs]);
 
-  // ── retry ──────────────────────────────────────────────────────────────
+  // ── retry ─────────────────────────────────────────────────────────────────
   const retry = useCallback(() => {
     const now = Date.now();
-    const timeSinceLastRetry = now - lastRetryTimeRef.current;
-    const retryMinCooldownMs = 1000;
-
-    if (timeSinceLastRetry < retryMinCooldownMs) {
-      return;
-    }
-
+    if (now - lastRetryTimeRef.current < 1000) return;
     lastRetryTimeRef.current = now;
     if (storageKey) sessionStorage.removeItem(storageKey);
     lastEventIdRef.current = null;
     setRetryVersion((v) => v + 1);
   }, [storageKey]);
 
-  // ── Derived values ─────────────────────────────────────────────────────
+  // ── Derived values ────────────────────────────────────────────────────────
   const isProcessing =
     state.status === 'loading' || state.status === 'queued' || state.status === 'in_progress';
 
@@ -621,12 +444,12 @@ export const useJsonPatchStream = <TData extends Record<string, unknown>>({
   } as const;
 };
 
-// ── Helpers ───────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-const flattenHeaders = (headers: HeadersInit): Record<string, string> => {
+function flattenHeaders(headers: HeadersInit): Record<string, string> {
   const result: Record<string, string> = {};
   new Headers(headers).forEach((v, k) => {
     result[k] = v;
   });
   return result;
-};
+}
