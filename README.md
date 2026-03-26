@@ -98,7 +98,7 @@ The cursor is persisted in `sessionStorage` so it survives React re-renders and 
 
 ## Hook Architecture
 
-```
+```text
 useJsonPatchStream          ← generic SSE + JSON Patch infra (reusable)
   └── useResumeStreamingV2  ← domain adapter (wires Zustand store)
         └── analysisStore   ← Zustand store with Immer + applyPatches
@@ -121,16 +121,6 @@ type TelemetryEvent =
   | { type: 'error'; code: string }
   | { type: 'aborted' };
 ```
-
-useJsonPatchStream ← generic SSE + JSON Patch infra (reusable)
-└── useResumeStreamingV2 ← domain adapter (wires Zustand store)
-└── analysisStore ← Zustand store with Immer + applyPatches
-
-````
-
-`useJsonPatchStream` is fully generic — it handles the SSE lifecycle, reconnection, backoff, stall detection, and telemetry. `useResumeStreamingV2` is a thin adapter that maps stream events to Zustand actions and provides microtask batching: multiple patches arriving in the same TCP chunk collapse into a single store update and a single React render.
-
-### Telemetry
 
 ## API Proxy Routes
 
@@ -175,7 +165,7 @@ npm install
 npm run dev           # Turbopack dev server
 # or
 npm run dev-webpack   # Webpack fallback
-````
+```
 
 `http://localhost:3000`
 
@@ -191,7 +181,7 @@ npm run build-webpack # Webpack fallback
 # 🔍 7. Testing
 
 ```bash
-npm test
+npm run test
 npm run test:run      # CI / single run
 ```
 
@@ -202,7 +192,7 @@ npm run test:run      # CI / single run
 - **Localization:** Add translation keys in `messages/` and configure routes in `src/i18n`.
 - **Core Logic:** Feature components in `src/features/cv-checker/`, page routes in `src/app/[locale]/cv-checker`.
 
-```
+```text
 root
 ├── src
 │   ├── actions        // server actions (CV analysis, statuses, history)
