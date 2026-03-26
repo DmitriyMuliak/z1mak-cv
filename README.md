@@ -122,6 +122,16 @@ type TelemetryEvent =
   | { type: 'aborted' };
 ```
 
+useJsonPatchStream ← generic SSE + JSON Patch infra (reusable)
+└── useResumeStreamingV2 ← domain adapter (wires Zustand store)
+└── analysisStore ← Zustand store with Immer + applyPatches
+
+````
+
+`useJsonPatchStream` is fully generic — it handles the SSE lifecycle, reconnection, backoff, stall detection, and telemetry. `useResumeStreamingV2` is a thin adapter that maps stream events to Zustand actions and provides microtask batching: multiple patches arriving in the same TCP chunk collapse into a single store update and a single React render.
+
+### Telemetry
+
 ## API Proxy Routes
 
 | Route                               | Method | Description                                                       |
@@ -165,7 +175,7 @@ npm install
 npm run dev           # Turbopack dev server
 # or
 npm run dev-webpack   # Webpack fallback
-```
+````
 
 `http://localhost:3000`
 
