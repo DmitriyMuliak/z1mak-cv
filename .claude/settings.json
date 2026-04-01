@@ -95,7 +95,7 @@
           {
             "type": "command",
             "description": "Final type check and lint on changed files",
-            "command": "if [[ -f package.json ]]; then CHANGED=$(git diff --name-only HEAD 2>/dev/null | grep -E '\\.(js|jsx|ts|tsx)$'); if [[ -n \"$CHANGED\" ]]; then echo 'Running final quality check...'; npx tsc --noEmit 2>&1 && npx eslint $CHANGED 2>&1; fi; fi",
+            "command": "if [[ -f package.json ]]; then CHANGED=$(git diff --name-only HEAD 2>/dev/null | grep -E '\\.(js|jsx|ts|tsx)$'); if [[ -n \"$CHANGED\" ]]; then TSC_OUT=$(npx tsc --noEmit 2>&1); TSC_EXIT=$?; if [[ $TSC_EXIT -ne 0 ]]; then echo \"[tsc] Type errors found:\" >&2; echo \"$TSC_OUT\" >&2; exit 1; fi; ESLINT_OUT=$(echo \"$CHANGED\" | xargs npx eslint 2>&1); ESLINT_EXIT=$?; if [[ $ESLINT_EXIT -ne 0 ]]; then echo \"[eslint] Lint errors found:\" >&2; echo \"$ESLINT_OUT\" >&2; exit 1; fi; fi; fi",
             "timeout": 90
           }
         ]
@@ -106,7 +106,7 @@
           {
             "type": "command",
             "description": "Run tests for changed source files",
-            "command": "if [[ -f package.json ]]; then CHANGED=$(git diff --name-only HEAD 2>/dev/null | grep -E '\\.(js|jsx|ts|tsx)$' | grep -vE '\\.(test|spec)\\.'); if [[ -n \"$CHANGED\" ]]; then echo 'Running related tests...'; if command -v vitest >/dev/null 2>&1; then npx vitest run --passWithNoTests 2>&1; elif command -v jest >/dev/null 2>&1; then npx jest --passWithNoTests 2>&1; fi; fi; fi",
+            "command": "if [[ -f package.json ]]; then CHANGED=$(git diff --name-only HEAD 2>/dev/null | grep -E '\\.(js|jsx|ts|tsx)$' | grep -vE '\\.(test|spec)\\.'); if [[ -n \"$CHANGED\" ]]; then if [[ -f node_modules/.bin/vitest ]]; then TEST_OUT=$(npx vitest run --passWithNoTests 2>&1); TEST_EXIT=$?; elif [[ -f node_modules/.bin/jest ]]; then TEST_OUT=$(npx jest --passWithNoTests 2>&1); TEST_EXIT=$?; else TEST_EXIT=0; fi; if [[ $TEST_EXIT -ne 0 ]]; then echo \"[vitest] Tests failed:\" >&2; echo \"$TEST_OUT\" >&2; exit 1; fi; fi; fi",
             "timeout": 60
           }
         ]
@@ -117,7 +117,7 @@
           {
             "type": "command",
             "description": "Bundle size analysis hint",
-            "command": "if [[ -f package.json ]] && git diff --name-only HEAD 2>/dev/null | grep -qE '\\.(js|jsx|ts|tsx)$'; then if command -v bundlesize >/dev/null 2>&1; then npx bundlesize 2>&1; else echo 'Bundle analysis: npx webpack-bundle-analyzer (run manually if needed)'; fi; fi",
+            "command": "if [[ -f package.json ]] && git diff --name-only HEAD 2>/dev/null | grep -qE '\\.(js|jsx|ts|tsx)$'; then if command -v bundlesize >/dev/null 2>&1; then BUNDLE_OUT=$(npx bundlesize 2>&1); BUNDLE_EXIT=$?; if [[ $BUNDLE_EXIT -ne 0 ]]; then echo \"[bundlesize] Bundle limit exceeded:\" >&2; echo \"$BUNDLE_OUT\" >&2; exit 1; fi; fi; fi",
             "timeout": 60
           }
         ]
