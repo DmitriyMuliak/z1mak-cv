@@ -177,7 +177,14 @@
 
 @layer utilities {
   .frosted-card {
-    @apply backdrop-blur-sm bg-white/5 border border-white/6 rounded-[20px] shadow-[0_0_4px_1px_rgba(0,0,0,0.2)];
+    /* backdrop-blur-sm */
+    /* List optimization - */
+    /*
+      content-visibility: auto;
+      contain-intrinsic-size: auto 400px; 
+    */
+    @apply bg-white/5 border border-white/6 rounded-[20px] shadow-[0_0_4px_1px_rgba(0,0,0,0.2)];
+    contain: layout paint;
   }
 }
 
