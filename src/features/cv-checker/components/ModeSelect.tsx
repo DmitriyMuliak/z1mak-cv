@@ -37,12 +37,14 @@ export const ModeSelect: React.FC<Props> = ({
       <Select value={value} onValueChange={onValueChange}>
         <SelectTrigger
           data-testid={`mode-select-${name}`}
-          className="min-w-[128px] cursor-pointer frosted-card w-full md:w-auto [&_svg:not([class*='text-'])]:text-current [&_svg:not([class*='text-'])]:opacity-100"
+          className="min-w-[128px] cursor-pointer frosted-card backdrop-blur-sm w-full md:w-auto [&_svg:not([class*='text-'])]:text-current [&_svg:not([class*='text-'])]:opacity-100"
         >
           <SelectValue placeholder={value} />
         </SelectTrigger>
 
-        <SelectContent className={cn('z-[9999] frosted-card !rounded-[10px]', contentClassName)}>
+        <SelectContent
+          className={cn('z-[9999] frosted-card backdrop-blur-sm !rounded-[10px]', contentClassName)}
+        >
           {options.map((option) => (
             <SelectItem
               key={option.value}
