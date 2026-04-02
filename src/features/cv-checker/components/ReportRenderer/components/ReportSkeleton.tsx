@@ -1,10 +1,16 @@
 import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 export const ReportSkeleton = () => {
   return (
     <div className="space-y-6 w-full animate-pulse">
+      {/* --- TABS STRIP SKELETON --- */}
+      <div className="frosted-card flex gap-1 p-1">
+        <Skeleton className="flex-1 h-9 rounded-[14px]" />
+        <Skeleton className="flex-1 h-9 rounded-[14px]" />
+        <Skeleton className="flex-1 h-9 rounded-[14px]" />
+      </div>
       {/* --- SECTION 1: HEADER SKELETON --- */}
       {/* ReportSection */}
       <Card className="frosted-card">
@@ -104,6 +110,81 @@ export const ReportSkeleton = () => {
         </CardContent>
       </Card>
     </div>
+  );
+};
+
+export const ImprovementsSkeleton = () => {
+  return (
+    <Card className="frosted-card animate-pulse">
+      <CardHeader>
+        <Skeleton className="h-7 w-48" />
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6 text-sm">
+          {/* summaryRewrite block */}
+          <div>
+            <Skeleton className="h-4 w-1/3 mb-2" />
+            <Skeleton className="h-4 w-full mb-1" />
+            <Skeleton className="h-4 w-4/5 mb-3" />
+            <div className="bg-secondary/50 p-3 rounded-md border border-border/50">
+              <Skeleton className="h-4 w-full mb-1" />
+              <Skeleton className="h-4 w-3/4" />
+            </div>
+          </div>
+          {/* keywordOptimization block */}
+          <div>
+            <Skeleton className="h-4 w-1/3 mb-2" />
+            <div className="flex gap-2 mb-3 flex-wrap">
+              <Skeleton className="h-5 w-16 rounded" />
+              <Skeleton className="h-5 w-20 rounded" />
+              <Skeleton className="h-5 w-14 rounded" />
+            </div>
+            <div className="bg-secondary/50 p-3 rounded-md border border-border/50">
+              <Skeleton className="h-4 w-full mb-1" />
+              <Skeleton className="h-4 w-2/3" />
+            </div>
+          </div>
+          {/* quantifyAchievements block */}
+          <div>
+            <Skeleton className="h-4 w-1/3 mb-2" />
+            <Skeleton className="h-4 w-full mb-3" />
+            <ul className="list-disc ml-5 space-y-1">
+              <li>
+                <Skeleton className="h-4 w-3/4" />
+              </li>
+              <li>
+                <Skeleton className="h-4 w-4/5" />
+              </li>
+              <li>
+                <Skeleton className="h-4 w-2/3" />
+              </li>
+            </ul>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export const InterviewQuestionsSkeleton = () => {
+  return (
+    <Card className="frosted-card animate-pulse">
+      <CardHeader>
+        <CardTitle>
+          <Skeleton className="h-7 w-56" />
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ol className="list-decimal ml-5 space-y-4">
+          {[1, 2, 3, 4, 5].map((item) => (
+            <li key={item} className="space-y-1">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+            </li>
+          ))}
+        </ol>
+      </CardContent>
+    </Card>
   );
 };
 

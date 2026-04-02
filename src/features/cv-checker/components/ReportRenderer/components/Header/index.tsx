@@ -10,19 +10,17 @@ import { Metrics } from './Metrics';
 import { Skills } from './Skills';
 import { ExportActions } from './ExportActions';
 import { Scores } from './Scores';
-// import { TypewriterText } from '../TypewriterText';
 import { MediaQuery, screenType } from '@/components/MediaQuery';
 
 export const Header: React.FC = () => {
   const t = useTranslations('pages.cvReport');
   const oa = useAnalysisStore((s) => s.data.overallAnalysis);
   const qm = useAnalysisStore((s) => s.data.quantitativeMetrics);
-  const metadata = useAnalysisStore((s) => s.data.metadata);
 
   const hasOverall = !!oa;
   const hasMetrics = !!qm;
 
-  if (!hasOverall && !hasMetrics && !metadata) {
+  if (!hasOverall || !hasMetrics) {
     return null;
   }
 

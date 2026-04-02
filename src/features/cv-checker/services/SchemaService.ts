@@ -37,6 +37,7 @@ export class SchemaService {
     return Array.isArray(flags) && flags.length > 0;
   }
 
+  // Preview Section
   public getUiSections(): UiSectionKey[] {
     const activeSections = new Set<UiSectionKey>();
 
@@ -51,26 +52,11 @@ export class SchemaService {
 
     if (this.includeSkills) activeSections.add('skills');
     if (this.includeExperience) activeSections.add('experience');
-    if (this.includeImprovements) activeSections.add('improvements');
-    if (this.includeQuestions) activeSections.add('questions');
 
     return UI_SECTION_ORDER.filter((section) => activeSections.has(section));
   }
 }
 
-export type UiSectionKey =
-  | 'header'
-  | 'skills'
-  | 'experience'
-  | 'redFlags'
-  | 'improvements'
-  | 'questions';
+export type UiSectionKey = 'header' | 'skills' | 'experience' | 'redFlags';
 
-export const UI_SECTION_ORDER: UiSectionKey[] = [
-  'header',
-  'redFlags',
-  'experience',
-  'skills',
-  'improvements',
-  'questions',
-];
+export const UI_SECTION_ORDER: UiSectionKey[] = ['header', 'redFlags', 'experience', 'skills'];

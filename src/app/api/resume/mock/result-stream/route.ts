@@ -21,6 +21,8 @@ const PATCH_SEQUENCE: Array<Record<string, unknown>> = [
   { detailedSkillAnalysis: report.detailedSkillAnalysis },
   { suggestedInterviewQuestions: report.suggestedInterviewQuestions },
   { experienceRelevanceAnalysis: report.experienceRelevanceAnalysis },
+  { careerJourney: report.careerJourney },
+  { atsKeywordMatrix: report.atsKeywordMatrix },
 ];
 
 export async function POST(request: NextRequest) {

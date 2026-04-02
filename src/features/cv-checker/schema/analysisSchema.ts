@@ -98,6 +98,50 @@ export const AnalysisSchema = v.object({
     }),
   ),
 
+  careerJourney: v.optional(
+    v.object({
+      title: v.string(),
+      positions: v.array(
+        v.object({
+          role: v.string(),
+          company: v.string(),
+          startDate: v.string(),
+          endDate: v.string(),
+          moveTag: v.string(),
+          relevanceToTarget: v.number(),
+          highlight: v.string(),
+        }),
+      ),
+      gaps: v.array(
+        v.object({
+          afterPositionIndex: v.number(),
+          durationMonths: v.number(),
+          concern: v.string(),
+        }),
+      ),
+      totalYears: v.number(),
+      careerTrajectory: v.string(),
+    }),
+  ),
+
+  atsKeywordMatrix: v.optional(
+    v.object({
+      title: v.string(),
+      compatibilityScore: v.number(),
+      summary: v.string(),
+      keywords: v.array(
+        v.object({
+          keyword: v.string(),
+          importance: v.picklist(['critical', 'important', 'nice-to-have']),
+          status: v.picklist(['exact-match', 'synonym-match', 'missing']),
+          foundAs: v.optional(v.string()),
+          cvSection: v.optional(v.string()),
+          suggestion: v.optional(v.string()),
+        }),
+      ),
+    }),
+  ),
+
   metadata: v.object({
     isValidCv: v.boolean(),
     isJobDescriptionPresent: v.boolean(),
