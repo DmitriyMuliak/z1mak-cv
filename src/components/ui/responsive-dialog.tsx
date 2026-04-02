@@ -71,7 +71,7 @@ export function ResponsiveDialog({
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent
-        className="z-50 frosted-card [&_[data-slot=drawer-handle]]:bg-primary"
+        className="z-50 frosted-card backdrop-blur-sm [&_[data-slot=drawer-handle]]:bg-primary"
         data-testid="responsive-drawer-content"
       >
         <DrawerHeader className="text-left">
