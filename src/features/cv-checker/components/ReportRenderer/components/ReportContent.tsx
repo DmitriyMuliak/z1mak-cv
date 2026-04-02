@@ -10,6 +10,7 @@ import {
 import { useAnalysisStore } from '@/features/cv-checker/store/analysisStore';
 import { SECTION_COMPONENTS } from '../config';
 import { StreamingTail } from './StreamingTail';
+import { ReportTabs } from './ReportTabs';
 
 const containerVariants = {
   hidden: { opacity: 0, y: 12 },
@@ -77,7 +78,7 @@ export const ReportContent: React.FC = () => {
     });
   }, [activeSections]);
 
-  return (
+  const overviewContent = (
     <motion.div
       className="space-y-6 w-full"
       variants={containerVariants}
@@ -90,4 +91,6 @@ export const ReportContent: React.FC = () => {
       <StreamingTail />
     </motion.div>
   );
+
+  return <ReportTabs>{overviewContent}</ReportTabs>;
 };

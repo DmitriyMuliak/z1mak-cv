@@ -154,6 +154,47 @@
       "questions": {
         "title": "Suggested Interview Questions",
         "whyAsk": "Why ask"
+      },
+      "careerJourney": {
+        "title": "Career Journey",
+        "trajectory": "Career trajectory",
+        "totalYears": "{years} yrs total",
+        "present": "Present",
+        "gap": "Gap: {months} mo.",
+        "relevance": "Relevance",
+        "moveTag": {
+          "promotion": "Promotion",
+          "pivot": "Pivot",
+          "lateral": "Lateral",
+          "firstRole": "First role",
+          "careerChange": "Career change"
+        }
+      },
+      "atsKeywords": {
+        "title": "ATS Compatibility",
+        "filterAll": "All",
+        "filterMatch": "Match",
+        "filterPartial": "Partial",
+        "filterMissing": "Missing",
+        "colKeyword": "Keyword",
+        "colPriority": "Priority",
+        "colStatus": "Status",
+        "colFound": "Found in",
+        "colFix": "Fix",
+        "statusMatch": "Match",
+        "statusPartial": "Partial",
+        "statusMissing": "Missing",
+        "importanceCritical": "Critical",
+        "importanceImportant": "Important",
+        "importanceNiceToHave": "Nice to have",
+        "addButton": "Add",
+        "howToAdd": "How to add \"{keyword}\"",
+        "showingOf": "Showing {shown} of {total} keywords"
+      },
+      "tabs": {
+        "overview": "Overview",
+        "improvements": "Improvements",
+        "questions": "Connections"
       }
     },
     "login": {
@@ -216,19 +257,16 @@
     "invalid_function": "Invalid function.",
     "invalid_custom": "Invalid value.",
     "custom": "Invalid value.",
-
     "file_too_large": "File is too large. Maximum {max} MB.",
     "file_invalid_type": "Invalid file type.",
     "file_problem": "There is a problem with the file.",
     "file_upload_base_error": "Problems with file uploading, try later",
-
     "specificNameKey": "Need to have min {expected} length",
     "c_min_length": "The value must be at least {expected} characters long.",
     "c_max_length": "The value must be not more than {expected} characters long.",
     "c_required": "This field is required.",
     "c_file_too_large": "File is too large. Maximum {expected} MB.",
     "c_two_passwords_not_match": "The two passwords do not match.",
-
     "captchaInvalid": "Captcha is invalid.",
     "captchaRequired": "Please complete the captcha.",
     "invalid_credentials": "The credentials were incorrect."

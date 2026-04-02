@@ -2,8 +2,6 @@ import { Header } from './components/Header';
 import { Skills } from './components/Skills';
 import { Experience } from './components/Experience';
 import { RedFlags } from './components/RedFlags';
-import { Improvements } from './components/Improvements';
-import { InterviewQuestions } from './components/InterviewQuestions';
 import { UiSectionKey } from '../../services/SchemaService';
 
 export const SECTION_COMPONENTS: Record<UiSectionKey, React.FC> = {
@@ -11,8 +9,6 @@ export const SECTION_COMPONENTS: Record<UiSectionKey, React.FC> = {
   skills: Skills,
   experience: Experience,
   redFlags: RedFlags,
-  improvements: Improvements,
-  questions: InterviewQuestions,
 };
 
 export type LoadingStatus = 'loading' | 'queued' | 'in_progress';

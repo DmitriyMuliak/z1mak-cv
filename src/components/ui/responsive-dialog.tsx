@@ -50,7 +50,7 @@ export function ResponsiveDialog({
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogTrigger asChild>{trigger}</DialogTrigger>
         <DialogContent
-          className="sm:max-w-[425px] z-50 frosted-card"
+          className="sm:max-w-[425px] z-50 frosted-card backdrop-blur-sm"
           data-testid="responsive-dialog-content"
         >
           <DialogHeader>

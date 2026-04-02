@@ -154,6 +154,47 @@
       "questions": {
         "title": "Питання для співбесіди",
         "whyAsk": "Чому запитуємо"
+      },
+      "careerJourney": {
+        "title": "Кар'єрний шлях",
+        "trajectory": "Траєкторія кар'єри",
+        "totalYears": "{years} р. загалом",
+        "present": "Дотепер",
+        "gap": "Перерва: {months} міс.",
+        "relevance": "Релевантність",
+        "moveTag": {
+          "promotion": "Підвищення",
+          "pivot": "Зміна напряму",
+          "lateral": "Горизонтальний перехід",
+          "firstRole": "Перша робота",
+          "careerChange": "Зміна кар'єри"
+        }
+      },
+      "atsKeywords": {
+        "title": "ATS Сумісність",
+        "filterAll": "Всі",
+        "filterMatch": "Знайдено",
+        "filterPartial": "Частково",
+        "filterMissing": "Відсутні",
+        "colKeyword": "Ключове слово",
+        "colPriority": "Пріоритет",
+        "colStatus": "Статус",
+        "colFound": "Де знайдено",
+        "colFix": "Виправлення",
+        "statusMatch": "Знайдено",
+        "statusPartial": "Частково",
+        "statusMissing": "Відсутнє",
+        "importanceCritical": "Критично",
+        "importanceImportant": "Важливо",
+        "importanceNiceToHave": "Бажано",
+        "addButton": "Додати",
+        "howToAdd": "Як додати \"{keyword}\"",
+        "showingOf": "Показано {shown} з {total} ключових слів"
+      },
+      "tabs": {
+        "overview": "Огляд",
+        "improvements": "Покращення",
+        "questions": "Зв'язки"
       }
     },
     "login": {
@@ -216,19 +257,16 @@
     "invalid_function": "Невірна функція.",
     "invalid_custom": "Невірне значення.",
     "custom": "Невірне значення.",
-
     "file_too_large": "Файл завеликий. Максимум {max} MB.",
     "file_invalid_type": "Неприпустимий тип файлу.",
     "file_problem": "Проблема з файлом.",
     "file_upload_base_error": "Проблема з завантаженням файлу, спробуйте пізніше",
-
     "specificNameKey": "Довжина імені має бути мінімум {expected} символів.",
     "c_required": "Це поле є обов'язковим.",
     "c_min_length": "Значення має бути не менше ніж {expected} символів завдовжки.",
     "c_max_length": "Значення має бути не більше ніж {expected} символів завдовжки.",
     "c_file_too_large": "Файл завеликий. Максимум {expected} MB.",
     "c_two_passwords_not_match": "Два пароля не співпадають.",
-
     "captchaInvalid": "Капча не валідна.",
     "captchaRequired": "Будь ласка, пройдіть капчу.",
     "invalid_credentials": "Облікові дані були неправильними."

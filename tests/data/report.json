@@ -146,6 +146,156 @@
       }
     ]
   },
+  "careerJourney": {
+    "title": "Career Journey",
+    "totalYears": 10.9,
+    "careerTrajectory": "Consistent upward growth with increasing ownership and technical depth",
+    "positions": [
+      {
+        "role": "Frontend Developer",
+        "company": "Web Agency",
+        "startDate": "2015-01",
+        "endDate": "2017-06",
+        "moveTag": "First role",
+        "relevanceToTarget": 32,
+        "highlight": "Built foundational web skills across diverse client projects"
+      },
+      {
+        "role": "Frontend Developer",
+        "company": "GTM — Global Tech Makers",
+        "startDate": "2017-11",
+        "endDate": "2020-10",
+        "moveTag": "Lateral",
+        "relevanceToTarget": 55,
+        "highlight": "Developed internal UI component library used across multiple products"
+      },
+      {
+        "role": "Senior Frontend Developer (Contract)",
+        "company": "IntellectSoft",
+        "startDate": "2020-11",
+        "endDate": "2021-04",
+        "moveTag": "Promotion",
+        "relevanceToTarget": 70,
+        "highlight": "Architected SPA from scratch and established code quality standards"
+      },
+      {
+        "role": "Senior Frontend Developer",
+        "company": "Israel IT",
+        "startDate": "2021-05",
+        "endDate": "2021-10",
+        "moveTag": "Lateral",
+        "relevanceToTarget": 65,
+        "highlight": "Led React admin panel architecture and mentored junior developers"
+      },
+      {
+        "role": "Software Engineer — Core Checkout",
+        "company": "Wix",
+        "startDate": "2021-11",
+        "endDate": "2024-04",
+        "moveTag": "Promotion",
+        "relevanceToTarget": 95,
+        "highlight": "Delivered mission-critical FinTech features at scale with React and TypeScript"
+      },
+      {
+        "role": "Independent Software Engineer",
+        "company": "Freelance & SaaS",
+        "startDate": "2024-04",
+        "endDate": "present",
+        "moveTag": "Career change",
+        "relevanceToTarget": 90,
+        "highlight": "Building AI-powered SaaS products, applying full-stack expertise autonomously"
+      }
+    ],
+    "gaps": [
+      {
+        "afterPositionIndex": 0,
+        "durationMonths": 5,
+        "concern": "5-month gap after first role — consider briefly addressing in interviews"
+      }
+    ]
+  },
+  "atsKeywordMatrix": {
+    "title": "ATS Keyword Match Matrix",
+    "compatibilityScore": 73,
+    "summary": "Good match — 4 critical keywords missing",
+    "keywords": [
+      {
+        "keyword": "React",
+        "importance": "critical",
+        "status": "exact-match",
+        "cvSection": "Skills"
+      },
+      {
+        "keyword": "TypeScript",
+        "importance": "critical",
+        "status": "exact-match",
+        "cvSection": "Skills"
+      },
+      {
+        "keyword": "Figma",
+        "importance": "critical",
+        "status": "missing",
+        "suggestion": "Add to your Skills section: \"Figma, pixel-perfect UI implementation\". Or mention in Experience: \"Implemented pixel-perfect UI based on Figma designs at...\""
+      },
+      {
+        "keyword": "pixel-perfect",
+        "importance": "critical",
+        "status": "missing",
+        "suggestion": "Add to your Summary or Experience section: \"Delivered pixel-perfect UI implementations from Figma mockups, collaborating closely with design team.\""
+      },
+      {
+        "keyword": "CI/CD",
+        "importance": "important",
+        "status": "synonym-match",
+        "foundAs": "CI pipelines",
+        "cvSection": "IntellectSoft"
+      },
+      {
+        "keyword": "Node.js",
+        "importance": "important",
+        "status": "exact-match",
+        "cvSection": "Skills"
+      },
+      {
+        "keyword": "AI search analytics",
+        "importance": "important",
+        "status": "missing",
+        "suggestion": "If you have relevant experience, mention: \"Built AI-assisted analytics features\" or reference your AI SaaS project in context of search/marketing analytics."
+      },
+      {
+        "keyword": "Tailwind CSS",
+        "importance": "important",
+        "status": "exact-match",
+        "cvSection": "Skills"
+      },
+      {
+        "keyword": "Design System",
+        "importance": "important",
+        "status": "synonym-match",
+        "foundAs": "component library",
+        "cvSection": "GTM"
+      },
+      {
+        "keyword": "Testing",
+        "importance": "important",
+        "status": "exact-match",
+        "cvSection": "Skills"
+      },
+      {
+        "keyword": "LLM integration",
+        "importance": "nice-to-have",
+        "status": "synonym-match",
+        "foundAs": "Gemini API",
+        "cvSection": "Independent"
+      },
+      {
+        "keyword": "Agile",
+        "importance": "nice-to-have",
+        "status": "missing",
+        "suggestion": "Add \"Agile/Scrum\" to your Skills section or mention sprint-based delivery in your Experience descriptions."
+      }
+    ]
+  },
   "experienceRelevanceAnalysis": {
     "title": "Аналіз релевантності досвіду",
     "jobs": [
