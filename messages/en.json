@@ -184,6 +184,7 @@
         "statusMatch": "Match",
         "statusPartial": "Partial",
         "statusMissing": "Missing",
+        "statusMentioned": "Mentioned",
         "importanceCritical": "Critical",
         "importanceImportant": "Important",
         "importanceNiceToHave": "Nice to have",
