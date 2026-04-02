@@ -184,6 +184,7 @@
         "statusMatch": "Знайдено",
         "statusPartial": "Частково",
         "statusMissing": "Відсутнє",
+        "statusMentioned": "Згадано",
         "importanceCritical": "Критично",
         "importanceImportant": "Важливо",
         "importanceNiceToHave": "Бажано",

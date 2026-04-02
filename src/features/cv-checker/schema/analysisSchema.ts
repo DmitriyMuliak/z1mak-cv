@@ -133,7 +133,7 @@ export const AnalysisSchema = v.object({
         v.object({
           keyword: v.string(),
           importance: v.picklist(['critical', 'important', 'nice-to-have']),
-          status: v.picklist(['exact-match', 'synonym-match', 'missing']),
+          status: v.picklist(['exact-match', 'synonym-match', 'missing', 'mentioned']),
           foundAs: v.optional(v.string()),
           cvSection: v.optional(v.string()),
           suggestion: v.optional(v.string()),
