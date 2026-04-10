@@ -175,6 +175,7 @@
         "filterAll": "All",
         "filterMatch": "Match",
         "filterPartial": "Partial",
+        "filterInferred": "Inferred",
         "filterMissing": "Missing",
         "colKeyword": "Keyword",
         "colPriority": "Priority",

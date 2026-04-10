@@ -29,5 +29,6 @@ export function filterKeywords(list: AtsKeyword[], filter: FilterValue): AtsKeyw
   if (filter === 'all') return list;
   if (filter === 'match') return list.filter((k) => k.status === 'exact-match');
   if (filter === 'partial') return list.filter((k) => k.status === 'synonym-match');
+  if (filter === 'inferred') return list.filter((k) => k.status === 'inferred');
   return list.filter((k) => k.status === 'missing');
 }
