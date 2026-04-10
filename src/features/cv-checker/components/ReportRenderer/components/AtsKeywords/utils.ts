@@ -7,8 +7,9 @@ export type AtsKeyword = NonNullable<AnalysisSchemaType['atsKeywordMatrix']>['ke
 const STATUS_WEIGHT: Record<AtsKeyword['status'], number> = {
   missing: 0,
   mentioned: 1,
-  'synonym-match': 2,
-  'exact-match': 3,
+  inferred: 2,
+  'synonym-match': 3,
+  'exact-match': 4,
 };
 const IMPORTANCE_WEIGHT: Record<AtsKeyword['importance'], number> = {
   critical: 0,

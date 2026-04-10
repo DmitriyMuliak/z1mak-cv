@@ -185,6 +185,7 @@
         "statusPartial": "Частково",
         "statusMissing": "Відсутнє",
         "statusMentioned": "Згадано",
+        "statusInferred": "Виведено",
         "importanceCritical": "Критично",
         "importanceImportant": "Важливо",
         "importanceNiceToHave": "Бажано",
