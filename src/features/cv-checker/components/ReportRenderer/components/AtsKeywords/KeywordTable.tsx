@@ -29,6 +29,7 @@ export const KeywordTable: React.FC<KeywordTableProps> = ({ keywords }) => {
       all: keywords.length,
       match: keywords.filter((k) => k.status === 'exact-match').length,
       partial: keywords.filter((k) => k.status === 'synonym-match').length,
+      inferred: keywords.filter((k) => k.status === 'inferred').length,
       missing: keywords.filter((k) => k.status === 'missing').length,
     }),
     [keywords],

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 
-export type FilterValue = 'all' | 'match' | 'partial' | 'missing';
+export type FilterValue = 'all' | 'match' | 'partial' | 'inferred' | 'missing';
 
 interface KeywordFilterProps {
   active: FilterValue;
@@ -11,11 +11,12 @@ interface KeywordFilterProps {
 
 const FILTERS: {
   value: FilterValue;
-  labelKey: 'filterAll' | 'filterMatch' | 'filterPartial' | 'filterMissing';
+  labelKey: 'filterAll' | 'filterMatch' | 'filterPartial' | 'filterInferred' | 'filterMissing';
 }[] = [
   { value: 'all', labelKey: 'filterAll' },
   { value: 'match', labelKey: 'filterMatch' },
   { value: 'partial', labelKey: 'filterPartial' },
+  { value: 'inferred', labelKey: 'filterInferred' },
   { value: 'missing', labelKey: 'filterMissing' },
 ];
 

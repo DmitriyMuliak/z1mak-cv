@@ -175,6 +175,7 @@
         "filterAll": "Всі",
         "filterMatch": "Знайдено",
         "filterPartial": "Частково",
+        "filterInferred": "Виведено",
         "filterMissing": "Відсутні",
         "colKeyword": "Ключове слово",
         "colPriority": "Пріоритет",
