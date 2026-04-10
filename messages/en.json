@@ -185,6 +185,7 @@
         "statusPartial": "Partial",
         "statusMissing": "Missing",
         "statusMentioned": "Mentioned",
+        "statusInferred": "Inferred",
         "importanceCritical": "Critical",
         "importanceImportant": "Important",
         "importanceNiceToHave": "Nice to have",

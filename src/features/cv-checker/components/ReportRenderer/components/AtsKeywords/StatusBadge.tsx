@@ -30,11 +30,18 @@ const CONFIG = {
     labelKey: 'statusMentioned' as const,
     className: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
   },
+  inferred: {
+    icon: '≈',
+    labelKey: 'statusInferred' as const,
+    className: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
+  },
 };
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, foundAs }) => {
   const t = useTranslations('pages.cvReport.atsKeywords');
   const cfg = CONFIG[status];
+
+  if (!cfg) return null;
 
   return (
     <span
