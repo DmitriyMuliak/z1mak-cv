@@ -26,6 +26,7 @@ export const KeywordFilter: React.FC<KeywordFilterProps> = ({ active, onChange, 
   return (
     <div className="flex flex-wrap gap-1" role="group" aria-label="Filter keywords">
       {FILTERS.map(({ value, labelKey }) => {
+        if (counts[value] === 0) return null;
         const isActive = active === value;
         return (
           <button
