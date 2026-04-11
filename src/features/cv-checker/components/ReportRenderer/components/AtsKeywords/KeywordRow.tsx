@@ -29,7 +29,9 @@ export const KeywordRow: React.FC<KeywordRowProps> = ({ keyword }) => {
 
       <TableCell className="py-2.5 text-xs text-muted-foreground hidden md:table-cell whitespace-normal break-words">
         {keyword.cvSection ? (
-          <span className="bg-secondary/60 rounded px-1.5 py-0.5">{keyword.cvSection}</span>
+          <span className="inline-block bg-secondary/60 rounded px-1.5 py-0.5">
+            {keyword.cvSection}
+          </span>
         ) : (
           <span className="opacity-30">—</span>
         )}
