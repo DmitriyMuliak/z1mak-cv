@@ -25,11 +25,7 @@ export class SchemaService {
   }
 
   private get includeHeader() {
-    return !!(
-      this.analysis.overallAnalysis ||
-      this.analysis.quantitativeMetrics ||
-      this.analysis.metadata
-    );
+    return !!(this.analysis.overallAnalysis && this.analysis.quantitativeMetrics);
   }
 
   private get includeRedFlags() {

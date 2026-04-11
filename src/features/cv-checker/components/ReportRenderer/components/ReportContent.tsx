@@ -82,7 +82,7 @@ export const ReportContent: React.FC = () => {
     <motion.div
       className="space-y-6 w-full"
       variants={containerVariants}
-      initial={showImmediately ? 'hidden' : false}
+      initial={showImmediately ? false : 'hidden'}
       animate="visible"
     >
       {displayedSections.map((sectionKey) => (
