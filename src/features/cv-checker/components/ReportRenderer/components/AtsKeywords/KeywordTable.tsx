@@ -29,6 +29,7 @@ export const KeywordTable: React.FC<KeywordTableProps> = ({ keywords }) => {
       all: keywords.length,
       match: keywords.filter((k) => k.status === 'exact-match').length,
       partial: keywords.filter((k) => k.status === 'synonym-match').length,
+      mentioned: keywords.filter((k) => k.status === 'mentioned').length,
       inferred: keywords.filter((k) => k.status === 'inferred').length,
       missing: keywords.filter((k) => k.status === 'missing').length,
     }),
@@ -49,14 +50,18 @@ export const KeywordTable: React.FC<KeywordTableProps> = ({ keywords }) => {
           className="overflow-y-auto overflow-x-auto"
           style={{ minHeight: TBODY_MIN_H, maxHeight: TBODY_MAX_H }}
         >
-          <Table>
+          <Table className="md:table-fixed md:min-w-[862px]">
             <TableHeader className="sticky top-0 z-10 bg-muted/60 backdrop-blur-sm">
               <TableRow className="border-border/40 text-xs text-muted-foreground hover:bg-transparent">
-                <TableHead className="py-2 h-9">{t('colKeyword')}</TableHead>
-                <TableHead className="py-2 h-9 hidden sm:table-cell">{t('colPriority')}</TableHead>
-                <TableHead className="py-2 h-9">{t('colStatus')}</TableHead>
-                <TableHead className="py-2 h-9 hidden md:table-cell">{t('colFound')}</TableHead>
-                <TableHead className="py-2 h-9 text-right">{t('colFix')}</TableHead>
+                <TableHead className="py-2 h-9 md:w-[42%]">{t('colKeyword')}</TableHead>
+                <TableHead className="py-2 h-9 md:w-[11%] hidden sm:table-cell">
+                  {t('colPriority')}
+                </TableHead>
+                <TableHead className="py-2 h-9 md:w-[13%]">{t('colStatus')}</TableHead>
+                <TableHead className="py-2 h-9 md:w-[29%] hidden md:table-cell">
+                  {t('colFound')}
+                </TableHead>
+                <TableHead className="py-2 h-9 md:w-[5%] text-right">{t('colFix')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
