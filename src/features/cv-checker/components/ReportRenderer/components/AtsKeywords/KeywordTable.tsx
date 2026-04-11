@@ -45,15 +45,15 @@ export const KeywordTable: React.FC<KeywordTableProps> = ({ keywords }) => {
         <Table className="md:table-fixed md:min-w-[862px]">
           <TableHeader className="sticky top-0 z-10 bg-muted/60 backdrop-blur-sm">
             <TableRow className="border-border/40 text-xs text-muted-foreground hover:bg-transparent">
-              <TableHead className="py-2 h-9 md:w-[42%]">{t('colKeyword')}</TableHead>
-              <TableHead className="py-2 h-9 md:w-[11%] hidden sm:table-cell">
+              <TableHead className="py-2 h-9 md:w-[40%]">{t('colKeyword')}</TableHead>
+              <TableHead className="py-2 h-9 md:w-[9%] hidden sm:table-cell">
                 {t('colPriority')}
               </TableHead>
               <TableHead className="py-2 h-9 md:w-[13%]">{t('colStatus')}</TableHead>
-              <TableHead className="py-2 h-9 md:w-[29%] hidden md:table-cell">
+              <TableHead className="py-2 h-9 md:w-[27%] hidden md:table-cell">
                 {t('colFound')}
               </TableHead>
-              <TableHead className="py-2 h-9 md:w-[5%] text-right">{t('colFix')}</TableHead>
+              <TableHead className="py-2 h-9 md:w-[11%] text-right">{t('colFix')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
