@@ -32,6 +32,7 @@ interface ResponsiveDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   isLoading?: boolean;
+  closeLabel?: string;
 }
 
 export function ResponsiveDialog({
@@ -42,6 +43,7 @@ export function ResponsiveDialog({
   isOpen,
   onOpenChange,
   isLoading,
+  closeLabel = 'Close',
 }: ResponsiveDialogProps) {
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
@@ -86,7 +88,7 @@ export function ResponsiveDialog({
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline" data-testid="drawer-close-button">
-              Close
+              {closeLabel}
             </Button>
           </DrawerClose>
         </DrawerFooter>

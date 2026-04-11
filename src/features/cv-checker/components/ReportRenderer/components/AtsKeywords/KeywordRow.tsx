@@ -15,7 +15,9 @@ interface KeywordRowProps {
 export const KeywordRow: React.FC<KeywordRowProps> = ({ keyword }) => {
   return (
     <>
-      <TableCell className="py-2.5 font-mono text-xs font-medium">{keyword.keyword}</TableCell>
+      <TableCell className="py-2.5 font-mono text-xs font-medium whitespace-normal break-words">
+        {keyword.keyword}
+      </TableCell>
 
       <TableCell className="py-2.5 hidden sm:table-cell">
         <ImportanceBar importance={keyword.importance} />
@@ -25,7 +27,7 @@ export const KeywordRow: React.FC<KeywordRowProps> = ({ keyword }) => {
         <StatusBadge status={keyword.status} foundAs={keyword.foundAs} />
       </TableCell>
 
-      <TableCell className="py-2.5 text-xs text-muted-foreground hidden md:table-cell">
+      <TableCell className="py-2.5 text-xs text-muted-foreground hidden md:table-cell whitespace-normal break-words">
         {keyword.cvSection ? (
           <span className="bg-secondary/60 rounded px-1.5 py-0.5">{keyword.cvSection}</span>
         ) : (

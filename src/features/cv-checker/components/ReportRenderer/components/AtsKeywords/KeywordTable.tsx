@@ -11,11 +11,7 @@ import { cn } from '@/lib/utils';
 interface KeywordTableProps {
   keywords: AtsKeyword[];
 }
-
 // ~1 header row (40px) + 5 rows (44px each) = 260px min
-// ~1 header row (40px) + 9 rows (44px each) = 436px max
-const TBODY_MIN_H = 220;
-const TBODY_MAX_H = 220;
 
 export const KeywordTable: React.FC<KeywordTableProps> = ({ keywords }) => {
   const t = useTranslations('pages.cvReport.atsKeywords');
@@ -29,6 +25,7 @@ export const KeywordTable: React.FC<KeywordTableProps> = ({ keywords }) => {
       all: keywords.length,
       match: keywords.filter((k) => k.status === 'exact-match').length,
       partial: keywords.filter((k) => k.status === 'synonym-match').length,
+      mentioned: keywords.filter((k) => k.status === 'mentioned').length,
       inferred: keywords.filter((k) => k.status === 'inferred').length,
       missing: keywords.filter((k) => k.status === 'missing').length,
     }),
@@ -44,35 +41,34 @@ export const KeywordTable: React.FC<KeywordTableProps> = ({ keywords }) => {
         </span>
       </div>
 
-      <div className="rounded-md border border-border/40 overflow-hidden">
-        <div
-          className="overflow-y-auto overflow-x-auto"
-          style={{ minHeight: TBODY_MIN_H, maxHeight: TBODY_MAX_H }}
-        >
-          <Table>
-            <TableHeader className="sticky top-0 z-10 bg-muted/60 backdrop-blur-sm">
-              <TableRow className="border-border/40 text-xs text-muted-foreground hover:bg-transparent">
-                <TableHead className="py-2 h-9">{t('colKeyword')}</TableHead>
-                <TableHead className="py-2 h-9 hidden sm:table-cell">{t('colPriority')}</TableHead>
-                <TableHead className="py-2 h-9">{t('colStatus')}</TableHead>
-                <TableHead className="py-2 h-9 hidden md:table-cell">{t('colFound')}</TableHead>
-                <TableHead className="py-2 h-9 text-right">{t('colFix')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.map((kw, _i) => (
-                <tr
-                  key={`${kw.keyword}-${kw.status}`}
-                  className={cn(
-                    'border-b border-border/40 last:border-0 transition-colors hover:bg-muted/50',
-                  )}
-                >
-                  <KeywordRow keyword={kw} />
-                </tr>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+      <div className="rounded-md border border-border/40 overflow-hidden [&_[data-slot=table-container]]:overflow-y-auto [&_[data-slot=table-container]]:overflow-x-auto [&_[data-slot=table-container]]:min-h-[220px] [&_[data-slot=table-container]]:max-h-[220px]">
+        <Table className="md:table-fixed md:min-w-[862px]">
+          <TableHeader className="sticky top-0 z-10 bg-muted/60 backdrop-blur-sm">
+            <TableRow className="border-border/40 text-xs text-muted-foreground hover:bg-transparent">
+              <TableHead className="py-2 h-9 md:w-[42%]">{t('colKeyword')}</TableHead>
+              <TableHead className="py-2 h-9 md:w-[11%] hidden sm:table-cell">
+                {t('colPriority')}
+              </TableHead>
+              <TableHead className="py-2 h-9 md:w-[13%]">{t('colStatus')}</TableHead>
+              <TableHead className="py-2 h-9 md:w-[29%] hidden md:table-cell">
+                {t('colFound')}
+              </TableHead>
+              <TableHead className="py-2 h-9 md:w-[5%] text-right">{t('colFix')}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filtered.map((kw, _i) => (
+              <tr
+                key={`${kw.keyword}-${kw.status}`}
+                className={cn(
+                  'border-b border-border/40 last:border-0 transition-colors hover:bg-muted/50',
+                )}
+              >
+                <KeywordRow keyword={kw} />
+              </tr>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

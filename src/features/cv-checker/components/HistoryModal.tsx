@@ -27,6 +27,7 @@ export function HistoryModal() {
       }
       title={t('title')}
       description={t('description')}
+      closeLabel={t('close')}
       isLoading={isRefreshing}
     >
       <AnimationContainer id="tag-history-list">
