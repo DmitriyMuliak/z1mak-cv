@@ -2,9 +2,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
-export const ReportSkeleton = () => {
+export const ReportSkeleton = ({ animated = true }: { animated?: boolean }) => {
   return (
-    <div className="space-y-6 w-full animate-pulse">
+    <div className={`space-y-6 w-full ${animated ? 'animate-pulse' : ''}`}>
       {/* --- TABS STRIP SKELETON --- */}
       <div className="frosted-card flex gap-1 p-1">
         <Skeleton className="flex-1 h-9 rounded-[14px]" />
