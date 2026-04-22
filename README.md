@@ -14,6 +14,13 @@ A production-grade Next.js application for intelligent CV analysis and enhanceme
 - **User History:** Persistent storage via Supabase with a modal-based history viewer.
 - **Modern UI:** Tailwind CSS v4, dark/light modes, animations, and a theme configurator.
 
+# 📸 Screenshots
+
+<p align="center">
+  <img src="public/result-overview.png" width="400px" alt="Analysis overview section" />
+  <img src="public/result-improvements.png" width="400px" alt="Analysis improvements section" />
+</p>
+
 # 🧩 1. Architecture Diagram
 
 ```mermaid
