@@ -5,7 +5,7 @@ import { allowedCvFilesMimeTypes } from './common';
 const OneMbInKb = 1048576;
 const MAX_SIZE = OneMbInKb * 5;
 const MAX_SIZE_MB = (MAX_SIZE / 1024 / 1024).toFixed();
-const MAX_TEXT_LENGTH = 6000;
+const MAX_TEXT_LENGTH = 20000;
 
 const BaseStringSchema = v.pipe(
   v.string(),
