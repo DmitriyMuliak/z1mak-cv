@@ -28,7 +28,11 @@ const CONFIG = {
 
 export const ImportanceBar: React.FC<ImportanceBarProps> = ({ importance }) => {
   const t = useTranslations('pages.cvReport.atsKeywords');
-  const cfg = CONFIG[importance];
+  const cfg = CONFIG[importance.toLowerCase() as keyof typeof CONFIG] || {
+    widthClass: '',
+    colorClass: '',
+    labelKey: 'unknown',
+  };
 
   return (
     <div className="flex flex-col gap-0.5 min-w-[72px]">
