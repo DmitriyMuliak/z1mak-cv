@@ -69,18 +69,11 @@ function ExperienceItem({ entry, index }: { entry: ExperienceEntry; index: numbe
           <span className="before:content-['·'] before:mx-1">{entry.location}</span>
         )}
       </div>
-      {entry.bullets.length > 0 && (
-        <ul className="list-disc list-inside space-y-0.5">
-          {entry.bullets.map((bullet, bi) => (
-            <li
-              key={bi}
-              data-resume-path={`/experience/${index}/bullets/${bi}`}
-              className="text-xs text-foreground/90 leading-relaxed"
-            >
-              {bullet}
-            </li>
-          ))}
-        </ul>
+      {entry.description && (
+        <div
+          className="text-xs text-foreground/90 leading-relaxed rich-preview [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-0.5 [&_p]:mb-0.5 [&_strong]:font-semibold [&_em]:italic"
+          dangerouslySetInnerHTML={{ __html: entry.description }}
+        />
       )}
     </div>
   );
@@ -262,7 +255,10 @@ export function ResumePreview({
           {summary && (
             <Section path="/summary">
               <SectionTitle template={template}>Summary</SectionTitle>
-              <p className="text-xs text-foreground/90 leading-relaxed">{summary}</p>
+              <div
+                className="text-xs text-foreground/90 leading-relaxed rich-preview [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-0.5 [&_p]:mb-0.5 [&_strong]:font-semibold [&_em]:italic"
+                dangerouslySetInnerHTML={{ __html: summary }}
+              />
             </Section>
           )}
 

@@ -23,7 +23,8 @@ const ExperienceEntrySchema = v.object({
   /** `undefined` means the position is current / "present". */
   endDate: v.optional(v.string()),
   location: v.optional(v.string()),
-  bullets: v.array(v.string()),
+  /** HTML string from the rich-text editor. */
+  description: v.optional(v.string()),
 });
 
 const EducationEntrySchema = v.object({

@@ -8,6 +8,69 @@ import type {
   CertificationEntry,
   LanguageEntry,
 } from '../schema/resumeDocument.schema';
+import { htmlToTextNodes, type TextRun } from '../utils/htmlToTextNodes';
+
+function Runs({ runs }: { runs: TextRun[] }) {
+  return (
+    <>
+      {runs.map((run, i) => (
+        <Text
+          key={i}
+          style={{
+            fontWeight: run.bold ? 700 : undefined,
+            fontStyle: run.italic ? 'italic' : undefined,
+          }}
+        >
+          {run.text}
+        </Text>
+      ))}
+    </>
+  );
+}
+
+function HtmlNodes({
+  html,
+  bulletDotStyle,
+  bulletTextStyle,
+  paraStyle,
+}: {
+  html: string | undefined;
+  bulletDotStyle: (typeof styles)[keyof typeof styles];
+  bulletTextStyle: (typeof styles)[keyof typeof styles];
+  paraStyle: (typeof styles)[keyof typeof styles] | { fontSize: number; marginBottom: number };
+}) {
+  return (
+    <>
+      {htmlToTextNodes(html).map((node, i) => {
+        if (node.type === 'bullet') {
+          return (
+            <View key={i} style={{ flexDirection: 'row', marginBottom: 1, paddingLeft: 8 }}>
+              <Text style={bulletDotStyle}>{'•'}</Text>
+              <Text style={bulletTextStyle}>
+                <Runs runs={node.runs} />
+              </Text>
+            </View>
+          );
+        }
+        if (node.type === 'ordered') {
+          return (
+            <View key={i} style={{ flexDirection: 'row', marginBottom: 1, paddingLeft: 8 }}>
+              <Text style={{ ...bulletDotStyle, width: 10 }}>{`${node.n}.`}</Text>
+              <Text style={bulletTextStyle}>
+                <Runs runs={node.runs} />
+              </Text>
+            </View>
+          );
+        }
+        return (
+          <Text key={i} style={paraStyle}>
+            <Runs runs={node.runs} />
+          </Text>
+        );
+      })}
+    </>
+  );
+}
 
 const styles = StyleSheet.create({
   page: {
@@ -103,12 +166,12 @@ function ExperienceSection({ entries }: { entries: ExperienceEntry[] }) {
             <DateRange start={e.startDate} end={e.endDate} />
           </View>
           {e.location ? <Text style={styles.entrySubtitle}>{e.location}</Text> : null}
-          {e.bullets.map((b, i) => (
-            <View key={i} style={styles.bullet}>
-              <Text style={styles.bulletDot}>•</Text>
-              <Text style={styles.bulletText}>{b}</Text>
-            </View>
-          ))}
+          <HtmlNodes
+            html={e.description}
+            bulletDotStyle={styles.bulletDot}
+            bulletTextStyle={styles.bulletText}
+            paraStyle={{ fontSize: 10, marginBottom: 2 }}
+          />
         </View>
       ))}
     </View>
@@ -196,7 +259,12 @@ export function AtsCleanTemplate({ document: doc, fontFamily = 'Roboto' }: AtsCl
         {doc.summary ? (
           <View style={styles.section}>
             <Text style={styles.sectionHeading}>SUMMARY</Text>
-            <Text style={styles.summaryText}>{doc.summary}</Text>
+            <HtmlNodes
+              html={doc.summary}
+              bulletDotStyle={styles.bulletDot}
+              bulletTextStyle={styles.bulletText}
+              paraStyle={styles.summaryText}
+            />
           </View>
         ) : null}
         <ExperienceSection entries={doc.experience} />
