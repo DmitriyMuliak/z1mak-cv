@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Link } from '@react-pdf/renderer';
 import type {
   ResumeDocument,
   ExperienceEntry,
@@ -47,21 +47,33 @@ const styles = StyleSheet.create({
   inlineItem: { fontSize: 10, marginBottom: 2 },
 });
 
+type ContactPart = { type: 'text'; value: string } | { type: 'link'; href: string; label: string };
+
 function ContactLine({ header }: { header: ResumeDocument['header'] }) {
-  const parts = [
-    header.email,
-    header.phone,
-    header.location,
-    header.linkedin,
-    header.website,
-  ].filter(Boolean) as string[];
+  const parts: ContactPart[] = [
+    header.email ? { type: 'text', value: header.email } : null,
+    header.phone ? { type: 'text', value: header.phone } : null,
+    header.location ? { type: 'text', value: header.location } : null,
+    header.linkedin
+      ? { type: 'link', href: header.linkedin, label: header.linkedinLabel || header.linkedin }
+      : null,
+    header.website
+      ? { type: 'link', href: header.website, label: header.websiteLabel || header.website }
+      : null,
+  ].filter(Boolean) as ContactPart[];
 
   return (
     <Text style={styles.contactLine}>
       {parts.map((part, i) => (
         <React.Fragment key={i}>
           {i > 0 && <Text style={{ color: '#888888' }}> | </Text>}
-          <Text>{part}</Text>
+          {part.type === 'link' ? (
+            <Link src={part.href} style={{ color: '#444444', textDecoration: 'none' }}>
+              {part.label}
+            </Link>
+          ) : (
+            <Text>{part.value}</Text>
+          )}
         </React.Fragment>
       ))}
     </Text>

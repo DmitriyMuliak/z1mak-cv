@@ -228,7 +228,7 @@ export function ResumePreview({
                     data-resume-path="/header/linkedin"
                     className="hover:text-primary"
                   >
-                    LinkedIn
+                    {header.linkedinLabel || header.linkedin}
                   </a>
                 ),
                 header.website && (
@@ -240,7 +240,7 @@ export function ResumePreview({
                     data-resume-path="/header/website"
                     className="hover:text-primary"
                   >
-                    Website
+                    {header.websiteLabel || header.website}
                   </a>
                 ),
               ]

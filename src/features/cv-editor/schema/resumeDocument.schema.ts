@@ -10,7 +10,9 @@ const ResumeHeaderSchema = v.object({
   phone: v.optional(v.string()),
   location: v.optional(v.string()),
   linkedin: v.optional(v.pipe(v.string(), v.url())),
+  linkedinLabel: v.optional(v.string()),
   website: v.optional(v.pipe(v.string(), v.url())),
+  websiteLabel: v.optional(v.string()),
 });
 
 const ExperienceEntrySchema = v.object({
@@ -134,7 +136,9 @@ export const defaultResumeDocument: ResumeDocument = {
     phone: undefined,
     location: undefined,
     linkedin: undefined,
+    linkedinLabel: undefined,
     website: undefined,
+    websiteLabel: undefined,
   },
   summary: undefined,
   experience: [],

@@ -1,86 +1,141 @@
 'use client';
 
+import { useState } from 'react';
+import { Tag } from 'lucide-react';
 import { useResumeEditorStore } from '../../store/resumeEditorStore';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
 // ---------------------------------------------------------------------------
-// Field descriptor for the flat header form
+// URL field with optional display label
 // ---------------------------------------------------------------------------
 
-interface HeaderField {
-  path: string;
+interface UrlFieldProps {
+  urlKey: 'linkedin' | 'website';
+  labelKey: 'linkedinLabel' | 'websiteLabel';
   label: string;
-  type: 'text' | 'email' | 'tel' | 'url';
   placeholder: string;
-  key: 'name' | 'email' | 'phone' | 'location' | 'linkedin' | 'website';
+  labelPlaceholder: string;
 }
 
-const HEADER_FIELDS: HeaderField[] = [
-  { key: 'name', path: '/header/name', label: 'Full Name', type: 'text', placeholder: 'Jane Doe' },
-  {
-    key: 'email',
-    path: '/header/email',
-    label: 'Email',
-    type: 'email',
-    placeholder: 'jane@example.com',
-  },
-  {
-    key: 'phone',
-    path: '/header/phone',
-    label: 'Phone',
-    type: 'tel',
-    placeholder: '+1 555 123 4567',
-  },
-  {
-    key: 'location',
-    path: '/header/location',
-    label: 'Location',
-    type: 'text',
-    placeholder: 'San Francisco, CA',
-  },
-  {
-    key: 'linkedin',
-    path: '/header/linkedin',
-    label: 'LinkedIn URL',
-    type: 'url',
-    placeholder: 'https://linkedin.com/in/janedoe',
-  },
-  {
-    key: 'website',
-    path: '/header/website',
-    label: 'Website',
-    type: 'url',
-    placeholder: 'https://janedoe.dev',
-  },
-];
+function UrlFieldWithLabel({
+  urlKey,
+  labelKey,
+  label,
+  placeholder,
+  labelPlaceholder,
+}: UrlFieldProps) {
+  const header = useResumeEditorStore((s) => s.document.header);
+  const updateField = useResumeEditorStore((s) => s.updateField);
+  const [showLabel, setShowLabel] = useState(!!header[labelKey]);
+
+  const urlValue = header[urlKey] ?? '';
+  const labelValue = header[labelKey] ?? '';
+
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={`header-${urlKey}`}>{label}</Label>
+      <div className="relative">
+        <Input
+          id={`header-${urlKey}`}
+          type="url"
+          placeholder={placeholder}
+          value={urlValue}
+          className="pr-9"
+          onChange={(e) => updateField(`/header/${urlKey}`, e.target.value || undefined)}
+        />
+        <button
+          type="button"
+          title={showLabel ? 'Remove display label' : 'Add display label'}
+          onClick={() => {
+            if (showLabel) {
+              updateField(`/header/${labelKey}`, undefined);
+            }
+            setShowLabel((v) => !v);
+          }}
+          className={cn(
+            'absolute right-2 top-1/2 -translate-y-1/2 rounded p-0.5 transition-colors',
+            showLabel ? 'text-primary' : 'text-muted-foreground hover:text-foreground',
+          )}
+        >
+          <Tag size={14} />
+        </button>
+      </div>
+
+      {showLabel && (
+        <Input
+          id={`header-${labelKey}`}
+          type="text"
+          placeholder={labelPlaceholder}
+          value={labelValue}
+          onChange={(e) => updateField(`/header/${labelKey}`, e.target.value || undefined)}
+          className="h-7 text-xs"
+        />
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Simple text / email / tel field
+// ---------------------------------------------------------------------------
+
+interface SimpleFieldProps {
+  fieldKey: 'name' | 'email' | 'phone' | 'location';
+  label: string;
+  type: 'text' | 'email' | 'tel';
+  placeholder: string;
+}
+
+function SimpleField({ fieldKey, label, type, placeholder }: SimpleFieldProps) {
+  const value = useResumeEditorStore((s) => s.document.header[fieldKey] ?? '');
+  const updateField = useResumeEditorStore((s) => s.updateField);
+
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={`header-${fieldKey}`}>{label}</Label>
+      <Input
+        id={`header-${fieldKey}`}
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => updateField(`/header/${fieldKey}`, e.target.value || undefined)}
+      />
+    </div>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-/**
- * Controlled form for the CV header section.
- * Each input directly calls `updateField` on blur/change.
- */
 export function HeaderForm() {
-  const header = useResumeEditorStore((s) => s.document.header);
-  const updateField = useResumeEditorStore((s) => s.updateField);
-
   return (
     <div className="space-y-4">
-      {HEADER_FIELDS.map((field) => (
-        <div key={field.key} className="space-y-1.5">
-          <Label htmlFor={`header-${field.key}`}>{field.label}</Label>
-          <Input
-            id={`header-${field.key}`}
-            type={field.type}
-            placeholder={field.placeholder}
-            value={header[field.key] ?? ''}
-            onChange={(e) => updateField(field.path, e.target.value || undefined)}
-          />
-        </div>
-      ))}
+      <SimpleField fieldKey="name" label="Full Name" type="text" placeholder="Jane Doe" />
+      <SimpleField fieldKey="email" label="Email" type="email" placeholder="jane@example.com" />
+      <SimpleField fieldKey="phone" label="Phone" type="tel" placeholder="+1 555 123 4567" />
+      <SimpleField
+        fieldKey="location"
+        label="Location"
+        type="text"
+        placeholder="San Francisco, CA"
+      />
+      <UrlFieldWithLabel
+        urlKey="linkedin"
+        labelKey="linkedinLabel"
+        label="LinkedIn URL"
+        placeholder="https://linkedin.com/in/janedoe"
+        labelPlaceholder="Display as… e.g. LinkedIn"
+      />
+      <UrlFieldWithLabel
+        urlKey="website"
+        labelKey="websiteLabel"
+        label="Website"
+        placeholder="https://janedoe.dev"
+        labelPlaceholder="Display as… e.g. My Portfolio"
+      />
     </div>
   );
 }
