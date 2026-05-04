@@ -12,6 +12,7 @@ export const paths = {
   changeEmail: '/auth/change-email',
   privacyPolicy: '/privacy-policy',
   termsOfService: '/terms-of-service',
+  cvEditor: '/cv-editor',
 } as const;
 
 export type PathKeys = keyof typeof paths;

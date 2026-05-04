@@ -1,0 +1,199 @@
+'use client';
+
+import { useState } from 'react';
+import { Undo2, Redo2, RotateCcw, CircleDot, FileDown, Loader2 } from 'lucide-react';
+import { useResumeEditorStore, useResumeEditorHistory } from '../store/resumeEditorStore';
+import { useTemplateSettingsStore } from '../store/templateSettingsStore';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { HeaderForm } from './forms/HeaderForm';
+import { SummaryForm } from './forms/SummaryForm';
+import { ExperienceForm } from './forms/ExperienceForm';
+import { EducationForm } from './forms/EducationForm';
+import { SkillsForm } from './forms/SkillsForm';
+import { TemplateSettingsForm } from './forms/TemplateSettingsForm';
+import { ResumePreview } from './ResumePreview';
+import { usePdfExport } from '../hooks/usePdfExport';
+
+// ---------------------------------------------------------------------------
+// Tabs
+// ---------------------------------------------------------------------------
+
+type TabId = 'header' | 'summary' | 'experience' | 'education' | 'skills' | 'template';
+
+const TABS: { id: TabId; label: string }[] = [
+  { id: 'header', label: 'Header' },
+  { id: 'summary', label: 'Summary' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'education', label: 'Education' },
+  { id: 'skills', label: 'Skills' },
+  { id: 'template', label: 'Template' },
+];
+
+const FORM_MAP: Record<TabId, React.ReactNode> = {
+  header: <HeaderForm />,
+  summary: <SummaryForm />,
+  experience: <ExperienceForm />,
+  education: <EducationForm />,
+  skills: <SkillsForm />,
+  template: <TemplateSettingsForm />,
+};
+
+// ---------------------------------------------------------------------------
+// Toolbar
+// ---------------------------------------------------------------------------
+
+function EditorToolbar() {
+  const { undo, redo, canUndo, canRedo } = useResumeEditorHistory();
+  const isDirty = useResumeEditorStore((s) => s.isDirty);
+  const resetDocument = useResumeEditorStore((s) => s.resetDocument);
+  const document = useResumeEditorStore((s) => s.document);
+  const template = useTemplateSettingsStore((s) => s.template);
+  const font = useTemplateSettingsStore((s) => s.font);
+  const { exportPdf, isGenerating } = usePdfExport();
+
+  return (
+    <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-background/80 backdrop-blur-sm shrink-0 flex-wrap">
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-sm"
+        onClick={() => undo()}
+        disabled={!canUndo}
+        title="Undo (Ctrl+Z)"
+        aria-label="Undo"
+      >
+        <Undo2 size={16} />
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-sm"
+        onClick={() => redo()}
+        disabled={!canRedo}
+        title="Redo (Ctrl+Y)"
+        aria-label="Redo"
+      >
+        <Redo2 size={16} />
+      </Button>
+
+      <div className="w-px h-5 bg-border mx-1" />
+
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        onClick={resetDocument}
+        title="Reset to empty document"
+        className="text-muted-foreground hover:text-destructive"
+      >
+        <RotateCcw size={14} />
+        Reset
+      </Button>
+
+      <div className="w-px h-5 bg-border mx-1" />
+
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={() => exportPdf(document, template, font)}
+        disabled={isGenerating}
+        aria-label={isGenerating ? 'Generating PDF…' : 'Export PDF'}
+        className="gap-1.5"
+      >
+        {isGenerating ? (
+          <Loader2 size={14} className="animate-spin" aria-hidden="true" />
+        ) : (
+          <FileDown size={14} aria-hidden="true" />
+        )}
+        {isGenerating ? 'Generating…' : 'Export PDF'}
+      </Button>
+
+      {isDirty && (
+        <span className="ml-auto flex items-center gap-1 text-xs text-amber-500">
+          <CircleDot size={12} />
+          Unsaved
+        </span>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Tab bar
+// ---------------------------------------------------------------------------
+
+function TabBar({ activeTab, onChange }: { activeTab: TabId; onChange: (t: TabId) => void }) {
+  const isDirty = useResumeEditorStore((s) => s.isDirty);
+
+  return (
+    <div
+      className="flex overflow-x-auto shrink-0 border-b border-border bg-background"
+      role="tablist"
+      aria-label="CV sections"
+    >
+      {TABS.map((tab) => (
+        <button
+          key={tab.id}
+          role="tab"
+          aria-selected={activeTab === tab.id}
+          aria-controls={`tabpanel-${tab.id}`}
+          id={`tab-${tab.id}`}
+          onClick={() => onChange(tab.id)}
+          className={cn(
+            'relative flex items-center gap-1.5 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors shrink-0',
+            'hover:text-foreground hover:bg-muted/50',
+            activeTab === tab.id
+              ? 'text-foreground after:absolute after:bottom-0 after:inset-x-0 after:h-0.5 after:bg-primary'
+              : 'text-muted-foreground',
+          )}
+        >
+          {tab.label}
+          {isDirty && activeTab === tab.id && tab.id !== 'template' && (
+            <span aria-hidden className="size-1.5 rounded-full bg-amber-500 shrink-0" />
+          )}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main layout
+// ---------------------------------------------------------------------------
+
+export function EditorLayout() {
+  const [activeTab, setActiveTab] = useState<TabId>('header');
+  const template = useTemplateSettingsStore((s) => s.template);
+  const font = useTemplateSettingsStore((s) => s.font);
+
+  return (
+    <div className="w-full flex flex-col" style={{ minHeight: 'calc(100vh - 80px)' }}>
+      <EditorToolbar />
+
+      <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
+        {/* Left: Form pane */}
+        <div className="flex flex-col w-full lg:w-[480px] lg:shrink-0 lg:border-r border-border overflow-hidden">
+          <TabBar activeTab={activeTab} onChange={setActiveTab} />
+          <div
+            id={`tabpanel-${activeTab}`}
+            role="tabpanel"
+            aria-labelledby={`tab-${activeTab}`}
+            className="flex-1 overflow-y-auto p-4"
+          >
+            {FORM_MAP[activeTab]}
+          </div>
+        </div>
+
+        {/* Right: Preview pane */}
+        <div className="flex-1 overflow-y-auto bg-muted/40 p-4 lg:p-6">
+          <div className="lg:sticky lg:top-4">
+            <p className="text-xs text-muted-foreground mb-3 text-center">Live Preview</p>
+            <ResumePreview template={template} font={font} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
