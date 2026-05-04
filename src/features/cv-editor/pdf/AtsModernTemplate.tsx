@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 50,
     lineHeight: 1.4,
   },
-  nameWrapper: { marginBottom: 6 },
+  nameWrapper: { marginBottom: 20 },
   name: { fontSize: 22, fontWeight: 700, color: '#111111' },
   contactLine: { fontSize: 9, color: '#555555', marginBottom: 14 },
   section: { marginBottom: 10 },

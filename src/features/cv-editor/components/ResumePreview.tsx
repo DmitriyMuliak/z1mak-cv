@@ -192,7 +192,7 @@ export function ResumePreview({
           {/* ---- Header ---- */}
           <Section path="/header">
             <h1
-              className="font-bold text-foreground leading-tight mb-1"
+              className="font-bold text-foreground leading-tight mb-2"
               style={{ fontSize: template === 'atsModern' ? '1.5rem' : '1.375rem' }}
             >
               {header.name || <span className="text-muted-foreground italic">Your Name</span>}
