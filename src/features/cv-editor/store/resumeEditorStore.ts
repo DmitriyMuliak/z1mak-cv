@@ -85,6 +85,18 @@ export const useResumeEditorStore = create<ResumeEditorStore>()(
         resetDocument: () => {
           set({ document: defaultResumeDocument, isDirty: false });
         },
+
+        reorderItems: (section, activeId, overId) => {
+          const next = produce(get().document, (draft) => {
+            const arr = draft[section] as { id: string }[];
+            const from = arr.findIndex((x) => x.id === activeId);
+            const to = arr.findIndex((x) => x.id === overId);
+            if (from === -1 || to === -1 || from === to) return;
+            const [item] = arr.splice(from, 1);
+            arr.splice(to, 0, item);
+          });
+          set({ document: next, isDirty: true });
+        },
       }),
       { name: 'ResumeEditorStore', enabled: envType.isDev },
     ),

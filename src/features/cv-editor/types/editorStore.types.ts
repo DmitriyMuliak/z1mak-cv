@@ -50,6 +50,16 @@ export interface ResumeEditorActions {
    * Resets `isDirty` to `false`.
    */
   resetDocument: () => void;
+
+  /**
+   * Move an item within a list section by swapping positions identified by id.
+   * Sets `isDirty` to `true`.
+   */
+  reorderItems: (
+    section: 'experience' | 'education' | 'skills',
+    activeId: string,
+    overId: string,
+  ) => void;
 }
 
 // ---------------------------------------------------------------------------
