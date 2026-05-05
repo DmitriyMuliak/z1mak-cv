@@ -14,10 +14,10 @@
 import { useState, useCallback } from 'react';
 import type { ResumeDocument } from '../schema/resumeDocument.schema';
 import type { PdfWorkerResponse } from '../workers/pdfGenerator.worker';
-import type { TemplateStyle } from '../store/templateSettingsStore';
+import type { TemplateStyle, SectionKey } from '../store/templateSettingsStore';
 import type { FontOption } from '../pdf/registerFonts';
 
-export type { TemplateStyle, FontOption };
+export type { TemplateStyle, FontOption, SectionKey };
 
 // ---------------------------------------------------------------------------
 // Helper: derive a filename from the document header name
@@ -66,6 +66,7 @@ export interface UsePdfExportReturn {
     template: TemplateStyle,
     font: FontOption,
     pageCount: number,
+    sectionOrder: SectionKey[][],
   ) => Promise<void>;
 }
 
@@ -78,6 +79,7 @@ export function usePdfExport(): UsePdfExportReturn {
       template: TemplateStyle,
       font: FontOption,
       pageCount: number,
+      sectionOrder: SectionKey[][],
     ): Promise<void> => {
       setIsGenerating(true);
       try {
@@ -104,7 +106,7 @@ export function usePdfExport(): UsePdfExportReturn {
             reject(new Error(e.message || 'PDF worker error.'));
           };
 
-          worker.postMessage({ document: doc, template, font, pageCount });
+          worker.postMessage({ document: doc, template, font, pageCount, sectionOrder });
         });
       } finally {
         setIsGenerating(false);

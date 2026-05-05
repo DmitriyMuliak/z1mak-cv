@@ -188,6 +188,7 @@ export function ResumePreview({
   const t = useTranslations('cvEditor');
   const doc = useResumeEditorStore((s) => s.document);
   const pageCount = useTemplateSettingsStore((s) => s.pageCount);
+  const sectionOrder = useTemplateSettingsStore((s) => s.sectionOrder);
   const { header, summary, experience, education, skills, certifications, languages } = doc;
   const hasContent = (arr: unknown[]) => arr.length > 0;
   const contactSep = template === 'atsModern' ? '·' : '|';
@@ -288,68 +289,73 @@ export function ResumePreview({
                 </Section>
               )}
 
-              {/* ---- Summary (page 0 only) ---- */}
-              {pageIndex === 0 && summary && (
-                <Section path="/summary">
-                  <SectionTitle template={template}>{t('preview.summary')}</SectionTitle>
-                  <div
-                    className="text-xs text-neutral-900/90 leading-relaxed rich-preview [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-0.5 [&_p]:mb-0.5 [&_strong]:font-semibold [&_em]:italic"
-                    dangerouslySetInnerHTML={{ __html: summary }}
-                  />
-                </Section>
-              )}
-
-              {/* ---- Experience ---- */}
-              {hasContent(pageExp) && (
-                <Section path="/experience">
-                  <SectionTitle template={template}>{t('preview.experience')}</SectionTitle>
-                  {pageExp.map((entry, i) => (
-                    <ExperienceItem key={entry.id} entry={entry} index={i} t={t} />
-                  ))}
-                </Section>
-              )}
-
-              {/* ---- Education ---- */}
-              {hasContent(pageEdu) && (
-                <Section path="/education">
-                  <SectionTitle template={template}>{t('preview.education')}</SectionTitle>
-                  {pageEdu.map((entry, i) => (
-                    <EducationItem key={entry.id} entry={entry} index={i} t={t} />
-                  ))}
-                </Section>
-              )}
-
-              {/* ---- Skills ---- */}
-              {hasContent(pageSkills) && (
-                <Section path="/skills">
-                  <SectionTitle template={template}>{t('preview.skills')}</SectionTitle>
-                  {pageSkills.map((group, i) => (
-                    <SkillGroupItem key={group.id} group={group} index={i} />
-                  ))}
-                </Section>
-              )}
-
-              {/* ---- Certifications ---- */}
-              {hasContent(pageCerts) && (
-                <Section path="/certifications">
-                  <SectionTitle template={template}>{t('preview.certifications')}</SectionTitle>
-                  {pageCerts.map((entry, i) => (
-                    <CertificationItem key={entry.id} entry={entry} index={i} />
-                  ))}
-                </Section>
-              )}
-
-              {/* ---- Languages ---- */}
-              {hasContent(pageLangs) && (
-                <Section path="/languages">
-                  <SectionTitle template={template}>{t('preview.languages')}</SectionTitle>
-                  <div className="flex flex-wrap">
-                    {pageLangs.map((entry, i) => (
-                      <LanguageItem key={entry.id} entry={entry} index={i} />
-                    ))}
-                  </div>
-                </Section>
-              )}
+              {/* ---- Sections in user-defined order ---- */}
+              {(sectionOrder[pageIndex] ?? []).map((key) => {
+                if (key === 'summary') {
+                  return pageIndex === 0 && summary ? (
+                    <Section key="summary" path="/summary">
+                      <SectionTitle template={template}>{t('preview.summary')}</SectionTitle>
+                      <div
+                        className="text-xs text-neutral-900/90 leading-relaxed rich-preview [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-0.5 [&_p]:mb-0.5 [&_strong]:font-semibold [&_em]:italic"
+                        dangerouslySetInnerHTML={{ __html: summary }}
+                      />
+                    </Section>
+                  ) : null;
+                }
+                if (key === 'experience' && hasContent(pageExp)) {
+                  return (
+                    <Section key="experience" path="/experience">
+                      <SectionTitle template={template}>{t('preview.experience')}</SectionTitle>
+                      {pageExp.map((entry, i) => (
+                        <ExperienceItem key={entry.id} entry={entry} index={i} t={t} />
+                      ))}
+                    </Section>
+                  );
+                }
+                if (key === 'education' && hasContent(pageEdu)) {
+                  return (
+                    <Section key="education" path="/education">
+                      <SectionTitle template={template}>{t('preview.education')}</SectionTitle>
+                      {pageEdu.map((entry, i) => (
+                        <EducationItem key={entry.id} entry={entry} index={i} t={t} />
+                      ))}
+                    </Section>
+                  );
+                }
+                if (key === 'skills' && hasContent(pageSkills)) {
+                  return (
+                    <Section key="skills" path="/skills">
+                      <SectionTitle template={template}>{t('preview.skills')}</SectionTitle>
+                      {pageSkills.map((group, i) => (
+                        <SkillGroupItem key={group.id} group={group} index={i} />
+                      ))}
+                    </Section>
+                  );
+                }
+                if (key === 'certifications' && hasContent(pageCerts)) {
+                  return (
+                    <Section key="certifications" path="/certifications">
+                      <SectionTitle template={template}>{t('preview.certifications')}</SectionTitle>
+                      {pageCerts.map((entry, i) => (
+                        <CertificationItem key={entry.id} entry={entry} index={i} />
+                      ))}
+                    </Section>
+                  );
+                }
+                if (key === 'languages' && hasContent(pageLangs)) {
+                  return (
+                    <Section key="languages" path="/languages">
+                      <SectionTitle template={template}>{t('preview.languages')}</SectionTitle>
+                      <div className="flex flex-wrap">
+                        {pageLangs.map((entry, i) => (
+                          <LanguageItem key={entry.id} entry={entry} index={i} />
+                        ))}
+                      </div>
+                    </Section>
+                  );
+                }
+                return null;
+              })}
 
               {/* Empty state placeholder (first page only) */}
               {pageIndex === 0 && isEmptyDoc && (

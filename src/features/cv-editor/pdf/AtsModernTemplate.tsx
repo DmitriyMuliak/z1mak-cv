@@ -9,6 +9,7 @@ import type {
   LanguageEntry,
 } from '../schema/resumeDocument.schema';
 import { htmlToTextNodes, type TextRun } from '../utils/htmlToTextNodes';
+import { DEFAULT_SECTION_ORDER, type SectionKey } from '../store/templateSettingsStore';
 
 function Runs({ runs }: { runs: TextRun[] }) {
   return (
@@ -261,12 +262,14 @@ export interface AtsModernTemplateProps {
   document: ResumeDocument;
   fontFamily?: string;
   pageCount?: number;
+  sectionOrder?: SectionKey[][];
 }
 
 export function AtsModernTemplate({
   document: doc,
   fontFamily = 'Roboto',
   pageCount = 1,
+  sectionOrder,
 }: AtsModernTemplateProps) {
   return (
     <Document title={doc.header.name || 'Resume'} author={doc.header.name}>
@@ -276,6 +279,7 @@ export function AtsModernTemplate({
         const pageSkills = doc.skills.filter((g) => (g.page ?? 0) === pageIndex);
         const pageCerts = doc.certifications.filter((e) => (e.page ?? 0) === pageIndex);
         const pageLangs = doc.languages.filter((e) => (e.page ?? 0) === pageIndex);
+        const order = sectionOrder?.[pageIndex] ?? DEFAULT_SECTION_ORDER;
         return (
           <Page key={pageIndex} size="A4" style={{ ...styles.page, fontFamily }}>
             {pageIndex === 0 && (
@@ -286,22 +290,32 @@ export function AtsModernTemplate({
                 <ContactLine header={doc.header} />
               </>
             )}
-            {pageIndex === 0 && doc.summary ? (
-              <View style={styles.section}>
-                <SectionHeading title="Summary" />
-                <HtmlNodes
-                  html={doc.summary}
-                  bulletDotStyle={styles.bulletDot}
-                  bulletTextStyle={styles.bulletText}
-                  paraStyle={styles.summaryText}
-                />
-              </View>
-            ) : null}
-            {pageExp.length > 0 && <ExperienceSection entries={pageExp} />}
-            {pageEdu.length > 0 && <EducationSection entries={pageEdu} />}
-            {pageSkills.length > 0 && <SkillsSection groups={pageSkills} />}
-            {pageCerts.length > 0 && <CertificationsSection entries={pageCerts} />}
-            {pageLangs.length > 0 && <LanguagesSection entries={pageLangs} />}
+            {order.map((key) => {
+              if (key === 'summary' && pageIndex === 0 && doc.summary) {
+                return (
+                  <View key="summary" style={styles.section}>
+                    <SectionHeading title="Summary" />
+                    <HtmlNodes
+                      html={doc.summary}
+                      bulletDotStyle={styles.bulletDot}
+                      bulletTextStyle={styles.bulletText}
+                      paraStyle={styles.summaryText}
+                    />
+                  </View>
+                );
+              }
+              if (key === 'experience' && pageExp.length > 0)
+                return <ExperienceSection key="experience" entries={pageExp} />;
+              if (key === 'education' && pageEdu.length > 0)
+                return <EducationSection key="education" entries={pageEdu} />;
+              if (key === 'skills' && pageSkills.length > 0)
+                return <SkillsSection key="skills" groups={pageSkills} />;
+              if (key === 'certifications' && pageCerts.length > 0)
+                return <CertificationsSection key="certifications" entries={pageCerts} />;
+              if (key === 'languages' && pageLangs.length > 0)
+                return <LanguagesSection key="languages" entries={pageLangs} />;
+              return null;
+            })}
           </Page>
         );
       })}

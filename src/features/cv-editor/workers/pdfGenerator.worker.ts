@@ -13,13 +13,14 @@ import { registerFonts, getFontFamily, type FontOption } from '../pdf/registerFo
 import { AtsCleanTemplate } from '../pdf/AtsCleanTemplate';
 import { AtsModernTemplate } from '../pdf/AtsModernTemplate';
 import type { ResumeDocument } from '../schema/resumeDocument.schema';
-import type { TemplateStyle } from '../store/templateSettingsStore';
+import type { TemplateStyle, SectionKey } from '../store/templateSettingsStore';
 
 export interface PdfWorkerRequest {
   document: ResumeDocument;
   template: TemplateStyle;
   font: FontOption;
   pageCount: number;
+  sectionOrder: SectionKey[][];
 }
 
 interface PdfWorkerSuccess {
@@ -38,7 +39,8 @@ function isPdfWorkerRequest(data: unknown): data is PdfWorkerRequest {
     d.document !== null &&
     (d.template === 'atsClean' || d.template === 'atsModern') &&
     (d.font === 'roboto' || d.font === 'ptSerif') &&
-    typeof d.pageCount === 'number'
+    typeof d.pageCount === 'number' &&
+    Array.isArray(d.sectionOrder)
   );
 }
 
@@ -48,13 +50,13 @@ self.addEventListener('message', async (event: MessageEvent<unknown>) => {
     return;
   }
 
-  const { document: resumeDocument, template, font, pageCount } = event.data;
+  const { document: resumeDocument, template, font, pageCount, sectionOrder } = event.data;
 
   registerFonts(font);
   const fontFamily = getFontFamily(font);
 
   try {
-    const props = { document: resumeDocument, fontFamily, pageCount };
+    const props = { document: resumeDocument, fontFamily, pageCount, sectionOrder };
     const element = (
       template === 'atsModern'
         ? React.createElement(AtsModernTemplate, props)

@@ -61,6 +61,7 @@ function EditorToolbar({ onOpenPreview }: { onOpenPreview: () => void }) {
   const template = useTemplateSettingsStore((s) => s.template);
   const font = useTemplateSettingsStore((s) => s.font);
   const pageCount = useTemplateSettingsStore((s) => s.pageCount);
+  const sectionOrder = useTemplateSettingsStore((s) => s.sectionOrder);
   const { exportPdf, isGenerating } = usePdfExport();
 
   return (
@@ -108,7 +109,7 @@ function EditorToolbar({ onOpenPreview }: { onOpenPreview: () => void }) {
         type="button"
         variant="outline"
         size="sm"
-        onClick={() => exportPdf(document, template, font, pageCount)}
+        onClick={() => exportPdf(document, template, font, pageCount, sectionOrder)}
         disabled={isGenerating}
         aria-label={isGenerating ? t('buttons.exporting') : t('buttons.exportPdf')}
         className="gap-1.5"
