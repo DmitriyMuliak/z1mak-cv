@@ -420,7 +420,10 @@
       "unsaved": "Unsaved",
       "undo": "Undo",
       "redo": "Redo",
-      "livePreview": "Live Preview"
+      "livePreview": "Live Preview",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "fitView": "Fit to view"
     },
     "validation": {
       "nameRequired": "Name is required",

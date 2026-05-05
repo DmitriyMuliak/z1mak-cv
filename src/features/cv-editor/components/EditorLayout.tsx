@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useTranslations } from 'next-intl';
-import { Undo2, Redo2, RotateCcw, FileDown, Loader2 } from 'lucide-react';
+import { Undo2, Redo2, RotateCcw, FileDown, Loader2, Eye, X } from 'lucide-react';
 import { useResumeEditorStore, useResumeEditorHistory } from '../store/resumeEditorStore';
 import { useTemplateSettingsStore } from '../store/templateSettingsStore';
+import type { TemplateStyle } from '../store/templateSettingsStore';
+import type { FontOption } from '../pdf/registerFonts';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { HeaderForm } from './forms/HeaderForm';
@@ -13,7 +16,7 @@ import { ExperienceForm } from './forms/ExperienceForm';
 import { EducationForm } from './forms/EducationForm';
 import { SkillsForm } from './forms/SkillsForm';
 import { TemplateSettingsForm } from './forms/TemplateSettingsForm';
-import { ResumePreview } from './ResumePreview';
+import { ResumeCanvas } from './ResumeCanvas';
 import { usePdfExport } from '../hooks/usePdfExport';
 
 // ---------------------------------------------------------------------------
@@ -46,7 +49,7 @@ function getTabs(t: ReturnType<typeof useTranslations>): { id: TabId; label: str
 // Toolbar
 // ---------------------------------------------------------------------------
 
-function EditorToolbar() {
+function EditorToolbar({ onOpenPreview }: { onOpenPreview: () => void }) {
   const t = useTranslations('cvEditor');
   const { undo, redo, canUndo, canRedo } = useResumeEditorHistory();
   // const isDirty = useResumeEditorStore((s) => s.isDirty);
@@ -114,6 +117,18 @@ function EditorToolbar() {
         {isGenerating ? t('buttons.exporting') : t('buttons.exportPdf')}
       </Button>
 
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={onOpenPreview}
+        aria-label={t('buttons.livePreview')}
+        className="gap-1.5 lg:hidden"
+      >
+        <Eye size={14} aria-hidden="true" />
+        {t('buttons.livePreview')}
+      </Button>
+
       {/* {isDirty && (
         <span className="ml-auto flex items-center gap-1 text-xs text-amber-500">
           <CircleDot size={12} />
@@ -169,15 +184,51 @@ function TabBar({ activeTab, onChange }: { activeTab: TabId; onChange: (t: TabId
 // Main layout
 // ---------------------------------------------------------------------------
 
-export function EditorLayout() {
+function PreviewModal({
+  onClose,
+  template,
+  font,
+}: {
+  onClose: () => void;
+  template: TemplateStyle;
+  font: FontOption;
+}) {
   const t = useTranslations('cvEditor');
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col bg-background lg:hidden">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border shrink-0 bg-background/80 backdrop-blur-sm">
+        <span className="text-sm font-medium">{t('buttons.livePreview')}</span>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          onClick={onClose}
+          aria-label="Close preview"
+        >
+          <X size={16} />
+        </Button>
+      </div>
+      <div className="flex-1 overflow-hidden relative bg-muted/40">
+        <ResumeCanvas template={template} font={font} />
+      </div>
+    </div>
+  );
+}
+
+export function EditorLayout() {
   const [activeTab, setActiveTab] = useState<TabId>('header');
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const isLg = useMediaQuery('(min-width: 1024px)');
   const template = useTemplateSettingsStore((s) => s.template);
   const font = useTemplateSettingsStore((s) => s.font);
 
+  useEffect(() => {
+    if (isLg) setPreviewOpen(false);
+  }, [isLg]);
+
   return (
     <div className="w-full flex flex-col" style={{ minHeight: 'calc(100vh - 80px)' }}>
-      <EditorToolbar />
+      <EditorToolbar onOpenPreview={() => setPreviewOpen(true)} />
 
       <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
         {/* Left: Form pane */}
@@ -193,16 +244,14 @@ export function EditorLayout() {
           </div>
         </div>
 
-        {/* Right: Preview pane */}
-        <div className="flex-1 overflow-y-auto bg-muted/40 p-4 lg:p-6">
-          <div className="lg:sticky lg:top-4">
-            <p className="text-xs text-muted-foreground mb-3 text-center">
-              {t('buttons.livePreview')}
-            </p>
-            <ResumePreview template={template} font={font} />
-          </div>
+        {/* Right: Preview pane — hidden on mobile, visible lg+ */}
+        <div className="hidden lg:flex flex-1 overflow-hidden relative bg-muted/40">
+          <ResumeCanvas template={template} font={font} />
         </div>
       </div>
+      {previewOpen && (
+        <PreviewModal onClose={() => setPreviewOpen(false)} template={template} font={font} />
+      )}
     </div>
   );
 }
