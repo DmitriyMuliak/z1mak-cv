@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Undo2, Redo2, RotateCcw, CircleDot, FileDown, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Undo2, Redo2, RotateCcw, FileDown, Loader2 } from 'lucide-react';
 import { useResumeEditorStore, useResumeEditorHistory } from '../store/resumeEditorStore';
 import { useTemplateSettingsStore } from '../store/templateSettingsStore';
 import { Button } from '@/components/ui/button';
@@ -21,15 +22,6 @@ import { usePdfExport } from '../hooks/usePdfExport';
 
 type TabId = 'header' | 'summary' | 'experience' | 'education' | 'skills' | 'template';
 
-const TABS: { id: TabId; label: string }[] = [
-  { id: 'header', label: 'Header' },
-  { id: 'summary', label: 'Summary' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'education', label: 'Education' },
-  { id: 'skills', label: 'Skills' },
-  { id: 'template', label: 'Template' },
-];
-
 const FORM_MAP: Record<TabId, React.ReactNode> = {
   header: <HeaderForm />,
   summary: <SummaryForm />,
@@ -39,13 +31,25 @@ const FORM_MAP: Record<TabId, React.ReactNode> = {
   template: <TemplateSettingsForm />,
 };
 
+function getTabs(t: ReturnType<typeof useTranslations>): { id: TabId; label: string }[] {
+  return [
+    { id: 'header', label: t('tabs.header') },
+    { id: 'summary', label: t('tabs.summary') },
+    { id: 'experience', label: t('tabs.experience') },
+    { id: 'education', label: t('tabs.education') },
+    { id: 'skills', label: t('tabs.skills') },
+    { id: 'template', label: t('tabs.template') },
+  ];
+}
+
 // ---------------------------------------------------------------------------
 // Toolbar
 // ---------------------------------------------------------------------------
 
 function EditorToolbar() {
+  const t = useTranslations('cvEditor');
   const { undo, redo, canUndo, canRedo } = useResumeEditorHistory();
-  const isDirty = useResumeEditorStore((s) => s.isDirty);
+  // const isDirty = useResumeEditorStore((s) => s.isDirty);
   const resetDocument = useResumeEditorStore((s) => s.resetDocument);
   const document = useResumeEditorStore((s) => s.document);
   const template = useTemplateSettingsStore((s) => s.template);
@@ -60,8 +64,8 @@ function EditorToolbar() {
         size="icon-sm"
         onClick={() => undo()}
         disabled={!canUndo}
-        title="Undo (Ctrl+Z)"
-        aria-label="Undo"
+        title={t('buttons.undo')}
+        aria-label={t('buttons.undo')}
       >
         <Undo2 size={16} />
       </Button>
@@ -71,8 +75,8 @@ function EditorToolbar() {
         size="icon-sm"
         onClick={() => redo()}
         disabled={!canRedo}
-        title="Redo (Ctrl+Y)"
-        aria-label="Redo"
+        title={t('buttons.redo')}
+        aria-label={t('buttons.redo')}
       >
         <Redo2 size={16} />
       </Button>
@@ -84,11 +88,11 @@ function EditorToolbar() {
         variant="ghost"
         size="sm"
         onClick={resetDocument}
-        title="Reset to empty document"
+        title={t('buttons.reset')}
         className="text-muted-foreground hover:text-destructive"
       >
         <RotateCcw size={14} />
-        Reset
+        {t('buttons.reset')}
       </Button>
 
       <div className="w-px h-5 bg-border mx-1" />
@@ -99,7 +103,7 @@ function EditorToolbar() {
         size="sm"
         onClick={() => exportPdf(document, template, font)}
         disabled={isGenerating}
-        aria-label={isGenerating ? 'Generating PDF…' : 'Export PDF'}
+        aria-label={isGenerating ? t('buttons.exporting') : t('buttons.exportPdf')}
         className="gap-1.5"
       >
         {isGenerating ? (
@@ -107,15 +111,15 @@ function EditorToolbar() {
         ) : (
           <FileDown size={14} aria-hidden="true" />
         )}
-        {isGenerating ? 'Generating…' : 'Export PDF'}
+        {isGenerating ? t('buttons.exporting') : t('buttons.exportPdf')}
       </Button>
 
-      {isDirty && (
+      {/* {isDirty && (
         <span className="ml-auto flex items-center gap-1 text-xs text-amber-500">
           <CircleDot size={12} />
-          Unsaved
+          {t('buttons.unsaved')}
         </span>
-      )}
+      )} */}
     </div>
   );
 }
@@ -125,15 +129,17 @@ function EditorToolbar() {
 // ---------------------------------------------------------------------------
 
 function TabBar({ activeTab, onChange }: { activeTab: TabId; onChange: (t: TabId) => void }) {
+  const t = useTranslations('cvEditor');
   const isDirty = useResumeEditorStore((s) => s.isDirty);
+  const tabs = getTabs(t);
 
   return (
     <div
       className="flex overflow-x-auto shrink-0 border-b border-border bg-background"
       role="tablist"
-      aria-label="CV sections"
+      aria-label={t('tabs.label')}
     >
-      {TABS.map((tab) => (
+      {tabs.map((tab) => (
         <button
           key={tab.id}
           role="tab"
@@ -164,6 +170,7 @@ function TabBar({ activeTab, onChange }: { activeTab: TabId; onChange: (t: TabId
 // ---------------------------------------------------------------------------
 
 export function EditorLayout() {
+  const t = useTranslations('cvEditor');
   const [activeTab, setActiveTab] = useState<TabId>('header');
   const template = useTemplateSettingsStore((s) => s.template);
   const font = useTemplateSettingsStore((s) => s.font);
@@ -189,7 +196,9 @@ export function EditorLayout() {
         {/* Right: Preview pane */}
         <div className="flex-1 overflow-y-auto bg-muted/40 p-4 lg:p-6">
           <div className="lg:sticky lg:top-4">
-            <p className="text-xs text-muted-foreground mb-3 text-center">Live Preview</p>
+            <p className="text-xs text-muted-foreground mb-3 text-center">
+              {t('buttons.livePreview')}
+            </p>
             <ResumePreview template={template} font={font} />
           </div>
         </div>

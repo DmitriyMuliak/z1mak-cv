@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
@@ -40,10 +41,11 @@ interface RichTextEditorProps {
 }
 
 export function RichTextEditor({ value, onChange, placeholder, className }: RichTextEditorProps) {
+  const t = useTranslations('cvEditor');
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Placeholder.configure({ placeholder: placeholder ?? 'Start typing…' }),
+      Placeholder.configure({ placeholder: placeholder ?? t('richEditor.placeholder') }),
     ],
     content: value ?? '',
     onUpdate({ editor }) {
@@ -71,14 +73,14 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           active={editor.isActive('bold')}
-          title="Bold"
+          title={t('richEditor.bold')}
         >
           <Bold size={14} />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleItalic().run()}
           active={editor.isActive('italic')}
-          title="Italic"
+          title={t('richEditor.italic')}
         >
           <Italic size={14} />
         </ToolbarButton>
@@ -86,14 +88,14 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           active={editor.isActive('bulletList')}
-          title="Bullet list"
+          title={t('richEditor.bulletList')}
         >
           <List size={14} />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           active={editor.isActive('orderedList')}
-          title="Numbered list"
+          title={t('richEditor.numberedList')}
         >
           <ListOrdered size={14} />
         </ToolbarButton>

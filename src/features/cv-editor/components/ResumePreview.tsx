@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useResumeEditorStore } from '../store/resumeEditorStore';
 import type { TemplateStyle, FontOption } from '../hooks/usePdfExport';
 type PdfTemplate = TemplateStyle;
@@ -54,13 +55,21 @@ function SectionTitle({
 // Sub-renderers
 // ---------------------------------------------------------------------------
 
-function ExperienceItem({ entry, index }: { entry: ExperienceEntry; index: number }) {
+function ExperienceItem({
+  entry,
+  index,
+  t,
+}: {
+  entry: ExperienceEntry;
+  index: number;
+  t: ReturnType<typeof useTranslations>;
+}) {
   return (
     <div data-resume-path={`/experience/${index}`} className="mb-3 last:mb-0">
       <div className="flex items-baseline justify-between gap-2">
         <span className="font-semibold text-sm text-foreground">{entry.title}</span>
         <span className="text-xs text-muted-foreground shrink-0">
-          {entry.startDate} — {entry.endDate ?? 'Present'}
+          {entry.startDate} — {entry.endDate ?? t('preview.present')}
         </span>
       </div>
       <div className="flex items-baseline gap-1 text-xs text-muted-foreground mb-1">
@@ -79,17 +88,31 @@ function ExperienceItem({ entry, index }: { entry: ExperienceEntry; index: numbe
   );
 }
 
-function EducationItem({ entry, index }: { entry: EducationEntry; index: number }) {
+function EducationItem({
+  entry,
+  index,
+  t,
+}: {
+  entry: EducationEntry;
+  index: number;
+  t: ReturnType<typeof useTranslations>;
+}) {
   return (
     <div data-resume-path={`/education/${index}`} className="mb-2 last:mb-0">
       <div className="flex items-baseline justify-between gap-2">
         <span className="font-semibold text-sm text-foreground">{entry.institution}</span>
         <span className="text-xs text-muted-foreground shrink-0">
-          {entry.startDate} — {entry.endDate ?? 'Present'}
+          {entry.startDate} — {entry.endDate ?? t('preview.present')}
         </span>
       </div>
       <div className="text-xs text-muted-foreground">
-        {entry.degree} in {entry.field}
+        {entry.degree && (
+          <>
+            {entry.degree}
+            {entry.field && ` ${t('preview.educationIn')} ${entry.field}`}
+          </>
+        )}
+        {!entry.degree && entry.field && entry.field}
         {entry.gpa && <span className="ml-2">GPA: {entry.gpa}</span>}
       </div>
     </div>
@@ -167,6 +190,7 @@ export function ResumePreview({
   template?: PdfTemplate;
   font?: FontOption;
 }) {
+  const t = useTranslations('cvEditor');
   const doc = useResumeEditorStore((s) => s.document);
   const { header, summary, experience, education, skills, certifications, languages } = doc;
 
@@ -188,7 +212,9 @@ export function ResumePreview({
               className="font-bold text-foreground leading-tight mb-2"
               style={{ fontSize: template === 'atsModern' ? '1.5rem' : '1.375rem' }}
             >
-              {header.name || <span className="text-muted-foreground italic">Your Name</span>}
+              {header.name || (
+                <span className="text-muted-foreground italic">{t('preview.yourName')}</span>
+              )}
             </h1>
             <div className="flex flex-wrap items-center gap-y-0.5 text-xs text-muted-foreground">
               {[
@@ -254,7 +280,7 @@ export function ResumePreview({
           {/* ---- Summary ---- */}
           {summary && (
             <Section path="/summary">
-              <SectionTitle template={template}>Summary</SectionTitle>
+              <SectionTitle template={template}>{t('preview.summary')}</SectionTitle>
               <div
                 className="text-xs text-foreground/90 leading-relaxed rich-preview [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-0.5 [&_p]:mb-0.5 [&_strong]:font-semibold [&_em]:italic"
                 dangerouslySetInnerHTML={{ __html: summary }}
@@ -265,9 +291,9 @@ export function ResumePreview({
           {/* ---- Experience ---- */}
           {hasContent(experience) && (
             <Section path="/experience">
-              <SectionTitle template={template}>Experience</SectionTitle>
+              <SectionTitle template={template}>{t('preview.experience')}</SectionTitle>
               {experience.map((entry, i) => (
-                <ExperienceItem key={entry.id} entry={entry} index={i} />
+                <ExperienceItem key={entry.id} entry={entry} index={i} t={t} />
               ))}
             </Section>
           )}
@@ -275,9 +301,9 @@ export function ResumePreview({
           {/* ---- Education ---- */}
           {hasContent(education) && (
             <Section path="/education">
-              <SectionTitle template={template}>Education</SectionTitle>
+              <SectionTitle template={template}>{t('preview.education')}</SectionTitle>
               {education.map((entry, i) => (
-                <EducationItem key={entry.id} entry={entry} index={i} />
+                <EducationItem key={entry.id} entry={entry} index={i} t={t} />
               ))}
             </Section>
           )}
@@ -285,7 +311,7 @@ export function ResumePreview({
           {/* ---- Skills ---- */}
           {hasContent(skills) && (
             <Section path="/skills">
-              <SectionTitle template={template}>Skills</SectionTitle>
+              <SectionTitle template={template}>{t('preview.skills')}</SectionTitle>
               {skills.map((group, i) => (
                 <SkillGroupItem key={group.id} group={group} index={i} />
               ))}
@@ -295,7 +321,7 @@ export function ResumePreview({
           {/* ---- Certifications ---- */}
           {hasContent(certifications) && (
             <Section path="/certifications">
-              <SectionTitle template={template}>Certifications</SectionTitle>
+              <SectionTitle template={template}>{t('preview.certifications')}</SectionTitle>
               {certifications.map((entry, i) => (
                 <CertificationItem key={entry.id} entry={entry} index={i} />
               ))}
@@ -305,7 +331,7 @@ export function ResumePreview({
           {/* ---- Languages ---- */}
           {hasContent(languages) && (
             <Section path="/languages">
-              <SectionTitle template={template}>Languages</SectionTitle>
+              <SectionTitle template={template}>{t('preview.languages')}</SectionTitle>
               <div className="flex flex-wrap">
                 {languages.map((entry, i) => (
                   <LanguageItem key={entry.id} entry={entry} index={i} />
@@ -321,7 +347,7 @@ export function ResumePreview({
             !hasContent(education) &&
             !hasContent(skills) && (
               <div className="flex items-center justify-center h-64 text-muted-foreground text-sm italic">
-                Start filling in your details to see the preview
+                {t('preview.emptyPreview')}
               </div>
             )}
         </div>

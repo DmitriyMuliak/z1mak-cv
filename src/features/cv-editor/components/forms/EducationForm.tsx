@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -39,6 +40,7 @@ interface EntryProps {
 }
 
 function EducationEntryForm({ entry, index, onRemove, dragHandleProps }: EntryProps) {
+  const t = useTranslations('cvEditor');
   const updateField = useResumeEditorStore((s) => s.updateField);
   const basePath = `/education/${index}`;
   const [collapsed, setCollapsed] = useState(false);
@@ -56,14 +58,14 @@ function EducationEntryForm({ entry, index, onRemove, dragHandleProps }: EntryPr
           <button
             type="button"
             className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors touch-none"
-            aria-label="Drag to reorder"
+            aria-label={t('education.dragToReorder')}
             {...attrs}
             {...listeners}
           >
             <GripVertical size={16} />
           </button>
           <span className="text-sm font-medium text-foreground">
-            {entry.institution || `Education ${index + 1}`}
+            {entry.institution || t('education.educationNumber', { number: index + 1 })}
           </span>
         </div>
         <div className="flex items-center gap-1">
@@ -72,7 +74,7 @@ function EducationEntryForm({ entry, index, onRemove, dragHandleProps }: EntryPr
             variant="ghost"
             size="icon-sm"
             onClick={() => setCollapsed((c) => !c)}
-            aria-label={collapsed ? 'Expand entry' : 'Collapse entry'}
+            aria-label={collapsed ? t('education.expandEntry') : t('education.collapseEntry')}
           >
             {collapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
           </Button>
@@ -81,7 +83,7 @@ function EducationEntryForm({ entry, index, onRemove, dragHandleProps }: EntryPr
             variant="ghost"
             size="icon-sm"
             onClick={() => onRemove(index)}
-            aria-label="Remove education entry"
+            aria-label={t('education.removeEntry')}
           >
             <Trash2 size={14} className="text-destructive" />
           </Button>
@@ -91,55 +93,55 @@ function EducationEntryForm({ entry, index, onRemove, dragHandleProps }: EntryPr
       {!collapsed && (
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2 space-y-1">
-            <Label htmlFor={`edu-${index}-institution`}>Institution</Label>
+            <Label htmlFor={`edu-${index}-institution`}>{t('education.institution')}</Label>
             <Input
               id={`edu-${index}-institution`}
-              placeholder="Massachusetts Institute of Technology"
+              placeholder={''}
               value={entry.institution}
               onChange={(e) => updateField(`${basePath}/institution`, e.target.value)}
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor={`edu-${index}-degree`}>Degree</Label>
+            <Label htmlFor={`edu-${index}-degree`}>{t('education.degree')}</Label>
             <Input
               id={`edu-${index}-degree`}
-              placeholder="Bachelor of Science"
+              placeholder={''}
               value={entry.degree}
               onChange={(e) => updateField(`${basePath}/degree`, e.target.value)}
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor={`edu-${index}-field`}>Field of Study</Label>
+            <Label htmlFor={`edu-${index}-field`}>{t('education.field')}</Label>
             <Input
               id={`edu-${index}-field`}
-              placeholder="Computer Science"
+              placeholder={''}
               value={entry.field}
               onChange={(e) => updateField(`${basePath}/field`, e.target.value)}
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor={`edu-${index}-start`}>Start Date</Label>
+            <Label htmlFor={`edu-${index}-start`}>{t('education.startDate')}</Label>
             <Input
               id={`edu-${index}-start`}
-              placeholder="Sep 2016"
+              placeholder={''}
               value={entry.startDate}
               onChange={(e) => updateField(`${basePath}/startDate`, e.target.value)}
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor={`edu-${index}-end`}>End Date</Label>
+            <Label htmlFor={`edu-${index}-end`}>{t('education.endDate')}</Label>
             <Input
               id={`edu-${index}-end`}
-              placeholder="May 2020"
+              placeholder={''}
               value={entry.endDate ?? ''}
               onChange={(e) => handleOptional('endDate', e.target.value)}
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor={`edu-${index}-gpa`}>GPA (optional)</Label>
+            <Label htmlFor={`edu-${index}-gpa`}>{t('education.gpa')}</Label>
             <Input
               id={`edu-${index}-gpa`}
-              placeholder="3.8"
+              placeholder={''}
               value={entry.gpa ?? ''}
               onChange={(e) => handleOptional('gpa', e.target.value)}
             />
@@ -155,6 +157,7 @@ function EducationEntryForm({ entry, index, onRemove, dragHandleProps }: EntryPr
 // ---------------------------------------------------------------------------
 
 export function EducationForm() {
+  const t = useTranslations('cvEditor');
   const education = useResumeEditorStore((s) => s.document.education);
   const updateField = useResumeEditorStore((s) => s.updateField);
   const reorderItems = useResumeEditorStore((s) => s.reorderItems);
@@ -180,7 +183,7 @@ export function EducationForm() {
     <div className="space-y-3">
       {education.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-6 border border-dashed border-border rounded-md">
-          No education entries yet.
+          {t('education.empty')}
         </p>
       )}
 
@@ -213,7 +216,7 @@ export function EducationForm() {
 
       <Button type="button" variant="outline" onClick={addEntry} className="w-full">
         <Plus size={16} />
-        Add Education
+        {t('education.addButton')}
       </Button>
     </div>
   );

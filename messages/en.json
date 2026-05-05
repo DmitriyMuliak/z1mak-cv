@@ -329,5 +329,131 @@
   },
   "examples": {
     "pluralTranslationExample": "{count, plural, one {# product} other {# products}}"
+  },
+  "cvEditor": {
+    "tabs": {
+      "label": "CV sections",
+      "header": "Header",
+      "summary": "Summary",
+      "experience": "Experience",
+      "education": "Education",
+      "skills": "Skills",
+      "template": "Template",
+      "certifications": "Certifications",
+      "languages": "Languages"
+    },
+    "header": {
+      "name": "Name*",
+      "email": "Email*",
+      "phone": "Phone",
+      "location": "Location",
+      "linkedin": "LinkedIn",
+      "website": "Website",
+      "displayAs": "Display as…",
+      "linkedinLabel": "LinkedIn label (e.g., LinkedIn)",
+      "websiteLabel": "Website label (e.g., My Portfolio)",
+      "removeLabel": "Remove display label",
+      "addLabel": "Add display label"
+    },
+    "summary": {
+      "title": "Professional Summary",
+      "placeholder": "A brief overview of your professional background, key skills, and career goals…",
+      "hint": "2–4 sentences work best. Focus on your value proposition."
+    },
+    "experience": {
+      "title": "Work Experience",
+      "addButton": "Add Experience",
+      "empty": "No experience entries yet. Add your first position below.",
+      "jobTitle": "Job Title*",
+      "company": "Company*",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "location": "Location",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe your responsibilities and achievements…",
+      "collapseEntry": "Collapse entry",
+      "expandEntry": "Expand entry",
+      "removeEntry": "Remove entry",
+      "dragToReorder": "Drag to reorder",
+      "positionNumber": "Position {number}"
+    },
+    "education": {
+      "title": "Education",
+      "addButton": "Add Education",
+      "empty": "No education entries yet.",
+      "institution": "Institution*",
+      "degree": "Degree",
+      "field": "Field of Study",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "gpa": "GPA",
+      "collapseEntry": "Collapse entry",
+      "expandEntry": "Expand entry",
+      "removeEntry": "Remove entry",
+      "dragToReorder": "Drag to reorder",
+      "educationNumber": "Education {number}"
+    },
+    "skills": {
+      "title": "Skills",
+      "addButton": "Add Skill Group",
+      "empty": "No skill groups yet. Group your skills by category.",
+      "category": "Category {number}",
+      "skills": "Skills",
+      "addSkill": "Add Skill",
+      "removeSkill": "Remove Skill",
+      "collapseGroup": "Collapse group",
+      "expandGroup": "Expand group",
+      "removeGroup": "Remove group",
+      "dragToReorder": "Drag to reorder"
+    },
+    "richEditor": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "bulletList": "Bullet list",
+      "numberedList": "Numbered list",
+      "placeholder": "Start typing…"
+    },
+    "buttons": {
+      "reset": "Reset",
+      "exportPdf": "Export PDF",
+      "exporting": "Generating…",
+      "unsaved": "Unsaved",
+      "undo": "Undo",
+      "redo": "Redo",
+      "livePreview": "Live Preview"
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Email must be a valid email address",
+      "phoneInvalid": "Phone number must be valid",
+      "linkedinInvalid": "LinkedIn URL must be a valid URL",
+      "websiteInvalid": "Website URL must be a valid URL"
+    },
+    "templates": {
+      "title": "Template style",
+      "atsClean": "ATS Clean",
+      "atsModern": "ATS Modern"
+    },
+    "fonts": {
+      "title": "Font",
+      "roboto": "Roboto",
+      "ptSerif": "PT Serif",
+      "sansSerif": "Sans-serif · ATS-friendly",
+      "serif": "Serif · Classic look",
+      "supportNote": "Both fonts support Latin and Cyrillic."
+    },
+    "preview": {
+      "yourName": "Your Name",
+      "summary": "Summary",
+      "experience": "Experience",
+      "education": "Education",
+      "skills": "Skills",
+      "certifications": "Certifications",
+      "languages": "Languages",
+      "present": "Present",
+      "emptyPreview": "Start filling in your details to see the preview",
+      "educationIn": "in"
+    }
   }
 }

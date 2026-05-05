@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Plus, Trash2, X, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -35,6 +36,7 @@ interface GroupProps {
 }
 
 function SkillGroupForm({ group, index, onRemove, dragHandleProps }: GroupProps) {
+  const t = useTranslations('cvEditor');
   const updateField = useResumeEditorStore((s) => s.updateField);
   const basePath = `/skills/${index}`;
   const [collapsed, setCollapsed] = useState(false);
@@ -63,17 +65,17 @@ function SkillGroupForm({ group, index, onRemove, dragHandleProps }: GroupProps)
         <button
           type="button"
           className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors touch-none mt-5"
-          aria-label="Drag to reorder"
+          aria-label={t('skills.dragToReorder')}
           {...attrs}
           {...listeners}
         >
           <GripVertical size={16} />
         </button>
         <div className="flex-1 space-y-1">
-          <Label htmlFor={`skill-${index}-category`}>Category</Label>
+          <Label htmlFor={`skill-${index}-category`}>{t('skills.category', { number: '' })}</Label>
           <Input
             id={`skill-${index}-category`}
-            placeholder="e.g. Languages, Frameworks, Tools"
+            placeholder={t('skills.category', { number: index + 1 })}
             value={group.category}
             onChange={(e) => updateField(`${basePath}/category`, e.target.value)}
           />
@@ -84,7 +86,7 @@ function SkillGroupForm({ group, index, onRemove, dragHandleProps }: GroupProps)
             variant="ghost"
             size="icon-sm"
             onClick={() => setCollapsed((c) => !c)}
-            aria-label={collapsed ? 'Expand group' : 'Collapse group'}
+            aria-label={collapsed ? t('skills.expandGroup') : t('skills.collapseGroup')}
           >
             {collapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
           </Button>
@@ -93,7 +95,7 @@ function SkillGroupForm({ group, index, onRemove, dragHandleProps }: GroupProps)
             variant="ghost"
             size="icon-sm"
             onClick={() => onRemove(index)}
-            aria-label="Remove skill group"
+            aria-label={t('skills.removeGroup')}
           >
             <Trash2 size={14} className="text-destructive" />
           </Button>
@@ -102,7 +104,7 @@ function SkillGroupForm({ group, index, onRemove, dragHandleProps }: GroupProps)
 
       {!collapsed && (
         <div className="space-y-1.5">
-          <Label>Skills</Label>
+          <Label>{t('skills.skills')}</Label>
 
           {/* Tag-style display of existing items */}
           {group.items.length > 0 && (
@@ -116,12 +118,12 @@ function SkillGroupForm({ group, index, onRemove, dragHandleProps }: GroupProps)
                     className="h-5 min-w-0 w-24 border-none shadow-none p-0 text-xs bg-transparent focus-visible:ring-0"
                     value={item}
                     onChange={(e) => updateItem(ii, e.target.value)}
-                    placeholder="Skill"
+                    placeholder={t('skills.skills')}
                   />
                   <button
                     type="button"
                     onClick={() => removeItem(ii)}
-                    aria-label="Remove skill"
+                    aria-label={t('skills.removeSkill')}
                     className="text-muted-foreground hover:text-destructive transition-colors"
                   >
                     <X size={11} />
@@ -133,7 +135,7 @@ function SkillGroupForm({ group, index, onRemove, dragHandleProps }: GroupProps)
 
           <Button type="button" variant="outline" size="sm" onClick={addItem} className="w-full">
             <Plus size={14} />
-            Add Skill
+            {t('skills.addSkill')}
           </Button>
         </div>
       )}
@@ -149,6 +151,7 @@ function SkillGroupForm({ group, index, onRemove, dragHandleProps }: GroupProps)
  * Manages skill groups — each group has a category name and a list of skill tags.
  */
 export function SkillsForm() {
+  const t = useTranslations('cvEditor');
   const skills = useResumeEditorStore((s) => s.document.skills);
   const updateField = useResumeEditorStore((s) => s.updateField);
   const reorderItems = useResumeEditorStore((s) => s.reorderItems);
@@ -174,7 +177,7 @@ export function SkillsForm() {
     <div className="space-y-3">
       {skills.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-6 border border-dashed border-border rounded-md">
-          No skill groups yet. Group your skills by category.
+          {t('skills.empty')}
         </p>
       )}
 
@@ -207,7 +210,7 @@ export function SkillsForm() {
 
       <Button type="button" variant="outline" onClick={addGroup} className="w-full">
         <Plus size={16} />
-        Add Skill Group
+        {t('skills.addButton')}
       </Button>
     </div>
   );

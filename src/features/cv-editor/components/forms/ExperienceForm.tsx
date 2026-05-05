@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -40,6 +41,7 @@ interface EntryProps {
 }
 
 function ExperienceEntryForm({ entry, index, onRemove, dragHandleProps }: EntryProps) {
+  const t = useTranslations('cvEditor');
   const updateField = useResumeEditorStore((s) => s.updateField);
   const basePath = `/experience/${index}`;
   const [collapsed, setCollapsed] = useState(false);
@@ -57,14 +59,14 @@ function ExperienceEntryForm({ entry, index, onRemove, dragHandleProps }: EntryP
           <button
             type="button"
             className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors touch-none"
-            aria-label="Drag to reorder"
+            aria-label={t('experience.dragToReorder')}
             {...attrs}
             {...listeners}
           >
             <GripVertical size={16} />
           </button>
           <span className="text-sm font-medium text-foreground">
-            {entry.title || entry.company || `Position ${index + 1}`}
+            {entry.title || entry.company || t('experience.positionNumber', { number: index + 1 })}
           </span>
         </div>
         <div className="flex items-center gap-1">
@@ -73,7 +75,7 @@ function ExperienceEntryForm({ entry, index, onRemove, dragHandleProps }: EntryP
             variant="ghost"
             size="icon-sm"
             onClick={() => setCollapsed((c) => !c)}
-            aria-label={collapsed ? 'Expand entry' : 'Collapse entry'}
+            aria-label={collapsed ? t('experience.expandEntry') : t('experience.collapseEntry')}
           >
             {collapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
           </Button>
@@ -82,7 +84,7 @@ function ExperienceEntryForm({ entry, index, onRemove, dragHandleProps }: EntryP
             variant="ghost"
             size="icon-sm"
             onClick={() => onRemove(index)}
-            aria-label="Remove experience entry"
+            aria-label={t('experience.removeEntry')}
           >
             <Trash2 size={14} className="text-destructive" />
           </Button>
@@ -93,46 +95,46 @@ function ExperienceEntryForm({ entry, index, onRemove, dragHandleProps }: EntryP
         <>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label htmlFor={`exp-${index}-title`}>Job Title</Label>
+              <Label htmlFor={`exp-${index}-title`}>{t('experience.jobTitle')}</Label>
               <Input
                 id={`exp-${index}-title`}
-                placeholder="Senior Engineer"
+                placeholder={''}
                 value={entry.title}
                 onChange={(e) => updateField(`${basePath}/title`, e.target.value)}
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor={`exp-${index}-company`}>Company</Label>
+              <Label htmlFor={`exp-${index}-company`}>{t('experience.company')}</Label>
               <Input
                 id={`exp-${index}-company`}
-                placeholder="Acme Corp"
+                placeholder={''}
                 value={entry.company}
                 onChange={(e) => updateField(`${basePath}/company`, e.target.value)}
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor={`exp-${index}-start`}>Start Date</Label>
+              <Label htmlFor={`exp-${index}-start`}>{t('experience.startDate')}</Label>
               <Input
                 id={`exp-${index}-start`}
-                placeholder="Jan 2020"
+                placeholder={''}
                 value={entry.startDate}
                 onChange={(e) => updateField(`${basePath}/startDate`, e.target.value)}
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor={`exp-${index}-end`}>End Date</Label>
+              <Label htmlFor={`exp-${index}-end`}>{t('experience.endDate')}</Label>
               <Input
                 id={`exp-${index}-end`}
-                placeholder="Present"
+                placeholder={''}
                 value={entry.endDate ?? ''}
                 onChange={(e) => handleField('endDate', e.target.value)}
               />
             </div>
             <div className="col-span-2 space-y-1">
-              <Label htmlFor={`exp-${index}-location`}>Location</Label>
+              <Label htmlFor={`exp-${index}-location`}>{t('experience.location')}</Label>
               <Input
                 id={`exp-${index}-location`}
-                placeholder="New York, NY (or Remote)"
+                placeholder={''}
                 value={entry.location ?? ''}
                 onChange={(e) => handleField('location', e.target.value)}
               />
@@ -140,11 +142,11 @@ function ExperienceEntryForm({ entry, index, onRemove, dragHandleProps }: EntryP
           </div>
 
           <div className="space-y-1">
-            <Label>Description</Label>
+            <Label>{t('experience.description')}</Label>
             <RichTextEditor
               value={entry.description}
               onChange={(html) => updateField(`${basePath}/description`, html)}
-              placeholder="Describe your responsibilities and achievements…"
+              placeholder={t('experience.descriptionPlaceholder')}
             />
           </div>
         </>
@@ -158,6 +160,7 @@ function ExperienceEntryForm({ entry, index, onRemove, dragHandleProps }: EntryP
 // ---------------------------------------------------------------------------
 
 export function ExperienceForm() {
+  const t = useTranslations('cvEditor');
   const experience = useResumeEditorStore((s) => s.document.experience);
   const updateField = useResumeEditorStore((s) => s.updateField);
   const reorderItems = useResumeEditorStore((s) => s.reorderItems);
@@ -183,7 +186,7 @@ export function ExperienceForm() {
     <div className="space-y-3">
       {experience.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-6 border border-dashed border-border rounded-md">
-          No experience entries yet. Add your first position below.
+          {t('experience.empty')}
         </p>
       )}
 
@@ -216,7 +219,7 @@ export function ExperienceForm() {
 
       <Button type="button" variant="outline" onClick={addEntry} className="w-full">
         <Plus size={16} />
-        Add Experience
+        {t('experience.addButton')}
       </Button>
     </div>
   );

@@ -1,9 +1,11 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useTemplateSettingsStore, TEMPLATE_OPTIONS } from '../../store/templateSettingsStore';
 import { FONT_OPTIONS } from '../../pdf/registerFonts';
 
 export function TemplateSettingsForm() {
+  const t = useTranslations('cvEditor');
   const template = useTemplateSettingsStore((s) => s.template);
   const font = useTemplateSettingsStore((s) => s.font);
   const setTemplate = useTemplateSettingsStore((s) => s.setTemplate);
@@ -12,7 +14,7 @@ export function TemplateSettingsForm() {
   return (
     <div className="space-y-6 py-2">
       <fieldset className="space-y-2">
-        <legend className="text-sm font-medium text-foreground">Template style</legend>
+        <legend className="text-sm font-medium text-foreground">{t('templates.title')}</legend>
         <div className="grid grid-cols-2 gap-2">
           {TEMPLATE_OPTIONS.map((opt) => (
             <button
@@ -33,7 +35,7 @@ export function TemplateSettingsForm() {
       </fieldset>
 
       <fieldset className="space-y-2">
-        <legend className="text-sm font-medium text-foreground">Font</legend>
+        <legend className="text-sm font-medium text-foreground">{t('fonts.title')}</legend>
         <div className="grid grid-cols-2 gap-2">
           {FONT_OPTIONS.map((opt) => (
             <button
@@ -58,12 +60,12 @@ export function TemplateSettingsForm() {
                 className="block text-xs text-muted-foreground mt-0.5 font-normal"
                 style={{ fontFamily: 'inherit' }}
               >
-                {opt.value === 'roboto' ? 'Sans-serif · ATS-friendly' : 'Serif · Classic look'}
+                {opt.value === 'roboto' ? t('fonts.sansSerif') : t('fonts.serif')}
               </span>
             </button>
           ))}
         </div>
-        <p className="text-xs text-muted-foreground pt-1">Both fonts support Latin and Cyrillic.</p>
+        <p className="text-xs text-muted-foreground pt-1">{t('fonts.supportNote')}</p>
       </fieldset>
     </div>
   );

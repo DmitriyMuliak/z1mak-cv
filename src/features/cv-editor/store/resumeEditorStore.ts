@@ -101,7 +101,6 @@ export const useResumeEditorStore = create<ResumeEditorStore>()(
       { name: 'ResumeEditorStore', enabled: envType.isDev },
     ),
     {
-      // Only track the document in temporal history, not isDirty
       partialize: (state) => ({ document: state.document }),
       limit: 100,
     },

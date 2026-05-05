@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Tag } from 'lucide-react';
 import { useResumeEditorStore } from '../../store/resumeEditorStore';
 import { Input } from '@/components/ui/input';
@@ -26,6 +27,7 @@ function UrlFieldWithLabel({
   placeholder,
   labelPlaceholder,
 }: UrlFieldProps) {
+  const t = useTranslations('cvEditor');
   const header = useResumeEditorStore((s) => s.document.header);
   const updateField = useResumeEditorStore((s) => s.updateField);
   const [showLabel, setShowLabel] = useState(!!header[labelKey]);
@@ -47,7 +49,7 @@ function UrlFieldWithLabel({
         />
         <button
           type="button"
-          title={showLabel ? 'Remove display label' : 'Add display label'}
+          title={showLabel ? t('header.removeLabel') : t('header.addLabel')}
           onClick={() => {
             if (showLabel) {
               updateField(`/header/${labelKey}`, undefined);
@@ -111,30 +113,41 @@ function SimpleField({ fieldKey, label, type, placeholder }: SimpleFieldProps) {
 // ---------------------------------------------------------------------------
 
 export function HeaderForm() {
+  const t = useTranslations('cvEditor');
   return (
     <div className="space-y-4">
-      <SimpleField fieldKey="name" label="Full Name" type="text" placeholder="Jane Doe" />
-      <SimpleField fieldKey="email" label="Email" type="email" placeholder="jane@example.com" />
-      <SimpleField fieldKey="phone" label="Phone" type="tel" placeholder="+1 555 123 4567" />
+      <SimpleField fieldKey="name" label={t('header.name')} type="text" placeholder={''} />
+      <SimpleField
+        fieldKey="email"
+        label={t('header.email')}
+        type="email"
+        placeholder={'email@example.com'}
+      />
+      <SimpleField
+        fieldKey="phone"
+        label={t('header.phone')}
+        type="tel"
+        placeholder={'+1 (555) 123-4567'}
+      />
       <SimpleField
         fieldKey="location"
-        label="Location"
+        label={t('header.location')}
         type="text"
-        placeholder="San Francisco, CA"
+        placeholder={'New York, NY'}
       />
       <UrlFieldWithLabel
         urlKey="linkedin"
         labelKey="linkedinLabel"
-        label="LinkedIn URL"
+        label={t('header.linkedin')}
         placeholder="https://linkedin.com/in/janedoe"
-        labelPlaceholder="Display as… e.g. LinkedIn"
+        labelPlaceholder={t('header.linkedinLabel')}
       />
       <UrlFieldWithLabel
         urlKey="website"
         labelKey="websiteLabel"
-        label="Website"
+        label={t('header.website')}
         placeholder="https://janedoe.dev"
-        labelPlaceholder="Display as… e.g. My Portfolio"
+        labelPlaceholder={t('header.websiteLabel')}
       />
     </div>
   );
