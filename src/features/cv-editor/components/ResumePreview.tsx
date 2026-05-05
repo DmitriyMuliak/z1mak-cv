@@ -39,13 +39,13 @@ function SectionTitle({
 }) {
   if (template === 'atsModern') {
     return (
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-foreground pb-1 mb-2 pl-2 border-l-[3px] border-blue-600">
+      <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-900 pb-1 mb-2 pl-2 border-l-[3px] border-blue-600">
         {children}
       </h2>
     );
   }
   return (
-    <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground border-b border-border pb-1 mb-2">
+    <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-500 border-b border-neutral-200 pb-1 mb-2">
       {children}
     </h2>
   );
@@ -67,12 +67,12 @@ function ExperienceItem({
   return (
     <div data-resume-path={`/experience/${index}`} className="mb-3 last:mb-0">
       <div className="flex items-baseline justify-between gap-2">
-        <span className="font-semibold text-sm text-foreground">{entry.title}</span>
-        <span className="text-xs text-muted-foreground shrink-0">
+        <span className="font-semibold text-sm text-neutral-900">{entry.title}</span>
+        <span className="text-xs text-neutral-500 shrink-0">
           {entry.startDate} — {entry.endDate ?? t('preview.present')}
         </span>
       </div>
-      <div className="flex items-baseline gap-1 text-xs text-muted-foreground mb-1">
+      <div className="flex items-baseline gap-1 text-xs text-neutral-500 mb-1">
         <span>{entry.company}</span>
         {entry.location && (
           <span className="before:content-['·'] before:mx-1">{entry.location}</span>
@@ -80,7 +80,7 @@ function ExperienceItem({
       </div>
       {entry.description && (
         <div
-          className="text-xs text-foreground/90 leading-relaxed rich-preview [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-0.5 [&_p]:mb-0.5 [&_strong]:font-semibold [&_em]:italic"
+          className="text-xs text-neutral-900/90 leading-relaxed rich-preview [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-0.5 [&_p]:mb-0.5 [&_strong]:font-semibold [&_em]:italic"
           dangerouslySetInnerHTML={{ __html: entry.description }}
         />
       )}
@@ -100,12 +100,12 @@ function EducationItem({
   return (
     <div data-resume-path={`/education/${index}`} className="mb-2 last:mb-0">
       <div className="flex items-baseline justify-between gap-2">
-        <span className="font-semibold text-sm text-foreground">{entry.institution}</span>
-        <span className="text-xs text-muted-foreground shrink-0">
+        <span className="font-semibold text-sm text-neutral-900">{entry.institution}</span>
+        <span className="text-xs text-neutral-500 shrink-0">
           {entry.startDate} — {entry.endDate ?? t('preview.present')}
         </span>
       </div>
-      <div className="text-xs text-muted-foreground">
+      <div className="text-xs text-neutral-500">
         {entry.degree && (
           <>
             {entry.degree}
@@ -122,8 +122,8 @@ function EducationItem({
 function SkillGroupItem({ group, index }: { group: SkillGroup; index: number }) {
   return (
     <div data-resume-path={`/skills/${index}`} className="mb-1.5 last:mb-0 flex gap-2 text-xs">
-      <span className="font-medium text-foreground shrink-0">{group.category}:</span>
-      <span className="text-foreground/80">{group.items.join(', ')}</span>
+      <span className="font-medium text-neutral-900 shrink-0">{group.category}:</span>
+      <span className="text-neutral-900/80">{group.items.join(', ')}</span>
     </div>
   );
 }
@@ -144,10 +144,10 @@ function CertificationItem({ entry, index }: { entry: CertificationEntry; index:
           {entry.name}
         </a>
       ) : (
-        <span className="font-medium text-foreground">{entry.name}</span>
+        <span className="font-medium text-neutral-900">{entry.name}</span>
       )}
-      <span className="text-muted-foreground">— {entry.issuer}</span>
-      {entry.date && <span className="text-muted-foreground">({entry.date})</span>}
+      <span className="text-neutral-500">— {entry.issuer}</span>
+      {entry.date && <span className="text-neutral-500">({entry.date})</span>}
     </div>
   );
 }
@@ -158,8 +158,8 @@ function LanguageItem({ entry, index }: { entry: LanguageEntry; index: number })
       data-resume-path={`/languages/${index}`}
       className="inline-flex items-center gap-1 text-xs mr-3"
     >
-      <span className="font-medium text-foreground">{entry.language}</span>
-      <span className="text-muted-foreground capitalize">({entry.proficiency})</span>
+      <span className="font-medium text-neutral-900">{entry.language}</span>
+      <span className="text-neutral-500 capitalize">({entry.proficiency})</span>
     </span>
   );
 }
@@ -193,21 +193,21 @@ export function ResumePreview({
 
   return (
     <div
-      className="bg-white text-foreground shadow-xl"
+      className="bg-white text-neutral-900 shadow-xl"
       style={{ width: A4_WIDTH, minHeight: A4_HEIGHT, fontFamily }}
     >
       <div className="px-8 py-8">
         {/* ---- Header ---- */}
         <Section path="/header">
           <h1
-            className="font-bold text-foreground leading-tight mb-2"
+            className="font-bold text-neutral-900 leading-tight mb-2"
             style={{ fontSize: template === 'atsModern' ? '1.5rem' : '1.375rem' }}
           >
             {header.name || (
-              <span className="text-muted-foreground italic">{t('preview.yourName')}</span>
+              <span className="text-neutral-500 italic">{t('preview.yourName')}</span>
             )}
           </h1>
-          <div className="flex flex-wrap items-center gap-y-0.5 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-y-0.5 text-xs text-neutral-500">
             {[
               header.email && (
                 <a
@@ -273,7 +273,7 @@ export function ResumePreview({
           <Section path="/summary">
             <SectionTitle template={template}>{t('preview.summary')}</SectionTitle>
             <div
-              className="text-xs text-foreground/90 leading-relaxed rich-preview [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-0.5 [&_p]:mb-0.5 [&_strong]:font-semibold [&_em]:italic"
+              className="text-xs text-neutral-900/90 leading-relaxed rich-preview [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-0.5 [&_p]:mb-0.5 [&_strong]:font-semibold [&_em]:italic"
               dangerouslySetInnerHTML={{ __html: summary }}
             />
           </Section>
@@ -337,7 +337,7 @@ export function ResumePreview({
           !hasContent(experience) &&
           !hasContent(education) &&
           !hasContent(skills) && (
-            <div className="flex items-center justify-center h-64 text-muted-foreground text-sm italic">
+            <div className="flex items-center justify-center h-64 text-neutral-500 text-sm italic">
               {t('preview.emptyPreview')}
             </div>
           )}
