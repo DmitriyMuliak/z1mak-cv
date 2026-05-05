@@ -16,6 +16,7 @@ import { ExperienceForm } from './forms/ExperienceForm';
 import { EducationForm } from './forms/EducationForm';
 import { SkillsForm } from './forms/SkillsForm';
 import { TemplateSettingsForm } from './forms/TemplateSettingsForm';
+import { PagesForm } from './forms/PagesForm';
 import { ResumeCanvas } from './ResumeCanvas';
 import { usePdfExport } from '../hooks/usePdfExport';
 
@@ -23,7 +24,7 @@ import { usePdfExport } from '../hooks/usePdfExport';
 // Tabs
 // ---------------------------------------------------------------------------
 
-type TabId = 'header' | 'summary' | 'experience' | 'education' | 'skills' | 'template';
+type TabId = 'header' | 'summary' | 'experience' | 'education' | 'skills' | 'template' | 'pages';
 
 const FORM_MAP: Record<TabId, React.ReactNode> = {
   header: <HeaderForm />,
@@ -32,6 +33,7 @@ const FORM_MAP: Record<TabId, React.ReactNode> = {
   education: <EducationForm />,
   skills: <SkillsForm />,
   template: <TemplateSettingsForm />,
+  pages: <PagesForm />,
 };
 
 function getTabs(t: ReturnType<typeof useTranslations>): { id: TabId; label: string }[] {
@@ -42,6 +44,7 @@ function getTabs(t: ReturnType<typeof useTranslations>): { id: TabId; label: str
     { id: 'education', label: t('tabs.education') },
     { id: 'skills', label: t('tabs.skills') },
     { id: 'template', label: t('tabs.template') },
+    { id: 'pages', label: t('tabs.pages') },
   ];
 }
 
@@ -57,6 +60,7 @@ function EditorToolbar({ onOpenPreview }: { onOpenPreview: () => void }) {
   const document = useResumeEditorStore((s) => s.document);
   const template = useTemplateSettingsStore((s) => s.template);
   const font = useTemplateSettingsStore((s) => s.font);
+  const pageCount = useTemplateSettingsStore((s) => s.pageCount);
   const { exportPdf, isGenerating } = usePdfExport();
 
   return (
@@ -104,7 +108,7 @@ function EditorToolbar({ onOpenPreview }: { onOpenPreview: () => void }) {
         type="button"
         variant="outline"
         size="sm"
-        onClick={() => exportPdf(document, template, font)}
+        onClick={() => exportPdf(document, template, font, pageCount)}
         disabled={isGenerating}
         aria-label={isGenerating ? t('buttons.exporting') : t('buttons.exportPdf')}
         className="gap-1.5"

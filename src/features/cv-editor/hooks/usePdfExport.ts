@@ -61,14 +61,24 @@ function downloadUint8Array(bytes: Uint8Array, filename: string): void {
 
 export interface UsePdfExportReturn {
   isGenerating: boolean;
-  exportPdf: (document: ResumeDocument, template: TemplateStyle, font: FontOption) => Promise<void>;
+  exportPdf: (
+    document: ResumeDocument,
+    template: TemplateStyle,
+    font: FontOption,
+    pageCount: number,
+  ) => Promise<void>;
 }
 
 export function usePdfExport(): UsePdfExportReturn {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const exportPdf = useCallback(
-    async (doc: ResumeDocument, template: TemplateStyle, font: FontOption): Promise<void> => {
+    async (
+      doc: ResumeDocument,
+      template: TemplateStyle,
+      font: FontOption,
+      pageCount: number,
+    ): Promise<void> => {
       setIsGenerating(true);
       try {
         await new Promise<void>((resolve, reject) => {
@@ -94,7 +104,7 @@ export function usePdfExport(): UsePdfExportReturn {
             reject(new Error(e.message || 'PDF worker error.'));
           };
 
-          worker.postMessage({ document: doc, template, font });
+          worker.postMessage({ document: doc, template, font, pageCount });
         });
       } finally {
         setIsGenerating(false);

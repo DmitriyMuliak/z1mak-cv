@@ -340,7 +340,8 @@
       "skills": "Навички",
       "template": "Шаблон",
       "certifications": "Сертифікати",
-      "languages": "Мови"
+      "languages": "Мови",
+      "pages": "Сторінки"
     },
     "header": {
       "name": "Ім'я*",
@@ -412,6 +413,12 @@
       "bulletList": "Маркований список",
       "numberedList": "Нумерований список",
       "placeholder": "Почніть друкувати…"
+    },
+    "pages": {
+      "page": "Сторінка",
+      "addPage": "Додати сторінку",
+      "deletePage": "Видалити сторінку",
+      "empty": "Порожня сторінка"
     },
     "buttons": {
       "reset": "Скинути",

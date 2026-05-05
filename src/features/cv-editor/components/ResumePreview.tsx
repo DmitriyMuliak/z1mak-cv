@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useResumeEditorStore } from '../store/resumeEditorStore';
+import { useTemplateSettingsStore } from '../store/templateSettingsStore';
 import type { TemplateStyle, FontOption } from '../hooks/usePdfExport';
 type PdfTemplate = TemplateStyle;
 import type {
@@ -186,162 +187,180 @@ export function ResumePreview({
 }) {
   const t = useTranslations('cvEditor');
   const doc = useResumeEditorStore((s) => s.document);
+  const pageCount = useTemplateSettingsStore((s) => s.pageCount);
   const { header, summary, experience, education, skills, certifications, languages } = doc;
   const hasContent = (arr: unknown[]) => arr.length > 0;
   const contactSep = template === 'atsModern' ? '·' : '|';
   const fontFamily = FONT_FAMILY_CSS[font];
 
+  const isEmptyDoc =
+    !header.name &&
+    !summary &&
+    !hasContent(experience) &&
+    !hasContent(education) &&
+    !hasContent(skills);
+
   return (
-    <div
-      className="bg-white text-neutral-900 shadow-xl"
-      style={{ width: A4_WIDTH, minHeight: A4_HEIGHT, fontFamily }}
-    >
-      <div className="px-8 py-8">
-        {/* ---- Header ---- */}
-        <Section path="/header">
-          <h1
-            className="font-bold text-neutral-900 leading-tight mb-2"
-            style={{ fontSize: template === 'atsModern' ? '1.5rem' : '1.375rem' }}
+    <>
+      {Array.from({ length: pageCount }, (_, pageIndex) => {
+        const pageExp = experience.filter((e) => (e.page ?? 0) === pageIndex);
+        const pageEdu = education.filter((e) => (e.page ?? 0) === pageIndex);
+        const pageSkills = skills.filter((g) => (g.page ?? 0) === pageIndex);
+        const pageCerts = certifications.filter((e) => (e.page ?? 0) === pageIndex);
+        const pageLangs = languages.filter((e) => (e.page ?? 0) === pageIndex);
+        return (
+          <div
+            key={pageIndex}
+            className="bg-white text-neutral-900 shadow-xl"
+            style={{ width: A4_WIDTH, minHeight: A4_HEIGHT, fontFamily }}
           >
-            {header.name || (
-              <span className="text-neutral-500 italic">{t('preview.yourName')}</span>
-            )}
-          </h1>
-          <div className="flex flex-wrap items-center gap-y-0.5 text-xs text-neutral-500">
-            {[
-              header.email && (
-                <a
-                  key="email"
-                  href={`mailto:${header.email}`}
-                  data-resume-path="/header/email"
-                  className="hover:text-primary"
-                >
-                  {header.email}
-                </a>
-              ),
-              header.phone && (
-                <span key="phone" data-resume-path="/header/phone">
-                  {header.phone}
-                </span>
-              ),
-              header.location && (
-                <span key="location" data-resume-path="/header/location">
-                  {header.location}
-                </span>
-              ),
-              header.linkedin && (
-                <a
-                  key="linkedin"
-                  href={header.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-resume-path="/header/linkedin"
-                  className="hover:text-primary"
-                >
-                  {header.linkedinLabel || header.linkedin}
-                </a>
-              ),
-              header.website && (
-                <a
-                  key="website"
-                  href={header.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-resume-path="/header/website"
-                  className="hover:text-primary"
-                >
-                  {header.websiteLabel || header.website}
-                </a>
-              ),
-            ]
-              .filter(Boolean)
-              .flatMap((el, i, arr) =>
-                i < arr.length - 1
-                  ? [
-                      el,
-                      <span key={`sep-${i}`} className="mx-1.5 select-none">
-                        {contactSep}
-                      </span>,
+            <div className="px-8 py-8">
+              {/* ---- Header (first page only) ---- */}
+              {pageIndex === 0 && (
+                <Section path="/header">
+                  <h1
+                    className="font-bold text-neutral-900 leading-tight mb-2"
+                    style={{ fontSize: template === 'atsModern' ? '1.5rem' : '1.375rem' }}
+                  >
+                    {header.name || (
+                      <span className="text-neutral-500 italic">{t('preview.yourName')}</span>
+                    )}
+                  </h1>
+                  <div className="flex flex-wrap items-center gap-y-0.5 text-xs text-neutral-500">
+                    {[
+                      header.email && (
+                        <a
+                          key="email"
+                          href={`mailto:${header.email}`}
+                          data-resume-path="/header/email"
+                          className="hover:text-primary"
+                        >
+                          {header.email}
+                        </a>
+                      ),
+                      header.phone && (
+                        <span key="phone" data-resume-path="/header/phone">
+                          {header.phone}
+                        </span>
+                      ),
+                      header.location && (
+                        <span key="location" data-resume-path="/header/location">
+                          {header.location}
+                        </span>
+                      ),
+                      header.linkedin && (
+                        <a
+                          key="linkedin"
+                          href={header.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          data-resume-path="/header/linkedin"
+                          className="hover:text-primary"
+                        >
+                          {header.linkedinLabel || header.linkedin}
+                        </a>
+                      ),
+                      header.website && (
+                        <a
+                          key="website"
+                          href={header.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          data-resume-path="/header/website"
+                          className="hover:text-primary"
+                        >
+                          {header.websiteLabel || header.website}
+                        </a>
+                      ),
                     ]
-                  : [el],
+                      .filter(Boolean)
+                      .flatMap((el, i, arr) =>
+                        i < arr.length - 1
+                          ? [
+                              el,
+                              <span key={`sep-${i}`} className="mx-1.5 select-none">
+                                {contactSep}
+                              </span>,
+                            ]
+                          : [el],
+                      )}
+                  </div>
+                </Section>
               )}
+
+              {/* ---- Summary (page 0 only) ---- */}
+              {pageIndex === 0 && summary && (
+                <Section path="/summary">
+                  <SectionTitle template={template}>{t('preview.summary')}</SectionTitle>
+                  <div
+                    className="text-xs text-neutral-900/90 leading-relaxed rich-preview [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-0.5 [&_p]:mb-0.5 [&_strong]:font-semibold [&_em]:italic"
+                    dangerouslySetInnerHTML={{ __html: summary }}
+                  />
+                </Section>
+              )}
+
+              {/* ---- Experience ---- */}
+              {hasContent(pageExp) && (
+                <Section path="/experience">
+                  <SectionTitle template={template}>{t('preview.experience')}</SectionTitle>
+                  {pageExp.map((entry, i) => (
+                    <ExperienceItem key={entry.id} entry={entry} index={i} t={t} />
+                  ))}
+                </Section>
+              )}
+
+              {/* ---- Education ---- */}
+              {hasContent(pageEdu) && (
+                <Section path="/education">
+                  <SectionTitle template={template}>{t('preview.education')}</SectionTitle>
+                  {pageEdu.map((entry, i) => (
+                    <EducationItem key={entry.id} entry={entry} index={i} t={t} />
+                  ))}
+                </Section>
+              )}
+
+              {/* ---- Skills ---- */}
+              {hasContent(pageSkills) && (
+                <Section path="/skills">
+                  <SectionTitle template={template}>{t('preview.skills')}</SectionTitle>
+                  {pageSkills.map((group, i) => (
+                    <SkillGroupItem key={group.id} group={group} index={i} />
+                  ))}
+                </Section>
+              )}
+
+              {/* ---- Certifications ---- */}
+              {hasContent(pageCerts) && (
+                <Section path="/certifications">
+                  <SectionTitle template={template}>{t('preview.certifications')}</SectionTitle>
+                  {pageCerts.map((entry, i) => (
+                    <CertificationItem key={entry.id} entry={entry} index={i} />
+                  ))}
+                </Section>
+              )}
+
+              {/* ---- Languages ---- */}
+              {hasContent(pageLangs) && (
+                <Section path="/languages">
+                  <SectionTitle template={template}>{t('preview.languages')}</SectionTitle>
+                  <div className="flex flex-wrap">
+                    {pageLangs.map((entry, i) => (
+                      <LanguageItem key={entry.id} entry={entry} index={i} />
+                    ))}
+                  </div>
+                </Section>
+              )}
+
+              {/* Empty state placeholder (first page only) */}
+              {pageIndex === 0 && isEmptyDoc && (
+                <div className="flex items-center justify-center h-64 text-neutral-500 text-sm italic">
+                  {t('preview.emptyPreview')}
+                </div>
+              )}
+            </div>
           </div>
-        </Section>
-
-        {/* ---- Summary ---- */}
-        {summary && (
-          <Section path="/summary">
-            <SectionTitle template={template}>{t('preview.summary')}</SectionTitle>
-            <div
-              className="text-xs text-neutral-900/90 leading-relaxed rich-preview [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-0.5 [&_p]:mb-0.5 [&_strong]:font-semibold [&_em]:italic"
-              dangerouslySetInnerHTML={{ __html: summary }}
-            />
-          </Section>
-        )}
-
-        {/* ---- Experience ---- */}
-        {hasContent(experience) && (
-          <Section path="/experience">
-            <SectionTitle template={template}>{t('preview.experience')}</SectionTitle>
-            {experience.map((entry, i) => (
-              <ExperienceItem key={entry.id} entry={entry} index={i} t={t} />
-            ))}
-          </Section>
-        )}
-
-        {/* ---- Education ---- */}
-        {hasContent(education) && (
-          <Section path="/education">
-            <SectionTitle template={template}>{t('preview.education')}</SectionTitle>
-            {education.map((entry, i) => (
-              <EducationItem key={entry.id} entry={entry} index={i} t={t} />
-            ))}
-          </Section>
-        )}
-
-        {/* ---- Skills ---- */}
-        {hasContent(skills) && (
-          <Section path="/skills">
-            <SectionTitle template={template}>{t('preview.skills')}</SectionTitle>
-            {skills.map((group, i) => (
-              <SkillGroupItem key={group.id} group={group} index={i} />
-            ))}
-          </Section>
-        )}
-
-        {/* ---- Certifications ---- */}
-        {hasContent(certifications) && (
-          <Section path="/certifications">
-            <SectionTitle template={template}>{t('preview.certifications')}</SectionTitle>
-            {certifications.map((entry, i) => (
-              <CertificationItem key={entry.id} entry={entry} index={i} />
-            ))}
-          </Section>
-        )}
-
-        {/* ---- Languages ---- */}
-        {hasContent(languages) && (
-          <Section path="/languages">
-            <SectionTitle template={template}>{t('preview.languages')}</SectionTitle>
-            <div className="flex flex-wrap">
-              {languages.map((entry, i) => (
-                <LanguageItem key={entry.id} entry={entry} index={i} />
-              ))}
-            </div>
-          </Section>
-        )}
-
-        {/* Empty state placeholder */}
-        {!header.name &&
-          !summary &&
-          !hasContent(experience) &&
-          !hasContent(education) &&
-          !hasContent(skills) && (
-            <div className="flex items-center justify-center h-64 text-neutral-500 text-sm italic">
-              {t('preview.emptyPreview')}
-            </div>
-          )}
-      </div>
-    </div>
+        );
+      })}
+    </>
   );
 }

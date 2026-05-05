@@ -10,13 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SortableItem, type DragHandleProps } from './SortableItem';
+import { PageSelect } from './PageSelect';
 import type { EducationEntry } from '../../schema/resumeDocument.schema';
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function createEmptyEntry(): EducationEntry {
+function createEmptyEntry(page: number): EducationEntry {
   return {
     id: crypto.randomUUID(),
     institution: '',
@@ -25,24 +22,21 @@ function createEmptyEntry(): EducationEntry {
     startDate: '',
     endDate: undefined,
     gpa: undefined,
+    page,
   };
 }
 
-// ---------------------------------------------------------------------------
-// Single entry sub-component
-// ---------------------------------------------------------------------------
-
 interface EntryProps {
   entry: EducationEntry;
-  index: number;
-  onRemove: (index: number) => void;
+  storeIndex: number;
+  onRemove: (storeIndex: number) => void;
   dragHandleProps: DragHandleProps;
 }
 
-function EducationEntryForm({ entry, index, onRemove, dragHandleProps }: EntryProps) {
+function EducationEntryForm({ entry, storeIndex, onRemove, dragHandleProps }: EntryProps) {
   const t = useTranslations('cvEditor');
   const updateField = useResumeEditorStore((s) => s.updateField);
-  const basePath = `/education/${index}`;
+  const basePath = `/education/${storeIndex}`;
   const [collapsed, setCollapsed] = useState(false);
 
   const handleOptional = (field: string, value: string) => {
@@ -65,7 +59,7 @@ function EducationEntryForm({ entry, index, onRemove, dragHandleProps }: EntryPr
             <GripVertical size={16} />
           </button>
           <span className="text-sm font-medium text-foreground">
-            {entry.institution || t('education.educationNumber', { number: index + 1 })}
+            {entry.institution || t('education.educationNumber', { number: storeIndex + 1 })}
           </span>
         </div>
         <div className="flex items-center gap-1">
@@ -82,7 +76,7 @@ function EducationEntryForm({ entry, index, onRemove, dragHandleProps }: EntryPr
             type="button"
             variant="ghost"
             size="icon-sm"
-            onClick={() => onRemove(index)}
+            onClick={() => onRemove(storeIndex)}
             aria-label={t('education.removeEntry')}
           >
             <Trash2 size={14} className="text-destructive" />
@@ -93,54 +87,54 @@ function EducationEntryForm({ entry, index, onRemove, dragHandleProps }: EntryPr
       {!collapsed && (
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2 space-y-1">
-            <Label htmlFor={`edu-${index}-institution`}>{t('education.institution')}</Label>
+            <Label htmlFor={`edu-${storeIndex}-institution`}>{t('education.institution')}</Label>
             <Input
-              id={`edu-${index}-institution`}
+              id={`edu-${storeIndex}-institution`}
               placeholder={''}
               value={entry.institution}
               onChange={(e) => updateField(`${basePath}/institution`, e.target.value)}
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor={`edu-${index}-degree`}>{t('education.degree')}</Label>
+            <Label htmlFor={`edu-${storeIndex}-degree`}>{t('education.degree')}</Label>
             <Input
-              id={`edu-${index}-degree`}
+              id={`edu-${storeIndex}-degree`}
               placeholder={''}
               value={entry.degree}
               onChange={(e) => updateField(`${basePath}/degree`, e.target.value)}
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor={`edu-${index}-field`}>{t('education.field')}</Label>
+            <Label htmlFor={`edu-${storeIndex}-field`}>{t('education.field')}</Label>
             <Input
-              id={`edu-${index}-field`}
+              id={`edu-${storeIndex}-field`}
               placeholder={''}
               value={entry.field}
               onChange={(e) => updateField(`${basePath}/field`, e.target.value)}
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor={`edu-${index}-start`}>{t('education.startDate')}</Label>
+            <Label htmlFor={`edu-${storeIndex}-start`}>{t('education.startDate')}</Label>
             <Input
-              id={`edu-${index}-start`}
+              id={`edu-${storeIndex}-start`}
               placeholder={''}
               value={entry.startDate}
               onChange={(e) => updateField(`${basePath}/startDate`, e.target.value)}
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor={`edu-${index}-end`}>{t('education.endDate')}</Label>
+            <Label htmlFor={`edu-${storeIndex}-end`}>{t('education.endDate')}</Label>
             <Input
-              id={`edu-${index}-end`}
+              id={`edu-${storeIndex}-end`}
               placeholder={''}
               value={entry.endDate ?? ''}
               onChange={(e) => handleOptional('endDate', e.target.value)}
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor={`edu-${index}-gpa`}>{t('education.gpa')}</Label>
+            <Label htmlFor={`edu-${storeIndex}-gpa`}>{t('education.gpa')}</Label>
             <Input
-              id={`edu-${index}-gpa`}
+              id={`edu-${storeIndex}-gpa`}
               placeholder={''}
               value={entry.gpa ?? ''}
               onChange={(e) => handleOptional('gpa', e.target.value)}
@@ -152,28 +146,30 @@ function EducationEntryForm({ entry, index, onRemove, dragHandleProps }: EntryPr
   );
 }
 
-// ---------------------------------------------------------------------------
-// Main form component
-// ---------------------------------------------------------------------------
-
 export function EducationForm() {
   const t = useTranslations('cvEditor');
   const education = useResumeEditorStore((s) => s.document.education);
   const updateField = useResumeEditorStore((s) => s.updateField);
   const reorderItems = useResumeEditorStore((s) => s.reorderItems);
 
+  const [selectedPage, setSelectedPage] = useState(0);
+
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+
+  const pageEntries = education
+    .map((entry, storeIndex) => ({ entry, storeIndex }))
+    .filter(({ entry }) => (entry.page ?? 0) === selectedPage);
 
   const addEntry = useCallback(() => {
     const state = useResumeEditorStore.getState();
-    const newList = [...state.document.education, createEmptyEntry()];
+    const newList = [...state.document.education, createEmptyEntry(selectedPage)];
     updateField('/education', newList);
-  }, [updateField]);
+  }, [updateField, selectedPage]);
 
   const removeEntry = useCallback(
-    (index: number) => {
+    (storeIndex: number) => {
       const state = useResumeEditorStore.getState();
-      const newList = state.document.education.filter((_, i) => i !== index);
+      const newList = state.document.education.filter((_, i) => i !== storeIndex);
       updateField('/education', newList);
     },
     [updateField],
@@ -181,7 +177,8 @@ export function EducationForm() {
 
   return (
     <div className="space-y-3">
-      {education.length === 0 && (
+      <PageSelect selectedPage={selectedPage} onSelect={setSelectedPage} />
+      {pageEntries.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-6 border border-dashed border-border rounded-md">
           {t('education.empty')}
         </p>
@@ -196,14 +193,17 @@ export function EducationForm() {
           }
         }}
       >
-        <SortableContext items={education.map((e) => e.id)} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={pageEntries.map(({ entry }) => entry.id)}
+          strategy={verticalListSortingStrategy}
+        >
           <div className="space-y-3">
-            {education.map((entry, i) => (
+            {pageEntries.map(({ entry, storeIndex }) => (
               <SortableItem key={entry.id} id={entry.id}>
                 {(dragHandleProps) => (
                   <EducationEntryForm
                     entry={entry}
-                    index={i}
+                    storeIndex={storeIndex}
                     onRemove={removeEntry}
                     dragHandleProps={dragHandleProps}
                   />

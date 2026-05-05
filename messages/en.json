@@ -340,7 +340,8 @@
       "skills": "Skills",
       "template": "Template",
       "certifications": "Certifications",
-      "languages": "Languages"
+      "languages": "Languages",
+      "pages": "Pages"
     },
     "header": {
       "name": "Name*",
@@ -412,6 +413,12 @@
       "bulletList": "Bullet list",
       "numberedList": "Numbered list",
       "placeholder": "Start typing…"
+    },
+    "pages": {
+      "page": "Page",
+      "addPage": "Add page",
+      "deletePage": "Delete page",
+      "empty": "Empty page"
     },
     "buttons": {
       "reset": "Reset",

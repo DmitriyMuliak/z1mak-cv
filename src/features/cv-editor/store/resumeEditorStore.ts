@@ -97,6 +97,30 @@ export const useResumeEditorStore = create<ResumeEditorStore>()(
           });
           set({ document: next, isDirty: true });
         },
+
+        reassignEntriesFromPage: (deletedPageIndex) => {
+          const next = produce(get().document, (draft) => {
+            const sections = [
+              'experience',
+              'education',
+              'skills',
+              'certifications',
+              'languages',
+            ] as const;
+            for (const section of sections) {
+              const arr = draft[section] as { page?: number }[];
+              for (const entry of arr) {
+                const p = entry.page ?? 0;
+                if (p === deletedPageIndex) {
+                  entry.page = Math.max(0, deletedPageIndex - 1);
+                } else if (p > deletedPageIndex) {
+                  entry.page = p - 1;
+                }
+              }
+            }
+          });
+          set({ document: next, isDirty: true });
+        },
       }),
       { name: 'ResumeEditorStore', enabled: envType.isDev },
     ),

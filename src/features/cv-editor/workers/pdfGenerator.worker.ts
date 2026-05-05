@@ -19,6 +19,7 @@ export interface PdfWorkerRequest {
   document: ResumeDocument;
   template: TemplateStyle;
   font: FontOption;
+  pageCount: number;
 }
 
 interface PdfWorkerSuccess {
@@ -36,7 +37,8 @@ function isPdfWorkerRequest(data: unknown): data is PdfWorkerRequest {
     typeof d.document === 'object' &&
     d.document !== null &&
     (d.template === 'atsClean' || d.template === 'atsModern') &&
-    (d.font === 'roboto' || d.font === 'ptSerif')
+    (d.font === 'roboto' || d.font === 'ptSerif') &&
+    typeof d.pageCount === 'number'
   );
 }
 
@@ -46,13 +48,13 @@ self.addEventListener('message', async (event: MessageEvent<unknown>) => {
     return;
   }
 
-  const { document: resumeDocument, template, font } = event.data;
+  const { document: resumeDocument, template, font, pageCount } = event.data;
 
   registerFonts(font);
   const fontFamily = getFontFamily(font);
 
   try {
-    const props = { document: resumeDocument, fontFamily };
+    const props = { document: resumeDocument, fontFamily, pageCount };
     const element = (
       template === 'atsModern'
         ? React.createElement(AtsModernTemplate, props)

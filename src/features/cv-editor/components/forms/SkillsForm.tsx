@@ -10,46 +10,40 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SortableItem, type DragHandleProps } from './SortableItem';
+import { PageSelect } from './PageSelect';
 import type { SkillGroup } from '../../schema/resumeDocument.schema';
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function createEmptyGroup(): SkillGroup {
+function createEmptyGroup(page: number): SkillGroup {
   return {
     id: crypto.randomUUID(),
     category: '',
     items: [],
+    page,
   };
 }
 
-// ---------------------------------------------------------------------------
-// Single skill group sub-component
-// ---------------------------------------------------------------------------
-
 interface GroupProps {
   group: SkillGroup;
-  index: number;
-  onRemove: (index: number) => void;
+  storeIndex: number;
+  onRemove: (storeIndex: number) => void;
   dragHandleProps: DragHandleProps;
 }
 
-function SkillGroupForm({ group, index, onRemove, dragHandleProps }: GroupProps) {
+function SkillGroupForm({ group, storeIndex, onRemove, dragHandleProps }: GroupProps) {
   const t = useTranslations('cvEditor');
   const updateField = useResumeEditorStore((s) => s.updateField);
-  const basePath = `/skills/${index}`;
+  const basePath = `/skills/${storeIndex}`;
   const [collapsed, setCollapsed] = useState(false);
 
   const addItem = () => {
     const state = useResumeEditorStore.getState();
-    const currentGroup = state.document.skills[index];
+    const currentGroup = state.document.skills[storeIndex];
     updateField(`${basePath}/items/${currentGroup.items.length}`, '');
   };
 
   const removeItem = (itemIndex: number) => {
     const state = useResumeEditorStore.getState();
-    const newItems = state.document.skills[index].items.filter((_, i) => i !== itemIndex);
+    const newItems = state.document.skills[storeIndex].items.filter((_, i) => i !== itemIndex);
     updateField(`${basePath}/items`, newItems);
   };
 
@@ -72,10 +66,12 @@ function SkillGroupForm({ group, index, onRemove, dragHandleProps }: GroupProps)
           <GripVertical size={16} />
         </button>
         <div className="flex-1 space-y-1">
-          <Label htmlFor={`skill-${index}-category`}>{t('skills.category', { number: '' })}</Label>
+          <Label htmlFor={`skill-${storeIndex}-category`}>
+            {t('skills.category', { number: '' })}
+          </Label>
           <Input
-            id={`skill-${index}-category`}
-            placeholder={t('skills.category', { number: index + 1 })}
+            id={`skill-${storeIndex}-category`}
+            placeholder={t('skills.category', { number: storeIndex + 1 })}
             value={group.category}
             onChange={(e) => updateField(`${basePath}/category`, e.target.value)}
           />
@@ -94,7 +90,7 @@ function SkillGroupForm({ group, index, onRemove, dragHandleProps }: GroupProps)
             type="button"
             variant="ghost"
             size="icon-sm"
-            onClick={() => onRemove(index)}
+            onClick={() => onRemove(storeIndex)}
             aria-label={t('skills.removeGroup')}
           >
             <Trash2 size={14} className="text-destructive" />
@@ -106,7 +102,6 @@ function SkillGroupForm({ group, index, onRemove, dragHandleProps }: GroupProps)
         <div className="space-y-1.5">
           <Label>{t('skills.skills')}</Label>
 
-          {/* Tag-style display of existing items */}
           {group.items.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-2">
               {group.items.map((item, ii) => (
@@ -143,31 +138,30 @@ function SkillGroupForm({ group, index, onRemove, dragHandleProps }: GroupProps)
   );
 }
 
-// ---------------------------------------------------------------------------
-// Main form component
-// ---------------------------------------------------------------------------
-
-/**
- * Manages skill groups — each group has a category name and a list of skill tags.
- */
 export function SkillsForm() {
   const t = useTranslations('cvEditor');
   const skills = useResumeEditorStore((s) => s.document.skills);
   const updateField = useResumeEditorStore((s) => s.updateField);
   const reorderItems = useResumeEditorStore((s) => s.reorderItems);
 
+  const [selectedPage, setSelectedPage] = useState(0);
+
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+
+  const pageGroups = skills
+    .map((group, storeIndex) => ({ group, storeIndex }))
+    .filter(({ group }) => (group.page ?? 0) === selectedPage);
 
   const addGroup = useCallback(() => {
     const state = useResumeEditorStore.getState();
-    const newList = [...state.document.skills, createEmptyGroup()];
+    const newList = [...state.document.skills, createEmptyGroup(selectedPage)];
     updateField('/skills', newList);
-  }, [updateField]);
+  }, [updateField, selectedPage]);
 
   const removeGroup = useCallback(
-    (index: number) => {
+    (storeIndex: number) => {
       const state = useResumeEditorStore.getState();
-      const newList = state.document.skills.filter((_, i) => i !== index);
+      const newList = state.document.skills.filter((_, i) => i !== storeIndex);
       updateField('/skills', newList);
     },
     [updateField],
@@ -175,7 +169,8 @@ export function SkillsForm() {
 
   return (
     <div className="space-y-3">
-      {skills.length === 0 && (
+      <PageSelect selectedPage={selectedPage} onSelect={setSelectedPage} />
+      {pageGroups.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-6 border border-dashed border-border rounded-md">
           {t('skills.empty')}
         </p>
@@ -190,14 +185,17 @@ export function SkillsForm() {
           }
         }}
       >
-        <SortableContext items={skills.map((g) => g.id)} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={pageGroups.map(({ group }) => group.id)}
+          strategy={verticalListSortingStrategy}
+        >
           <div className="space-y-3">
-            {skills.map((group, i) => (
+            {pageGroups.map(({ group, storeIndex }) => (
               <SortableItem key={group.id} id={group.id}>
                 {(dragHandleProps) => (
                   <SkillGroupForm
                     group={group}
-                    index={i}
+                    storeIndex={storeIndex}
                     onRemove={removeGroup}
                     dragHandleProps={dragHandleProps}
                   />

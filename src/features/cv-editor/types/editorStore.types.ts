@@ -60,6 +60,13 @@ export interface ResumeEditorActions {
     activeId: string,
     overId: string,
   ) => void;
+
+  /**
+   * Called when a page is deleted at `deletedPageIndex`.
+   * Moves all entries that were on the deleted page to the previous page,
+   * and decrements the `page` field of entries on pages after the deleted one.
+   */
+  reassignEntriesFromPage: (deletedPageIndex: number) => void;
 }
 
 // ---------------------------------------------------------------------------

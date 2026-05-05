@@ -25,6 +25,8 @@ const ExperienceEntrySchema = v.object({
   location: v.optional(v.string()),
   /** HTML string from the rich-text editor. */
   description: v.optional(v.string()),
+  /** 0-indexed page this entry belongs to. `undefined` defaults to page 0. */
+  page: v.optional(v.number()),
 });
 
 const EducationEntrySchema = v.object({
@@ -35,12 +37,14 @@ const EducationEntrySchema = v.object({
   startDate: v.string(),
   endDate: v.optional(v.string()),
   gpa: v.optional(v.string()),
+  page: v.optional(v.number()),
 });
 
 const SkillGroupSchema = v.object({
   id: v.pipe(v.string(), v.uuid()),
   category: v.string(),
   items: v.array(v.string()),
+  page: v.optional(v.number()),
 });
 
 const CertificationEntrySchema = v.object({
@@ -49,6 +53,7 @@ const CertificationEntrySchema = v.object({
   issuer: v.string(),
   date: v.optional(v.string()),
   url: v.optional(v.pipe(v.string(), v.url())),
+  page: v.optional(v.number()),
 });
 
 const LanguageProficiency = v.picklist(['native', 'fluent', 'advanced', 'intermediate', 'basic']);
@@ -57,6 +62,7 @@ const LanguageEntrySchema = v.object({
   id: v.pipe(v.string(), v.uuid()),
   language: v.string(),
   proficiency: LanguageProficiency,
+  page: v.optional(v.number()),
 });
 
 // ---------------------------------------------------------------------------

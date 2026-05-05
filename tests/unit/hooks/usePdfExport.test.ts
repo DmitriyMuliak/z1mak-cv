@@ -136,7 +136,7 @@ describe('usePdfExport', () => {
 
     act(() => {
       // Start the export but do NOT resolve the worker yet
-      result.current.exportPdf(stubDocument, 'atsClean', 'roboto').catch(() => {});
+      result.current.exportPdf(stubDocument, 'atsClean', 'roboto', 1).catch(() => {});
     });
 
     expect(result.current.isGenerating).toBe(true);
@@ -148,7 +148,7 @@ describe('usePdfExport', () => {
     const fakeBytes = new Uint8Array([1, 2, 3]);
 
     await act(async () => {
-      const exportPromise = result.current.exportPdf(stubDocument, 'atsClean', 'roboto');
+      const exportPromise = result.current.exportPdf(stubDocument, 'atsClean', 'roboto', 1);
       workerControl!.resolve(fakeBytes);
       await exportPromise;
     });
@@ -162,7 +162,7 @@ describe('usePdfExport', () => {
     const fakeBytes = new Uint8Array([10, 20, 30]);
 
     await act(async () => {
-      const exportPromise = result.current.exportPdf(stubDocument, 'atsClean', 'roboto');
+      const exportPromise = result.current.exportPdf(stubDocument, 'atsClean', 'roboto', 1);
       workerControl!.resolve(fakeBytes);
       await exportPromise;
     });
@@ -177,7 +177,7 @@ describe('usePdfExport', () => {
     const { result } = renderHook(() => usePdfExport());
 
     await act(async () => {
-      const exportPromise = result.current.exportPdf(stubDocument, 'atsModern', 'roboto');
+      const exportPromise = result.current.exportPdf(stubDocument, 'atsModern', 'roboto', 1);
       workerControl!.resolve(new Uint8Array([1]));
       await exportPromise;
     });
@@ -190,7 +190,7 @@ describe('usePdfExport', () => {
     const { result } = renderHook(() => usePdfExport());
 
     await act(async () => {
-      const exportPromise = result.current.exportPdf(stubDocument, 'atsClean', 'roboto');
+      const exportPromise = result.current.exportPdf(stubDocument, 'atsClean', 'roboto', 1);
       workerControl!.reject('Rendering failed');
       await expect(exportPromise).rejects.toThrow('Rendering failed');
     });
@@ -203,7 +203,7 @@ describe('usePdfExport', () => {
     const { result } = renderHook(() => usePdfExport());
 
     await act(async () => {
-      const exportPromise = result.current.exportPdf(stubDocument, 'atsClean', 'roboto');
+      const exportPromise = result.current.exportPdf(stubDocument, 'atsClean', 'roboto', 1);
       workerControl!.resolve(new Uint8Array([0]));
       await exportPromise;
     });
@@ -216,7 +216,7 @@ describe('usePdfExport', () => {
     const { result } = renderHook(() => usePdfExport());
 
     await act(async () => {
-      const exportPromise = result.current.exportPdf(stubDocument, 'atsClean', 'roboto');
+      const exportPromise = result.current.exportPdf(stubDocument, 'atsClean', 'roboto', 1);
       workerControl!.reject('boom');
       await expect(exportPromise).rejects.toThrow('boom');
     });
@@ -229,7 +229,7 @@ describe('usePdfExport', () => {
     const { result } = renderHook(() => usePdfExport());
 
     await act(async () => {
-      const exportPromise = result.current.exportPdf(stubDocument, 'atsClean', 'roboto');
+      const exportPromise = result.current.exportPdf(stubDocument, 'atsClean', 'roboto', 1);
       workerControl!.resolve(new Uint8Array([0]));
       await exportPromise;
     });
@@ -243,7 +243,7 @@ describe('usePdfExport', () => {
     const { result } = renderHook(() => usePdfExport());
 
     await act(async () => {
-      const exportPromise = result.current.exportPdf(stubDocument, 'atsModern', 'roboto');
+      const exportPromise = result.current.exportPdf(stubDocument, 'atsModern', 'roboto', 1);
       workerControl!.resolve(new Uint8Array([0]));
       await exportPromise;
     });

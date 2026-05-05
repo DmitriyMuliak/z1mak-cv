@@ -260,36 +260,51 @@ function LanguagesSection({ entries }: { entries: LanguageEntry[] }) {
 export interface AtsModernTemplateProps {
   document: ResumeDocument;
   fontFamily?: string;
+  pageCount?: number;
 }
 
 export function AtsModernTemplate({
   document: doc,
   fontFamily = 'Roboto',
+  pageCount = 1,
 }: AtsModernTemplateProps) {
   return (
     <Document title={doc.header.name || 'Resume'} author={doc.header.name}>
-      <Page size="A4" style={{ ...styles.page, fontFamily }}>
-        <View style={styles.nameWrapper}>
-          <Text style={styles.name}>{doc.header.name}</Text>
-        </View>
-        <ContactLine header={doc.header} />
-        {doc.summary ? (
-          <View style={styles.section}>
-            <SectionHeading title="Summary" />
-            <HtmlNodes
-              html={doc.summary}
-              bulletDotStyle={styles.bulletDot}
-              bulletTextStyle={styles.bulletText}
-              paraStyle={styles.summaryText}
-            />
-          </View>
-        ) : null}
-        <ExperienceSection entries={doc.experience} />
-        <EducationSection entries={doc.education} />
-        <SkillsSection groups={doc.skills} />
-        <CertificationsSection entries={doc.certifications} />
-        <LanguagesSection entries={doc.languages} />
-      </Page>
+      {Array.from({ length: pageCount }, (_, pageIndex) => {
+        const pageExp = doc.experience.filter((e) => (e.page ?? 0) === pageIndex);
+        const pageEdu = doc.education.filter((e) => (e.page ?? 0) === pageIndex);
+        const pageSkills = doc.skills.filter((g) => (g.page ?? 0) === pageIndex);
+        const pageCerts = doc.certifications.filter((e) => (e.page ?? 0) === pageIndex);
+        const pageLangs = doc.languages.filter((e) => (e.page ?? 0) === pageIndex);
+        return (
+          <Page key={pageIndex} size="A4" style={{ ...styles.page, fontFamily }}>
+            {pageIndex === 0 && (
+              <>
+                <View style={styles.nameWrapper}>
+                  <Text style={styles.name}>{doc.header.name}</Text>
+                </View>
+                <ContactLine header={doc.header} />
+              </>
+            )}
+            {pageIndex === 0 && doc.summary ? (
+              <View style={styles.section}>
+                <SectionHeading title="Summary" />
+                <HtmlNodes
+                  html={doc.summary}
+                  bulletDotStyle={styles.bulletDot}
+                  bulletTextStyle={styles.bulletText}
+                  paraStyle={styles.summaryText}
+                />
+              </View>
+            ) : null}
+            {pageExp.length > 0 && <ExperienceSection entries={pageExp} />}
+            {pageEdu.length > 0 && <EducationSection entries={pageEdu} />}
+            {pageSkills.length > 0 && <SkillsSection groups={pageSkills} />}
+            {pageCerts.length > 0 && <CertificationsSection entries={pageCerts} />}
+            {pageLangs.length > 0 && <LanguagesSection entries={pageLangs} />}
+          </Page>
+        );
+      })}
     </Document>
   );
 }
