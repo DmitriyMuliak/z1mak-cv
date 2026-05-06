@@ -493,6 +493,7 @@
       "languages": "Languages",
       "present": "Present",
       "emptyPreview": "Start filling in your details to see the preview",
+      "overflowWarning": "Page content is too large, which may result in incorrect PDF export.",
       "educationIn": "in"
     }
   }

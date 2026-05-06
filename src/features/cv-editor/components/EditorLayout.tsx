@@ -247,7 +247,7 @@ export function EditorLayout() {
   }, [isLg]);
 
   return (
-    <div className="w-full flex flex-col" style={{ minHeight: 'calc(100vh - 80px)' }}>
+    <div className="w-full flex flex-col">
       <EditorToolbar onOpenPreview={() => setPreviewOpen(true)} />
 
       <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">

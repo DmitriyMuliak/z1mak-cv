@@ -1,6 +1,8 @@
 'use client';
 
+import { useRef, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { AlertTriangle } from 'lucide-react';
 import { useResumeEditorStore } from '../store/resumeEditorStore';
 import { useTemplateSettingsStore } from '../store/templateSettingsStore';
 import type { TemplateStyle, FontOption } from '../hooks/usePdfExport';
@@ -183,6 +185,47 @@ function LanguageItem({
 export const A4_WIDTH = 794;
 export const A4_HEIGHT = 1123;
 
+function PageContainer({
+  children,
+  fontFamily,
+  overflowWarning,
+}: {
+  children: React.ReactNode;
+  fontFamily: string;
+  overflowWarning: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setIsOverflowing(entry.contentRect.height > A4_HEIGHT);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <div>
+      <div
+        ref={ref}
+        className="bg-white text-neutral-900 shadow-xl"
+        style={{ width: A4_WIDTH, minHeight: A4_HEIGHT, fontFamily }}
+      >
+        {children}
+      </div>
+      {isOverflowing && (
+        <div className="flex items-start gap-2 px-3 py-2.5 bg-amber-50 border border-x border-b border-amber-200 rounded-b-md text-xs text-amber-800 shadow-xl">
+          <AlertTriangle size={14} className="shrink-0 mt-0.5 text-amber-500" />
+          <span>{overflowWarning}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const FONT_FAMILY_CSS: Record<FontOption, string> = {
   roboto: '"Roboto", "Helvetica Neue", Arial, sans-serif',
   ptSerif: '"PT Serif", Georgia, serif',
@@ -220,10 +263,10 @@ export function ResumePreview({
         const pageCerts = certifications.filter((e) => (e.page ?? 0) === pageIndex);
         const pageLangs = languages.filter((e) => (e.page ?? 0) === pageIndex);
         return (
-          <div
+          <PageContainer
             key={pageIndex}
-            className="bg-white text-neutral-900 shadow-xl"
-            style={{ width: A4_WIDTH, minHeight: A4_HEIGHT, fontFamily }}
+            fontFamily={fontFamily}
+            overflowWarning={t('preview.overflowWarning')}
           >
             <div className="px-8 py-8">
               {/* ---- Header (first page only) ---- */}
@@ -374,7 +417,7 @@ export function ResumePreview({
                 </div>
               )}
             </div>
-          </div>
+          </PageContainer>
         );
       })}
     </>

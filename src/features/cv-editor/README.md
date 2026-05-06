@@ -27,6 +27,7 @@
 ## Editor UX
 
 - **Live preview** — A4 canvas updates in real time as you type
+- **Overflow warning** — if a page's content exceeds A4 height (1123 px at 96 dpi), an amber banner appears directly below that page: *"Page content is too large, which may result in incorrect PDF export."* Detected via `ResizeObserver`; per-page, so only the overflowing page is flagged
 - **Drag & drop** reordering within each section list
 - **Collapse / expand** individual entries to reduce visual noise
 - **Undo / Redo** — full edit history (up to 100 steps) via zundo
