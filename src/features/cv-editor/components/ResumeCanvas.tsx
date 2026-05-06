@@ -12,7 +12,7 @@ function ZoomControls() {
   const t = useTranslations('cvEditor');
 
   return (
-    <div className="absolute bottom-4 right-4 flex items-center gap-1 z-10 bg-background/80 backdrop-blur-sm border border-border rounded-lg p-1 shadow-sm">
+    <div className="absolute top-4 right-4 flex items-center gap-1 z-10 bg-background/80 backdrop-blur-sm border border-border rounded-lg p-1 shadow-sm">
       <Button
         type="button"
         variant="ghost"
