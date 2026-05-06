@@ -34,6 +34,7 @@
       "skillsTitle": "Навички",
       "contactTitle": "Контакт",
       "cvCheckerTitle": "Перевірка CV",
+      "cvEditorTitle": "Редактор CV",
       "openMenu": "Відкрити меню",
       "closeMenu": "Закрити меню"
     }
@@ -328,5 +329,172 @@
   },
   "examples": {
     "pluralTranslationExample": "{count, plural, one {# товар} few {# товари} many {# товарів} other {# товару}}"
+  },
+  "cvEditor": {
+    "tabs": {
+      "label": "Розділи CV",
+      "header": "Заголовок",
+      "summary": "Про себе",
+      "experience": "Досвід",
+      "education": "Освіта",
+      "skills": "Навички",
+      "template": "Шаблон",
+      "certifications": "Сертифікати",
+      "languages": "Мови",
+      "pages": "Сторінки"
+    },
+    "header": {
+      "name": "Ім'я*",
+      "email": "Email*",
+      "phone": "Телефон",
+      "location": "Місцезнаходження",
+      "linkedin": "LinkedIn",
+      "website": "Сайт",
+      "displayAs": "Показувати як…",
+      "linkedinLabel": "Мітка LinkedIn (напр., LinkedIn)",
+      "websiteLabel": "Мітка сайту (напр., Моє портфоліо)",
+      "removeLabel": "Видалити мітку відображення",
+      "addLabel": "Додати мітку відображення"
+    },
+    "summary": {
+      "title": "Про себе",
+      "placeholder": "Коротка інформація про вас, вашу кар'єру та цілі…",
+      "hint": "2–4 речення найкраще. Зосередьтесь на вашій пропозиції цінності."
+    },
+    "experience": {
+      "title": "Досвід роботи",
+      "addButton": "Додати досвід",
+      "empty": "Досвід роботи поки що не додано. Додайте вашу першу посаду нижче.",
+      "jobTitle": "Посада*",
+      "company": "Компанія*",
+      "startDate": "Дата початку",
+      "endDate": "Дата закінчення",
+      "location": "Місцезнаходження",
+      "description": "Опис",
+      "descriptionPlaceholder": "Опишіть ваші обов'язки та досягнення…",
+      "collapseEntry": "Згорнути запис",
+      "expandEntry": "Розгорнути запис",
+      "removeEntry": "Видалити запис",
+      "dragToReorder": "Перетягніть для переупорядкування",
+      "positionNumber": "Посада {number}"
+    },
+    "education": {
+      "title": "Освіта",
+      "addButton": "Додати освіту",
+      "empty": "Записи про освіту поки що не додано.",
+      "institution": "Навчальний заклад*",
+      "degree": "Ступінь",
+      "field": "Спеціальність",
+      "startDate": "Дата початку",
+      "endDate": "Дата закінчення",
+      "gpa": "Середній бал",
+      "collapseEntry": "Згорнути запис",
+      "expandEntry": "Розгорнути запис",
+      "removeEntry": "Видалити запис",
+      "dragToReorder": "Перетягніть для переупорядкування",
+      "educationNumber": "Освіта {number}"
+    },
+    "skills": {
+      "title": "Навички",
+      "addButton": "Додати групу навичок",
+      "empty": "Групи навичок поки що не додано. Групуйте ваші навички за категоріями.",
+      "category": "Категорія {number}",
+      "skills": "Навичка",
+      "addSkill": "Додати навичку",
+      "removeSkill": "Видалити навичку",
+      "collapseGroup": "Згорнути групу",
+      "expandGroup": "Розгорнути групу",
+      "removeGroup": "Видалити групу",
+      "dragToReorder": "Перетягніть для переупорядкування"
+    },
+    "certifications": {
+      "title": "Сертифікати",
+      "addButton": "Додати сертифікат",
+      "empty": "Сертифікати поки що не додано.",
+      "name": "Назва сертифіката*",
+      "issuer": "Організація, що видала*",
+      "date": "Дата (напр., Чер 2024)",
+      "url": "Посилання на сертифікат",
+      "collapseEntry": "Згорнути запис",
+      "expandEntry": "Розгорнути запис",
+      "removeEntry": "Видалити запис",
+      "dragToReorder": "Перетягніть для переупорядкування",
+      "entryNumber": "Сертифікат {number}"
+    },
+    "languages": {
+      "title": "Мови",
+      "addButton": "Додати мову",
+      "empty": "Мови поки що не додано.",
+      "language": "Мова*",
+      "proficiency": "Рівень",
+      "removeEntry": "Видалити запис",
+      "dragToReorder": "Перетягніть для переупорядкування",
+      "proficiencyLevels": {
+        "native": "Рідна",
+        "fluent": "Вільна",
+        "advanced": "Просунутий",
+        "intermediate": "Середній",
+        "basic": "Базовий"
+      }
+    },
+    "richEditor": {
+      "bold": "Жирний",
+      "italic": "Курсив",
+      "bulletList": "Маркований список",
+      "numberedList": "Нумерований список",
+      "placeholder": "Почніть друкувати…"
+    },
+    "pages": {
+      "page": "Сторінка",
+      "addPage": "Додати сторінку",
+      "deletePage": "Видалити сторінку",
+      "empty": "Порожня сторінка"
+    },
+    "buttons": {
+      "reset": "Скинути",
+      "exportPdf": "Експортувати PDF",
+      "exporting": "Генерування…",
+      "unsaved": "Незбережено",
+      "undo": "Повернути",
+      "redo": "Повторити",
+      "livePreview": "Попередній перегляд",
+      "zoomIn": "Збільшити",
+      "zoomOut": "Зменшити",
+      "fitView": "За розміром"
+    },
+    "validation": {
+      "nameRequired": "Ім'я є обов'язковим",
+      "emailRequired": "Email є обов'язковим",
+      "emailInvalid": "Email повинен бути дійсною адресою",
+      "phoneInvalid": "Номер телефону повинен бути дійсним",
+      "linkedinInvalid": "LinkedIn URL повинен бути дійсною URL-адресою",
+      "websiteInvalid": "URL сайту повинен бути дійсною URL-адресою"
+    },
+    "templates": {
+      "title": "Стиль шаблону",
+      "atsClean": "ATS Clean",
+      "atsModern": "ATS Modern"
+    },
+    "fonts": {
+      "title": "Шрифт",
+      "roboto": "Roboto",
+      "ptSerif": "PT Serif",
+      "sansSerif": "Без засічок · Дружній до ATS",
+      "serif": "З засічками · Класичний вигляд",
+      "supportNote": "Обидва шрифти підтримують латиницю та кирилицю."
+    },
+    "preview": {
+      "yourName": "Ваше ім'я",
+      "summary": "Про себе",
+      "experience": "Досвід",
+      "education": "Освіта",
+      "skills": "Навички",
+      "certifications": "Сертифікати",
+      "languages": "Мови",
+      "present": "Дотепер",
+      "emptyPreview": "Починайте заповнювати деталі, щоб побачити попередній перегляд",
+      "overflowWarning": "Вміст цієї сторінки занадто великий, що може призвести до некоректного експорту у PDF.",
+      "educationIn": "у"
+    }
   }
 }

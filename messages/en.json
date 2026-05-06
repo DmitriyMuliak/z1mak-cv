@@ -34,6 +34,7 @@
       "skillsTitle": "Skills",
       "contactTitle": "Contact",
       "cvCheckerTitle": "CV Checker",
+      "cvEditorTitle": "CV Editor",
       "openMenu": "Open menu",
       "closeMenu": "Close menu"
     }
@@ -328,5 +329,172 @@
   },
   "examples": {
     "pluralTranslationExample": "{count, plural, one {# product} other {# products}}"
+  },
+  "cvEditor": {
+    "tabs": {
+      "label": "CV sections",
+      "header": "Header",
+      "summary": "Summary",
+      "experience": "Experience",
+      "education": "Education",
+      "skills": "Skills",
+      "template": "Template",
+      "certifications": "Certifications",
+      "languages": "Languages",
+      "pages": "Pages"
+    },
+    "header": {
+      "name": "Name*",
+      "email": "Email*",
+      "phone": "Phone",
+      "location": "Location",
+      "linkedin": "LinkedIn",
+      "website": "Website",
+      "displayAs": "Display as…",
+      "linkedinLabel": "LinkedIn label (e.g., LinkedIn)",
+      "websiteLabel": "Website label (e.g., My Portfolio)",
+      "removeLabel": "Remove display label",
+      "addLabel": "Add display label"
+    },
+    "summary": {
+      "title": "Professional Summary",
+      "placeholder": "A brief overview of your professional background, key skills, and career goals…",
+      "hint": "2–4 sentences work best. Focus on your value proposition."
+    },
+    "experience": {
+      "title": "Work Experience",
+      "addButton": "Add Experience",
+      "empty": "No experience entries yet. Add your first position below.",
+      "jobTitle": "Job Title*",
+      "company": "Company*",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "location": "Location",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe your responsibilities and achievements…",
+      "collapseEntry": "Collapse entry",
+      "expandEntry": "Expand entry",
+      "removeEntry": "Remove entry",
+      "dragToReorder": "Drag to reorder",
+      "positionNumber": "Position {number}"
+    },
+    "education": {
+      "title": "Education",
+      "addButton": "Add Education",
+      "empty": "No education entries yet.",
+      "institution": "Institution*",
+      "degree": "Degree",
+      "field": "Field of Study",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "gpa": "GPA",
+      "collapseEntry": "Collapse entry",
+      "expandEntry": "Expand entry",
+      "removeEntry": "Remove entry",
+      "dragToReorder": "Drag to reorder",
+      "educationNumber": "Education {number}"
+    },
+    "skills": {
+      "title": "Skills",
+      "addButton": "Add Skill Group",
+      "empty": "No skill groups yet. Group your skills by category.",
+      "category": "Category {number}",
+      "skills": "Skills",
+      "addSkill": "Add Skill",
+      "removeSkill": "Remove Skill",
+      "collapseGroup": "Collapse group",
+      "expandGroup": "Expand group",
+      "removeGroup": "Remove group",
+      "dragToReorder": "Drag to reorder"
+    },
+    "certifications": {
+      "title": "Certifications",
+      "addButton": "Add Certification",
+      "empty": "No certifications yet.",
+      "name": "Certification Name*",
+      "issuer": "Issuing Organization*",
+      "date": "Date (e.g. Jun 2024)",
+      "url": "Credential URL",
+      "collapseEntry": "Collapse entry",
+      "expandEntry": "Expand entry",
+      "removeEntry": "Remove entry",
+      "dragToReorder": "Drag to reorder",
+      "entryNumber": "Certification {number}"
+    },
+    "languages": {
+      "title": "Languages",
+      "addButton": "Add Language",
+      "empty": "No languages yet.",
+      "language": "Language*",
+      "proficiency": "Proficiency",
+      "removeEntry": "Remove entry",
+      "dragToReorder": "Drag to reorder",
+      "proficiencyLevels": {
+        "native": "Native",
+        "fluent": "Fluent",
+        "advanced": "Advanced",
+        "intermediate": "Intermediate",
+        "basic": "Basic"
+      }
+    },
+    "richEditor": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "bulletList": "Bullet list",
+      "numberedList": "Numbered list",
+      "placeholder": "Start typing…"
+    },
+    "pages": {
+      "page": "Page",
+      "addPage": "Add page",
+      "deletePage": "Delete page",
+      "empty": "Empty page"
+    },
+    "buttons": {
+      "reset": "Reset",
+      "exportPdf": "Export PDF",
+      "exporting": "Generating…",
+      "unsaved": "Unsaved",
+      "undo": "Undo",
+      "redo": "Redo",
+      "livePreview": "Live Preview",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "fitView": "Fit to view"
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Email must be a valid email address",
+      "phoneInvalid": "Phone number must be valid",
+      "linkedinInvalid": "LinkedIn URL must be a valid URL",
+      "websiteInvalid": "Website URL must be a valid URL"
+    },
+    "templates": {
+      "title": "Template style",
+      "atsClean": "ATS Clean",
+      "atsModern": "ATS Modern"
+    },
+    "fonts": {
+      "title": "Font",
+      "roboto": "Roboto",
+      "ptSerif": "PT Serif",
+      "sansSerif": "Sans-serif · ATS-friendly",
+      "serif": "Serif · Classic look",
+      "supportNote": "Both fonts support Latin and Cyrillic."
+    },
+    "preview": {
+      "yourName": "Your Name",
+      "summary": "Summary",
+      "experience": "Experience",
+      "education": "Education",
+      "skills": "Skills",
+      "certifications": "Certifications",
+      "languages": "Languages",
+      "present": "Present",
+      "emptyPreview": "Start filling in your details to see the preview",
+      "overflowWarning": "Page content is too large, which may result in incorrect PDF export.",
+      "educationIn": "in"
+    }
   }
 }

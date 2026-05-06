@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '1mb',
     },
   },
+  webpack: (config) => {
+    // Required for Web Workers to function correctly in Next.js:
+    // the default globalObject is 'window', which is not available inside a Worker.
+    config.output.globalObject = 'self';
+    return config;
+  },
 };
 
 const withNextIntl = createNextIntlPlugin();
