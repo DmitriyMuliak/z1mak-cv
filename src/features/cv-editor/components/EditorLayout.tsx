@@ -169,33 +169,47 @@ function TabBar({ activeTab, onChange }: { activeTab: TabId; onChange: (t: TabId
   const tabs = getTabs(t);
 
   return (
-    <div
-      className="flex overflow-x-auto shrink-0 border-b border-border bg-background"
-      role="tablist"
-      aria-label={t('tabs.label')}
-    >
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          role="tab"
-          aria-selected={activeTab === tab.id}
-          aria-controls={`tabpanel-${tab.id}`}
-          id={`tab-${tab.id}`}
-          onClick={() => onChange(tab.id)}
-          className={cn(
-            'relative flex items-center gap-1.5 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors shrink-0',
-            'hover:text-foreground hover:bg-muted/50',
-            activeTab === tab.id
-              ? 'text-foreground after:absolute after:bottom-0 after:inset-x-0 after:h-0.5 after:bg-primary'
-              : 'text-muted-foreground',
-          )}
-        >
-          {tab.label}
-          {isDirty && activeTab === tab.id && tab.id !== 'template' && (
-            <span aria-hidden className="size-1.5 rounded-full bg-amber-500 shrink-0" />
-          )}
-        </button>
-      ))}
+    <div className="relative shrink-0 border-b border-border bg-background group/tabbar">
+      <div
+        className={cn(
+          'flex overflow-x-auto',
+          '[scroll-snap-type:x_proximity]',
+          '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+          'group-hover/tabbar:[scrollbar-width:thin] group-hover/tabbar:[&::-webkit-scrollbar]:block',
+          'group-hover/tabbar:[&::-webkit-scrollbar]:h-1',
+        )}
+        role="tablist"
+        aria-label={t('tabs.label')}
+      >
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            role="tab"
+            aria-selected={activeTab === tab.id}
+            aria-controls={`tabpanel-${tab.id}`}
+            id={`tab-${tab.id}`}
+            onClick={() => onChange(tab.id)}
+            className={cn(
+              'relative flex items-center gap-1.5 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors shrink-0',
+              '[scroll-snap-align:start]',
+              'hover:text-foreground hover:bg-muted/50',
+              activeTab === tab.id
+                ? 'text-foreground after:absolute after:bottom-0 after:inset-x-0 after:h-0.5 after:bg-primary'
+                : 'text-muted-foreground',
+            )}
+          >
+            {tab.label}
+            {isDirty && activeTab === tab.id && tab.id !== 'template' && (
+              <span aria-hidden className="size-1.5 rounded-full bg-amber-500 shrink-0" />
+            )}
+          </button>
+        ))}
+      </div>
+      {/* Gradient fade — hints at horizontal scroll */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-r from-transparent to-background"
+      />
     </div>
   );
 }

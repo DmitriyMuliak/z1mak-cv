@@ -156,7 +156,11 @@ export function CertificationsForm() {
 
   return (
     <div className="space-y-3">
-      <PageSelect selectedPage={selectedPage} onSelect={setSelectedPage} />
+      <PageSelect
+        selectedPage={selectedPage}
+        onSelect={setSelectedPage}
+        sectionKey="certifications"
+      />
       {pageEntries.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-6 border border-dashed border-border rounded-md">
           {t('certifications.empty')}

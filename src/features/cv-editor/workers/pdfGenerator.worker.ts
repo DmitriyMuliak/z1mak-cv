@@ -13,7 +13,7 @@ import { registerFonts, getFontFamily, type FontOption } from '../pdf/registerFo
 import { AtsCleanTemplate } from '../pdf/AtsCleanTemplate';
 import { AtsModernTemplate } from '../pdf/AtsModernTemplate';
 import type { ResumeDocument } from '../schema/resumeDocument.schema';
-import type { TemplateStyle, SectionKey } from '../store/templateSettingsStore';
+import type { TemplateStyle, SectionKey, SectionSettings } from '../store/templateSettingsStore';
 
 export interface PdfLabels {
   summary: string;
@@ -48,6 +48,7 @@ export interface PdfWorkerRequest {
   pageCount: number;
   sectionOrder: SectionKey[][];
   labels: PdfLabels;
+  sectionSettings: SectionSettings;
 }
 
 interface PdfWorkerSuccess {
@@ -77,13 +78,28 @@ self.addEventListener('message', async (event: MessageEvent<unknown>) => {
     return;
   }
 
-  const { document: resumeDocument, template, font, pageCount, sectionOrder, labels } = event.data;
+  const {
+    document: resumeDocument,
+    template,
+    font,
+    pageCount,
+    sectionOrder,
+    labels,
+    sectionSettings,
+  } = event.data;
 
   registerFonts(font);
   const fontFamily = getFontFamily(font);
 
   try {
-    const props = { document: resumeDocument, fontFamily, pageCount, sectionOrder, labels };
+    const props = {
+      document: resumeDocument,
+      fontFamily,
+      pageCount,
+      sectionOrder,
+      labels,
+      sectionSettings,
+    };
     const element = (
       template === 'atsModern'
         ? React.createElement(AtsModernTemplate, props)

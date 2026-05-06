@@ -9,7 +9,11 @@ import type {
   LanguageEntry,
 } from '../schema/resumeDocument.schema';
 import { htmlToTextNodes, type TextRun } from '../utils/htmlToTextNodes';
-import { DEFAULT_SECTION_ORDER, type SectionKey } from '../store/templateSettingsStore';
+import {
+  DEFAULT_SECTION_ORDER,
+  type SectionKey,
+  type SectionSettings,
+} from '../store/templateSettingsStore';
 import { DEFAULT_PDF_LABELS, type PdfLabels } from '../workers/pdfGenerator.worker';
 
 function Runs({ runs }: { runs: TextRun[] }) {
@@ -154,11 +158,19 @@ function DateRange({ start, end }: { start: string; end?: string }) {
   );
 }
 
-function ExperienceSection({ entries, labels }: { entries: ExperienceEntry[]; labels: PdfLabels }) {
+function ExperienceSection({
+  entries,
+  labels,
+  hideTitle,
+}: {
+  entries: ExperienceEntry[];
+  labels: PdfLabels;
+  hideTitle?: boolean;
+}) {
   if (!entries.length) return null;
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionHeading}>{labels.experience.toUpperCase()}</Text>
+      {!hideTitle && <Text style={styles.sectionHeading}>{labels.experience.toUpperCase()}</Text>}
       {entries.map((e) => (
         <View key={e.id} style={{ marginBottom: 6 }}>
           <View style={styles.entryHeader}>
@@ -180,11 +192,19 @@ function ExperienceSection({ entries, labels }: { entries: ExperienceEntry[]; la
   );
 }
 
-function EducationSection({ entries, labels }: { entries: EducationEntry[]; labels: PdfLabels }) {
+function EducationSection({
+  entries,
+  labels,
+  hideTitle,
+}: {
+  entries: EducationEntry[];
+  labels: PdfLabels;
+  hideTitle?: boolean;
+}) {
   if (!entries.length) return null;
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionHeading}>{labels.education.toUpperCase()}</Text>
+      {!hideTitle && <Text style={styles.sectionHeading}>{labels.education.toUpperCase()}</Text>}
       {entries.map((e) => (
         <View key={e.id} style={{ marginBottom: 5 }}>
           <View style={styles.entryHeader}>
@@ -201,11 +221,19 @@ function EducationSection({ entries, labels }: { entries: EducationEntry[]; labe
   );
 }
 
-function SkillsSection({ groups, labels }: { groups: SkillGroup[]; labels: PdfLabels }) {
+function SkillsSection({
+  groups,
+  labels,
+  hideTitle,
+}: {
+  groups: SkillGroup[];
+  labels: PdfLabels;
+  hideTitle?: boolean;
+}) {
   if (!groups.length) return null;
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionHeading}>{labels.skills.toUpperCase()}</Text>
+      {!hideTitle && <Text style={styles.sectionHeading}>{labels.skills.toUpperCase()}</Text>}
       {groups.map((g) => (
         <View key={g.id} style={styles.skillRow}>
           <Text style={styles.skillCategory}>{g.category}:</Text>
@@ -219,14 +247,18 @@ function SkillsSection({ groups, labels }: { groups: SkillGroup[]; labels: PdfLa
 function CertificationsSection({
   entries,
   labels,
+  hideTitle,
 }: {
   entries: CertificationEntry[];
   labels: PdfLabels;
+  hideTitle?: boolean;
 }) {
   if (!entries.length) return null;
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionHeading}>{labels.certifications.toUpperCase()}</Text>
+      {!hideTitle && (
+        <Text style={styles.sectionHeading}>{labels.certifications.toUpperCase()}</Text>
+      )}
       {entries.map((e) => (
         <Text key={e.id} style={styles.inlineItem}>
           {e.name} — {e.issuer}
@@ -237,11 +269,19 @@ function CertificationsSection({
   );
 }
 
-function LanguagesSection({ entries, labels }: { entries: LanguageEntry[]; labels: PdfLabels }) {
+function LanguagesSection({
+  entries,
+  labels,
+  hideTitle,
+}: {
+  entries: LanguageEntry[];
+  labels: PdfLabels;
+  hideTitle?: boolean;
+}) {
   if (!entries.length) return null;
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionHeading}>{labels.languages.toUpperCase()}</Text>
+      {!hideTitle && <Text style={styles.sectionHeading}>{labels.languages.toUpperCase()}</Text>}
       {entries.map((e) => (
         <Text key={e.id} style={styles.inlineItem}>
           {e.language} — {labels.proficiencyLevels[e.proficiency] ?? e.proficiency}
@@ -257,6 +297,7 @@ export interface AtsCleanTemplateProps {
   pageCount?: number;
   sectionOrder?: SectionKey[][];
   labels?: PdfLabels;
+  sectionSettings?: SectionSettings;
 }
 
 export function AtsCleanTemplate({
@@ -265,6 +306,7 @@ export function AtsCleanTemplate({
   pageCount = 1,
   sectionOrder,
   labels = DEFAULT_PDF_LABELS,
+  sectionSettings = [],
 }: AtsCleanTemplateProps) {
   return (
     <Document title={doc.header.name || 'Resume'} author={doc.header.name}>
@@ -286,10 +328,13 @@ export function AtsCleanTemplate({
               </>
             )}
             {order.map((key) => {
+              const hideTitle = sectionSettings[pageIndex]?.[key]?.hideTitle ?? false;
               if (key === 'summary' && pageIndex === 0 && doc.summary) {
                 return (
                   <View key="summary" style={styles.section}>
-                    <Text style={styles.sectionHeading}>{labels.summary.toUpperCase()}</Text>
+                    {!hideTitle && (
+                      <Text style={styles.sectionHeading}>{labels.summary.toUpperCase()}</Text>
+                    )}
                     <HtmlNodes
                       html={doc.summary}
                       bulletDotStyle={styles.bulletDot}
@@ -300,17 +345,50 @@ export function AtsCleanTemplate({
                 );
               }
               if (key === 'experience' && pageExp.length > 0)
-                return <ExperienceSection key="experience" entries={pageExp} labels={labels} />;
+                return (
+                  <ExperienceSection
+                    key="experience"
+                    entries={pageExp}
+                    labels={labels}
+                    hideTitle={hideTitle}
+                  />
+                );
               if (key === 'education' && pageEdu.length > 0)
-                return <EducationSection key="education" entries={pageEdu} labels={labels} />;
+                return (
+                  <EducationSection
+                    key="education"
+                    entries={pageEdu}
+                    labels={labels}
+                    hideTitle={hideTitle}
+                  />
+                );
               if (key === 'skills' && pageSkills.length > 0)
-                return <SkillsSection key="skills" groups={pageSkills} labels={labels} />;
+                return (
+                  <SkillsSection
+                    key="skills"
+                    groups={pageSkills}
+                    labels={labels}
+                    hideTitle={hideTitle}
+                  />
+                );
               if (key === 'certifications' && pageCerts.length > 0)
                 return (
-                  <CertificationsSection key="certifications" entries={pageCerts} labels={labels} />
+                  <CertificationsSection
+                    key="certifications"
+                    entries={pageCerts}
+                    labels={labels}
+                    hideTitle={hideTitle}
+                  />
                 );
               if (key === 'languages' && pageLangs.length > 0)
-                return <LanguagesSection key="languages" entries={pageLangs} labels={labels} />;
+                return (
+                  <LanguagesSection
+                    key="languages"
+                    entries={pageLangs}
+                    labels={labels}
+                    hideTitle={hideTitle}
+                  />
+                );
               return null;
             })}
           </Page>

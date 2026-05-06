@@ -24,6 +24,14 @@
 - Badges with content are fully visible; empty sections appear as a dashed outline (pre-arrangement possible)
 - Drag any badge to reorder sections within a page — the live preview and PDF reflect the new order immediately
 
+## Section options
+
+Each section form shows an **Options** button (gear icon) next to the page selector. Clicking it opens a modal scoped to the current page with per-section settings:
+
+- **Hide section title** — omits the section heading in both the live preview and the exported PDF (useful for a cleaner single-section page or when the heading is redundant)
+
+Settings are stored per-page in `templateSettingsStore.sectionSettings` and threaded through the full PDF pipeline.
+
 ## Editor UX
 
 - **Live preview** — A4 canvas updates in real time as you type

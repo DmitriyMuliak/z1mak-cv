@@ -16,6 +16,7 @@ import { useTranslations } from 'next-intl';
 import type { ResumeDocument } from '../schema/resumeDocument.schema';
 import type { PdfWorkerResponse } from '../workers/pdfGenerator.worker';
 import type { TemplateStyle, SectionKey } from '../store/templateSettingsStore';
+import { useTemplateSettingsStore } from '../store/templateSettingsStore';
 import type { FontOption } from '../pdf/registerFonts';
 
 export type { TemplateStyle, FontOption, SectionKey };
@@ -124,7 +125,16 @@ export function usePdfExport(): UsePdfExportReturn {
             reject(new Error(e.message || 'PDF worker error.'));
           };
 
-          worker.postMessage({ document: doc, template, font, pageCount, sectionOrder, labels });
+          const sectionSettings = useTemplateSettingsStore.getState().sectionSettings;
+          worker.postMessage({
+            document: doc,
+            template,
+            font,
+            pageCount,
+            sectionOrder,
+            labels,
+            sectionSettings,
+          });
         });
       } finally {
         setIsGenerating(false);

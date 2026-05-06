@@ -242,6 +242,7 @@ export function ResumePreview({
   const doc = useResumeEditorStore((s) => s.document);
   const pageCount = useTemplateSettingsStore((s) => s.pageCount);
   const sectionOrder = useTemplateSettingsStore((s) => s.sectionOrder);
+  const sectionSettings = useTemplateSettingsStore((s) => s.sectionSettings);
   const { header, summary, experience, education, skills, certifications, languages } = doc;
   const hasContent = (arr: unknown[]) => arr.length > 0;
   const contactSep = template === 'atsModern' ? '·' : '|';
@@ -344,10 +345,13 @@ export function ResumePreview({
 
               {/* ---- Sections in user-defined order ---- */}
               {(sectionOrder[pageIndex] ?? []).map((key) => {
+                const hideTitle = sectionSettings[pageIndex]?.[key]?.hideTitle ?? false;
                 if (key === 'summary') {
                   return pageIndex === 0 && summary ? (
                     <Section key="summary" path="/summary">
-                      <SectionTitle template={template}>{t('preview.summary')}</SectionTitle>
+                      {!hideTitle && (
+                        <SectionTitle template={template}>{t('preview.summary')}</SectionTitle>
+                      )}
                       <div
                         className="text-xs text-neutral-900/90 leading-relaxed rich-preview [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_li]:mb-0.5 [&_p]:mb-0.5 [&_strong]:font-semibold [&_em]:italic"
                         dangerouslySetInnerHTML={{ __html: summary }}
@@ -358,7 +362,9 @@ export function ResumePreview({
                 if (key === 'experience' && hasContent(pageExp)) {
                   return (
                     <Section key="experience" path="/experience">
-                      <SectionTitle template={template}>{t('preview.experience')}</SectionTitle>
+                      {!hideTitle && (
+                        <SectionTitle template={template}>{t('preview.experience')}</SectionTitle>
+                      )}
                       {pageExp.map((entry, i) => (
                         <ExperienceItem key={entry.id} entry={entry} index={i} t={t} />
                       ))}
@@ -368,7 +374,9 @@ export function ResumePreview({
                 if (key === 'education' && hasContent(pageEdu)) {
                   return (
                     <Section key="education" path="/education">
-                      <SectionTitle template={template}>{t('preview.education')}</SectionTitle>
+                      {!hideTitle && (
+                        <SectionTitle template={template}>{t('preview.education')}</SectionTitle>
+                      )}
                       {pageEdu.map((entry, i) => (
                         <EducationItem key={entry.id} entry={entry} index={i} t={t} />
                       ))}
@@ -378,7 +386,9 @@ export function ResumePreview({
                 if (key === 'skills' && hasContent(pageSkills)) {
                   return (
                     <Section key="skills" path="/skills">
-                      <SectionTitle template={template}>{t('preview.skills')}</SectionTitle>
+                      {!hideTitle && (
+                        <SectionTitle template={template}>{t('preview.skills')}</SectionTitle>
+                      )}
                       {pageSkills.map((group, i) => (
                         <SkillGroupItem key={group.id} group={group} index={i} />
                       ))}
@@ -388,7 +398,11 @@ export function ResumePreview({
                 if (key === 'certifications' && hasContent(pageCerts)) {
                   return (
                     <Section key="certifications" path="/certifications">
-                      <SectionTitle template={template}>{t('preview.certifications')}</SectionTitle>
+                      {!hideTitle && (
+                        <SectionTitle template={template}>
+                          {t('preview.certifications')}
+                        </SectionTitle>
+                      )}
                       {pageCerts.map((entry, i) => (
                         <CertificationItem key={entry.id} entry={entry} index={i} />
                       ))}
@@ -398,7 +412,9 @@ export function ResumePreview({
                 if (key === 'languages' && hasContent(pageLangs)) {
                   return (
                     <Section key="languages" path="/languages">
-                      <SectionTitle template={template}>{t('preview.languages')}</SectionTitle>
+                      {!hideTitle && (
+                        <SectionTitle template={template}>{t('preview.languages')}</SectionTitle>
+                      )}
                       <div className="flex flex-wrap">
                         {pageLangs.map((entry, i) => (
                           <LanguageItem key={entry.id} entry={entry} index={i} t={t} />
