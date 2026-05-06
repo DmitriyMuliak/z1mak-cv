@@ -1,5 +1,4 @@
 import type { StateCreator } from 'zustand';
-import type { Draft } from 'immer';
 
 type ImmerSet<State> = Parameters<StateCreator<State, [['zustand/immer', never]], []>>[0];
 
@@ -9,8 +8,8 @@ export interface SetValue<S extends object> {
 
 export const createSetter = <T extends object>(set: ImmerSet<T>) => {
   const setValue = <K extends keyof T>(key: K, value: T[K]) => {
-    set((state: Draft<T>) => {
-      (state as T)[key] = value;
+    set((state) => {
+      (state as unknown as T)[key] = value;
     });
   };
 
@@ -23,8 +22,8 @@ export interface SetPatch<T extends object> {
 
 export const createPatcher = <T extends object>(set: ImmerSet<T>) => {
   const setPatch = (patch: Partial<T>) => {
-    set((state: Draft<T>) => {
-      const draftState = state as T;
+    set((state) => {
+      const draftState = state as unknown as T;
       for (const key in patch) {
         if (Object.prototype.hasOwnProperty.call(patch, key)) {
           const stateKey = key as keyof T;
