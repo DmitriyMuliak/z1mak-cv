@@ -444,6 +444,12 @@
       "numberedList": "Numbered list",
       "placeholder": "Start typing…"
     },
+    "sectionOptions": {
+      "title": "Section Options",
+      "hideTitle": "Hide section title",
+      "page": "Page",
+      "options": "Options"
+    },
     "pages": {
       "page": "Page",
       "addPage": "Add page",
