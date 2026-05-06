@@ -15,6 +15,8 @@ import { SummaryForm } from './forms/SummaryForm';
 import { ExperienceForm } from './forms/ExperienceForm';
 import { EducationForm } from './forms/EducationForm';
 import { SkillsForm } from './forms/SkillsForm';
+import { CertificationsForm } from './forms/CertificationsForm';
+import { LanguagesForm } from './forms/LanguagesForm';
 import { TemplateSettingsForm } from './forms/TemplateSettingsForm';
 import { PagesForm } from './forms/PagesForm';
 import { ResumeCanvas } from './ResumeCanvas';
@@ -24,7 +26,16 @@ import { usePdfExport } from '../hooks/usePdfExport';
 // Tabs
 // ---------------------------------------------------------------------------
 
-type TabId = 'header' | 'summary' | 'experience' | 'education' | 'skills' | 'template' | 'pages';
+type TabId =
+  | 'header'
+  | 'summary'
+  | 'experience'
+  | 'education'
+  | 'skills'
+  | 'certifications'
+  | 'languages'
+  | 'template'
+  | 'pages';
 
 const FORM_MAP: Record<TabId, React.ReactNode> = {
   header: <HeaderForm />,
@@ -32,6 +43,8 @@ const FORM_MAP: Record<TabId, React.ReactNode> = {
   experience: <ExperienceForm />,
   education: <EducationForm />,
   skills: <SkillsForm />,
+  certifications: <CertificationsForm />,
+  languages: <LanguagesForm />,
   template: <TemplateSettingsForm />,
   pages: <PagesForm />,
 };
@@ -43,8 +56,10 @@ function getTabs(t: ReturnType<typeof useTranslations>): { id: TabId; label: str
     { id: 'experience', label: t('tabs.experience') },
     { id: 'education', label: t('tabs.education') },
     { id: 'skills', label: t('tabs.skills') },
-    { id: 'template', label: t('tabs.template') },
+    { id: 'certifications', label: t('tabs.certifications') },
+    { id: 'languages', label: t('tabs.languages') },
     { id: 'pages', label: t('tabs.pages') },
+    { id: 'template', label: t('tabs.template') },
   ];
 }
 

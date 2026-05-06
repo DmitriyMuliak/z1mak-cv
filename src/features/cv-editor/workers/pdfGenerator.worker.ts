@@ -15,12 +15,39 @@ import { AtsModernTemplate } from '../pdf/AtsModernTemplate';
 import type { ResumeDocument } from '../schema/resumeDocument.schema';
 import type { TemplateStyle, SectionKey } from '../store/templateSettingsStore';
 
+export interface PdfLabels {
+  summary: string;
+  experience: string;
+  education: string;
+  skills: string;
+  certifications: string;
+  languages: string;
+  proficiencyLevels: Record<string, string>;
+}
+
+export const DEFAULT_PDF_LABELS: PdfLabels = {
+  summary: 'Summary',
+  experience: 'Experience',
+  education: 'Education',
+  skills: 'Skills',
+  certifications: 'Certifications',
+  languages: 'Languages',
+  proficiencyLevels: {
+    native: 'Native',
+    fluent: 'Fluent',
+    advanced: 'Advanced',
+    intermediate: 'Intermediate',
+    basic: 'Basic',
+  },
+};
+
 export interface PdfWorkerRequest {
   document: ResumeDocument;
   template: TemplateStyle;
   font: FontOption;
   pageCount: number;
   sectionOrder: SectionKey[][];
+  labels: PdfLabels;
 }
 
 interface PdfWorkerSuccess {
@@ -50,13 +77,13 @@ self.addEventListener('message', async (event: MessageEvent<unknown>) => {
     return;
   }
 
-  const { document: resumeDocument, template, font, pageCount, sectionOrder } = event.data;
+  const { document: resumeDocument, template, font, pageCount, sectionOrder, labels } = event.data;
 
   registerFonts(font);
   const fontFamily = getFontFamily(font);
 
   try {
-    const props = { document: resumeDocument, fontFamily, pageCount, sectionOrder };
+    const props = { document: resumeDocument, fontFamily, pageCount, sectionOrder, labels };
     const element = (
       template === 'atsModern'
         ? React.createElement(AtsModernTemplate, props)

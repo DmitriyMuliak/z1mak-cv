@@ -7,8 +7,8 @@
 - **Experience** — multiple work entries with job title, company, dates, location, rich-text description
 - **Education** — institution, degree, field of study, dates, GPA
 - **Skills** — grouped skill categories with tag-style items
-- **Certifications** — name, issuer, date, optional URL
-- **Languages** — language + proficiency level
+- **Certifications** — name, issuer, date, optional credential URL; collapse/expand per entry
+- **Languages** — language name + proficiency level (Native / Fluent / Advanced / Intermediate / Basic) chosen from a dropdown; compact single-row layout
 - **Template** — switch between ATS Clean and ATS Modern styles; choose Roboto or PT Serif font
 
 ## Multi-page support
@@ -39,11 +39,18 @@
 - Two templates: `ATS Clean` and `ATS Modern`
 - Two fonts: `Roboto` (sans-serif, ATS-friendly) and `PT Serif` (serif, classic look), both supporting Latin and Cyrillic
 - Multi-page PDFs respect per-page entry assignment and section order
+- **Localized PDF output** — section headings and proficiency level labels are translated into the active locale (e.g. Ukrainian UI produces a Ukrainian-labelled PDF); falls back to English defaults
 
 ## Mobile
 
 - On small screens the preview is hidden; a **Live Preview** button opens a full-screen overlay
 - On `lg+` breakpoint the overlay closes automatically and the standard side-by-side layout activates
+
+## Internationalization
+
+- All editor UI labels, form fields, and section headings are translated via `next-intl` (`messages/en.json`, `messages/uk.json`)
+- Proficiency level labels for the Languages section (`native`, `fluent`, `advanced`, `intermediate`, `basic`) are translated both in the live preview and in PDF output
+- PDF templates receive a `PdfLabels` object at export time; `DEFAULT_PDF_LABELS` (English) is used as a fallback when running outside a Next.js context (e.g. tests)
 
 ## Data model
 
@@ -51,3 +58,5 @@
 - Layout metadata (template, font, page count, section order) lives in `templateSettingsStore`
 - Entries reference their page via an optional `page: number` field (0-indexed, defaults to 0)
 - Section render order per page is stored as `sectionOrder: SectionKey[][]`
+- `CertificationEntry`: `{ id, name, issuer, date?, url?, page? }`
+- `LanguageEntry`: `{ id, language, proficiency: LanguageProficiency, page? }`

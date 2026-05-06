@@ -8,6 +8,7 @@ import type { FontOption } from '../pdf/registerFonts';
 export type TemplateStyle = 'atsClean' | 'atsModern';
 
 export type SectionKey =
+  | 'header'
   | 'summary'
   | 'experience'
   | 'education'
@@ -16,6 +17,7 @@ export type SectionKey =
   | 'languages';
 
 export const DEFAULT_SECTION_ORDER: SectionKey[] = [
+  // 'header', --- IGNORE ---
   'summary',
   'experience',
   'education',

@@ -153,14 +153,24 @@ function CertificationItem({ entry, index }: { entry: CertificationEntry; index:
   );
 }
 
-function LanguageItem({ entry, index }: { entry: LanguageEntry; index: number }) {
+function LanguageItem({
+  entry,
+  index,
+  t,
+}: {
+  entry: LanguageEntry;
+  index: number;
+  t: ReturnType<typeof useTranslations>;
+}) {
   return (
     <span
       data-resume-path={`/languages/${index}`}
       className="inline-flex items-center gap-1 text-xs mr-3"
     >
       <span className="font-medium text-neutral-900">{entry.language}</span>
-      <span className="text-neutral-500 capitalize">({entry.proficiency})</span>
+      <span className="text-neutral-500">
+        ({t(`languages.proficiencyLevels.${entry.proficiency}`)})
+      </span>
     </span>
   );
 }
@@ -348,7 +358,7 @@ export function ResumePreview({
                       <SectionTitle template={template}>{t('preview.languages')}</SectionTitle>
                       <div className="flex flex-wrap">
                         {pageLangs.map((entry, i) => (
-                          <LanguageItem key={entry.id} entry={entry} index={i} />
+                          <LanguageItem key={entry.id} entry={entry} index={i} t={t} />
                         ))}
                       </div>
                     </Section>

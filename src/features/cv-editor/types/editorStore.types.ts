@@ -56,7 +56,7 @@ export interface ResumeEditorActions {
    * Sets `isDirty` to `true`.
    */
   reorderItems: (
-    section: 'experience' | 'education' | 'skills',
+    section: 'experience' | 'education' | 'skills' | 'certifications' | 'languages',
     activeId: string,
     overId: string,
   ) => void;

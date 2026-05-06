@@ -10,6 +10,7 @@ import type {
 } from '../schema/resumeDocument.schema';
 import { htmlToTextNodes, type TextRun } from '../utils/htmlToTextNodes';
 import { DEFAULT_SECTION_ORDER, type SectionKey } from '../store/templateSettingsStore';
+import { DEFAULT_PDF_LABELS, type PdfLabels } from '../workers/pdfGenerator.worker';
 
 function Runs({ runs }: { runs: TextRun[] }) {
   return (
@@ -167,11 +168,11 @@ function DateRange({ start, end }: { start: string; end?: string }) {
   );
 }
 
-function ExperienceSection({ entries }: { entries: ExperienceEntry[] }) {
+function ExperienceSection({ entries, labels }: { entries: ExperienceEntry[]; labels: PdfLabels }) {
   if (!entries.length) return null;
   return (
     <View style={styles.section}>
-      <SectionHeading title="Experience" />
+      <SectionHeading title={labels.experience} />
       {entries.map((e) => (
         <View key={e.id} style={{ marginBottom: 6 }}>
           <View style={styles.entryHeader}>
@@ -193,11 +194,11 @@ function ExperienceSection({ entries }: { entries: ExperienceEntry[] }) {
   );
 }
 
-function EducationSection({ entries }: { entries: EducationEntry[] }) {
+function EducationSection({ entries, labels }: { entries: EducationEntry[]; labels: PdfLabels }) {
   if (!entries.length) return null;
   return (
     <View style={styles.section}>
-      <SectionHeading title="Education" />
+      <SectionHeading title={labels.education} />
       {entries.map((e) => (
         <View key={e.id} style={{ marginBottom: 5 }}>
           <View style={styles.entryHeader}>
@@ -214,11 +215,11 @@ function EducationSection({ entries }: { entries: EducationEntry[] }) {
   );
 }
 
-function SkillsSection({ groups }: { groups: SkillGroup[] }) {
+function SkillsSection({ groups, labels }: { groups: SkillGroup[]; labels: PdfLabels }) {
   if (!groups.length) return null;
   return (
     <View style={styles.section}>
-      <SectionHeading title="Skills" />
+      <SectionHeading title={labels.skills} />
       {groups.map((g) => (
         <View key={g.id} style={styles.skillRow}>
           <Text style={styles.skillCategory}>{g.category}:</Text>
@@ -229,11 +230,17 @@ function SkillsSection({ groups }: { groups: SkillGroup[] }) {
   );
 }
 
-function CertificationsSection({ entries }: { entries: CertificationEntry[] }) {
+function CertificationsSection({
+  entries,
+  labels,
+}: {
+  entries: CertificationEntry[];
+  labels: PdfLabels;
+}) {
   if (!entries.length) return null;
   return (
     <View style={styles.section}>
-      <SectionHeading title="Certifications" />
+      <SectionHeading title={labels.certifications} />
       {entries.map((e) => (
         <Text key={e.id} style={styles.inlineItem}>
           {e.name} — {e.issuer}
@@ -244,14 +251,14 @@ function CertificationsSection({ entries }: { entries: CertificationEntry[] }) {
   );
 }
 
-function LanguagesSection({ entries }: { entries: LanguageEntry[] }) {
+function LanguagesSection({ entries, labels }: { entries: LanguageEntry[]; labels: PdfLabels }) {
   if (!entries.length) return null;
   return (
     <View style={styles.section}>
-      <SectionHeading title="Languages" />
+      <SectionHeading title={labels.languages} />
       {entries.map((e) => (
         <Text key={e.id} style={styles.inlineItem}>
-          {e.language} — {e.proficiency.charAt(0).toUpperCase() + e.proficiency.slice(1)}
+          {e.language} — {labels.proficiencyLevels[e.proficiency] ?? e.proficiency}
         </Text>
       ))}
     </View>
@@ -263,6 +270,7 @@ export interface AtsModernTemplateProps {
   fontFamily?: string;
   pageCount?: number;
   sectionOrder?: SectionKey[][];
+  labels?: PdfLabels;
 }
 
 export function AtsModernTemplate({
@@ -270,6 +278,7 @@ export function AtsModernTemplate({
   fontFamily = 'Roboto',
   pageCount = 1,
   sectionOrder,
+  labels = DEFAULT_PDF_LABELS,
 }: AtsModernTemplateProps) {
   return (
     <Document title={doc.header.name || 'Resume'} author={doc.header.name}>
@@ -294,7 +303,7 @@ export function AtsModernTemplate({
               if (key === 'summary' && pageIndex === 0 && doc.summary) {
                 return (
                   <View key="summary" style={styles.section}>
-                    <SectionHeading title="Summary" />
+                    <SectionHeading title={labels.summary} />
                     <HtmlNodes
                       html={doc.summary}
                       bulletDotStyle={styles.bulletDot}
@@ -305,15 +314,17 @@ export function AtsModernTemplate({
                 );
               }
               if (key === 'experience' && pageExp.length > 0)
-                return <ExperienceSection key="experience" entries={pageExp} />;
+                return <ExperienceSection key="experience" entries={pageExp} labels={labels} />;
               if (key === 'education' && pageEdu.length > 0)
-                return <EducationSection key="education" entries={pageEdu} />;
+                return <EducationSection key="education" entries={pageEdu} labels={labels} />;
               if (key === 'skills' && pageSkills.length > 0)
-                return <SkillsSection key="skills" groups={pageSkills} />;
+                return <SkillsSection key="skills" groups={pageSkills} labels={labels} />;
               if (key === 'certifications' && pageCerts.length > 0)
-                return <CertificationsSection key="certifications" entries={pageCerts} />;
+                return (
+                  <CertificationsSection key="certifications" entries={pageCerts} labels={labels} />
+                );
               if (key === 'languages' && pageLangs.length > 0)
-                return <LanguagesSection key="languages" entries={pageLangs} />;
+                return <LanguagesSection key="languages" entries={pageLangs} labels={labels} />;
               return null;
             })}
           </Page>

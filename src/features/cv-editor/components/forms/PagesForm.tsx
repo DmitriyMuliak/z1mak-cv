@@ -97,14 +97,29 @@ function PageTile({ pageIndex, pageCount, onDelete }: PageTileProps) {
         >
           <SortableContext items={order} strategy={horizontalListSortingStrategy}>
             <div className="flex flex-wrap gap-1.5">
-              {order.map((key) => (
-                <SectionBadge
-                  key={key}
-                  sectionKey={key}
-                  active={hasContentOnPage(doc, key, pageIndex)}
-                  label={t(`tabs.${key}`)}
-                />
-              ))}
+              {order.map((key) => {
+                if (key === 'summary') {
+                  if (pageIndex === 0) {
+                    return (
+                      <SectionBadge
+                        key={key}
+                        sectionKey={key}
+                        active={hasContentOnPage(doc, key, pageIndex)}
+                        label={t(`tabs.${key}`)}
+                      />
+                    );
+                  }
+                  return null;
+                }
+                return (
+                  <SectionBadge
+                    key={key}
+                    sectionKey={key}
+                    active={hasContentOnPage(doc, key, pageIndex)}
+                    label={t(`tabs.${key}`)}
+                  />
+                );
+              })}
             </div>
           </SortableContext>
         </DndContext>

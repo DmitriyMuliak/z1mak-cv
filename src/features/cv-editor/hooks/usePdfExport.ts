@@ -12,6 +12,7 @@
  */
 
 import { useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import type { ResumeDocument } from '../schema/resumeDocument.schema';
 import type { PdfWorkerResponse } from '../workers/pdfGenerator.worker';
 import type { TemplateStyle, SectionKey } from '../store/templateSettingsStore';
@@ -72,6 +73,7 @@ export interface UsePdfExportReturn {
 
 export function usePdfExport(): UsePdfExportReturn {
   const [isGenerating, setIsGenerating] = useState(false);
+  const t = useTranslations('cvEditor');
 
   const exportPdf = useCallback(
     async (
@@ -81,6 +83,22 @@ export function usePdfExport(): UsePdfExportReturn {
       pageCount: number,
       sectionOrder: SectionKey[][],
     ): Promise<void> => {
+      const labels = {
+        summary: t('preview.summary'),
+        experience: t('preview.experience'),
+        education: t('preview.education'),
+        skills: t('preview.skills'),
+        certifications: t('preview.certifications'),
+        languages: t('preview.languages'),
+        proficiencyLevels: {
+          native: t('languages.proficiencyLevels.native'),
+          fluent: t('languages.proficiencyLevels.fluent'),
+          advanced: t('languages.proficiencyLevels.advanced'),
+          intermediate: t('languages.proficiencyLevels.intermediate'),
+          basic: t('languages.proficiencyLevels.basic'),
+        },
+      };
+
       setIsGenerating(true);
       try {
         await new Promise<void>((resolve, reject) => {
@@ -106,13 +124,13 @@ export function usePdfExport(): UsePdfExportReturn {
             reject(new Error(e.message || 'PDF worker error.'));
           };
 
-          worker.postMessage({ document: doc, template, font, pageCount, sectionOrder });
+          worker.postMessage({ document: doc, template, font, pageCount, sectionOrder, labels });
         });
       } finally {
         setIsGenerating(false);
       }
     },
-    [],
+    [t],
   );
 
   return { exportPdf, isGenerating };

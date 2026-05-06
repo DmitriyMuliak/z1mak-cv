@@ -407,6 +407,36 @@
       "removeGroup": "Видалити групу",
       "dragToReorder": "Перетягніть для переупорядкування"
     },
+    "certifications": {
+      "title": "Сертифікати",
+      "addButton": "Додати сертифікат",
+      "empty": "Сертифікати поки що не додано.",
+      "name": "Назва сертифіката*",
+      "issuer": "Організація, що видала*",
+      "date": "Дата (напр., Чер 2024)",
+      "url": "Посилання на сертифікат",
+      "collapseEntry": "Згорнути запис",
+      "expandEntry": "Розгорнути запис",
+      "removeEntry": "Видалити запис",
+      "dragToReorder": "Перетягніть для переупорядкування",
+      "entryNumber": "Сертифікат {number}"
+    },
+    "languages": {
+      "title": "Мови",
+      "addButton": "Додати мову",
+      "empty": "Мови поки що не додано.",
+      "language": "Мова*",
+      "proficiency": "Рівень",
+      "removeEntry": "Видалити запис",
+      "dragToReorder": "Перетягніть для переупорядкування",
+      "proficiencyLevels": {
+        "native": "Рідна",
+        "fluent": "Вільна",
+        "advanced": "Просунутий",
+        "intermediate": "Середній",
+        "basic": "Базовий"
+      }
+    },
     "richEditor": {
       "bold": "Жирний",
       "italic": "Курсив",

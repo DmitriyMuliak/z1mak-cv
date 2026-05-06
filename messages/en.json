@@ -407,6 +407,36 @@
       "removeGroup": "Remove group",
       "dragToReorder": "Drag to reorder"
     },
+    "certifications": {
+      "title": "Certifications",
+      "addButton": "Add Certification",
+      "empty": "No certifications yet.",
+      "name": "Certification Name*",
+      "issuer": "Issuing Organization*",
+      "date": "Date (e.g. Jun 2024)",
+      "url": "Credential URL",
+      "collapseEntry": "Collapse entry",
+      "expandEntry": "Expand entry",
+      "removeEntry": "Remove entry",
+      "dragToReorder": "Drag to reorder",
+      "entryNumber": "Certification {number}"
+    },
+    "languages": {
+      "title": "Languages",
+      "addButton": "Add Language",
+      "empty": "No languages yet.",
+      "language": "Language*",
+      "proficiency": "Proficiency",
+      "removeEntry": "Remove entry",
+      "dragToReorder": "Drag to reorder",
+      "proficiencyLevels": {
+        "native": "Native",
+        "fluent": "Fluent",
+        "advanced": "Advanced",
+        "intermediate": "Intermediate",
+        "basic": "Basic"
+      }
+    },
     "richEditor": {
       "bold": "Bold",
       "italic": "Italic",
