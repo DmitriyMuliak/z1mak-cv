@@ -3,7 +3,14 @@
 import { useCallback, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Trash2, X, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+} from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useResumeEditorStore } from '../../store/resumeEditorStore';
 import { Button } from '@/components/ui/button';
@@ -21,6 +28,16 @@ function createEmptyGroup(page: number): SkillGroup {
     page,
   };
 }
+
+const dragOverlayHandleProps = {
+  tabIndex: -1,
+  role: '',
+  'aria-disabled': false,
+  'aria-pressed': true,
+  'aria-roledescription': '',
+  'aria-describedby': '',
+  listeners: {},
+};
 
 interface GroupProps {
   group: SkillGroup;
@@ -148,9 +165,15 @@ export function SkillsForm() {
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
+  const [activeId, setActiveId] = useState<string | null>(null);
+
   const pageGroups = skills
     .map((group, storeIndex) => ({ group, storeIndex }))
     .filter(({ group }) => (group.page ?? 0) === selectedPage);
+
+  const activeGroupData = activeId
+    ? pageGroups.find((p) => String(p.group.id) === activeId)
+    : undefined;
 
   const addGroup = useCallback(() => {
     const state = useResumeEditorStore.getState();
@@ -179,11 +202,14 @@ export function SkillsForm() {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
+        onDragStart={({ active }) => setActiveId(String(active.id))}
         onDragEnd={({ active, over }) => {
+          setActiveId(null);
           if (over && active.id !== over.id) {
             reorderItems('skills', String(active.id), String(over.id));
           }
         }}
+        onDragCancel={() => setActiveId(null)}
       >
         <SortableContext
           items={pageGroups.map(({ group }) => group.id)}
@@ -204,6 +230,19 @@ export function SkillsForm() {
             ))}
           </div>
         </SortableContext>
+
+        <DragOverlay>
+          {activeGroupData ? (
+            <div className="opacity-100 shadow-xl cursor-grabbing rounded-md">
+              <SkillGroupForm
+                group={activeGroupData.group}
+                storeIndex={activeGroupData.storeIndex}
+                onRemove={removeGroup}
+                dragHandleProps={dragOverlayHandleProps}
+              />
+            </div>
+          ) : null}
+        </DragOverlay>
       </DndContext>
 
       <Button type="button" variant="outline" onClick={addGroup} className="w-full">

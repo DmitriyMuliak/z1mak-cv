@@ -1,8 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Trash2, GripVertical } from 'lucide-react';
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+} from '@dnd-kit/core';
 import { SortableContext, horizontalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useTemplateSettingsStore, type SectionKey } from '../../store/templateSettingsStore';
@@ -64,6 +72,7 @@ function PageTile({ pageIndex, pageCount, onDelete }: PageTileProps) {
   const doc = useResumeEditorStore((s) => s.document);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+  const [activeId, setActiveId] = useState<SectionKey | null>(null);
 
   return (
     <div className="rounded-md border border-border overflow-hidden">
@@ -89,11 +98,14 @@ function PageTile({ pageIndex, pageCount, onDelete }: PageTileProps) {
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
+          onDragStart={({ active }) => setActiveId(active.id as SectionKey)}
           onDragEnd={({ active, over }) => {
+            setActiveId(null);
             if (over && active.id !== over.id) {
               reorderSection(pageIndex, active.id as SectionKey, over.id as SectionKey);
             }
           }}
+          onDragCancel={() => setActiveId(null)}
         >
           <SortableContext items={order} strategy={horizontalListSortingStrategy}>
             <div className="flex flex-wrap gap-1.5">
@@ -122,6 +134,17 @@ function PageTile({ pageIndex, pageCount, onDelete }: PageTileProps) {
               })}
             </div>
           </SortableContext>
+
+          <DragOverlay>
+            {activeId ? (
+              <SectionBadge
+                key={activeId}
+                sectionKey={activeId}
+                active={hasContentOnPage(doc, activeId, pageIndex)}
+                label={t(`tabs.${activeId}`)}
+              />
+            ) : null}
+          </DragOverlay>
         </DndContext>
       </div>
     </div>
