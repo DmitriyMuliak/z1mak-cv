@@ -3,7 +3,14 @@
 import { useCallback, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+} from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useResumeEditorStore } from '../../store/resumeEditorStore';
 import { Button } from '@/components/ui/button';
@@ -25,6 +32,16 @@ function createEmptyEntry(page: number): EducationEntry {
     page,
   };
 }
+
+const dragOverlayHandleProps = {
+  tabIndex: -1,
+  role: '',
+  'aria-disabled': false,
+  'aria-pressed': true,
+  'aria-roledescription': '',
+  'aria-describedby': '',
+  listeners: {},
+};
 
 interface EntryProps {
   entry: EducationEntry;
@@ -156,9 +173,15 @@ export function EducationForm() {
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
+  const [activeId, setActiveId] = useState<string | null>(null);
+
   const pageEntries = education
     .map((entry, storeIndex) => ({ entry, storeIndex }))
     .filter(({ entry }) => (entry.page ?? 0) === selectedPage);
+
+  const activeEntryData = activeId
+    ? pageEntries.find((p) => String(p.entry.id) === activeId)
+    : undefined;
 
   const addEntry = useCallback(() => {
     const state = useResumeEditorStore.getState();
@@ -187,11 +210,13 @@ export function EducationForm() {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
+        onDragStart={({ active }) => setActiveId(String(active.id))}
         onDragEnd={({ active, over }) => {
           if (over && active.id !== over.id) {
             reorderItems('education', String(active.id), String(over.id));
           }
         }}
+        onDragCancel={() => setActiveId(null)}
       >
         <SortableContext
           items={pageEntries.map(({ entry }) => entry.id)}
@@ -212,6 +237,19 @@ export function EducationForm() {
             ))}
           </div>
         </SortableContext>
+
+        <DragOverlay>
+          {activeEntryData ? (
+            <div className="opacity-100 shadow-xl cursor-grabbing rounded-md">
+              <EducationEntryForm
+                entry={activeEntryData.entry}
+                storeIndex={activeEntryData.storeIndex}
+                onRemove={removeEntry}
+                dragHandleProps={dragOverlayHandleProps}
+              />
+            </div>
+          ) : null}
+        </DragOverlay>
       </DndContext>
 
       <Button type="button" variant="outline" onClick={addEntry} className="w-full">

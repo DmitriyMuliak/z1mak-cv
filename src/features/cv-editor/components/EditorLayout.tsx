@@ -165,7 +165,7 @@ function EditorToolbar({ onOpenPreview }: { onOpenPreview: () => void }) {
 
 function TabBar({ activeTab, onChange }: { activeTab: TabId; onChange: (t: TabId) => void }) {
   const t = useTranslations('cvEditor');
-  const isDirty = useResumeEditorStore((s) => s.isDirty);
+  // const isDirty = useResumeEditorStore((s) => s.isDirty);
   const tabs = getTabs(t);
 
   return (
@@ -174,9 +174,14 @@ function TabBar({ activeTab, onChange }: { activeTab: TabId; onChange: (t: TabId
         className={cn(
           'flex overflow-x-auto',
           '[scroll-snap-type:x_proximity]',
-          '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
-          'group-hover/tabbar:[scrollbar-width:thin] group-hover/tabbar:[&::-webkit-scrollbar]:block',
-          'group-hover/tabbar:[&::-webkit-scrollbar]:h-1',
+          'pt-1.5',
+          '[&::-webkit-scrollbar]:h-1.5',
+          '[&::-webkit-scrollbar-track]:bg-transparent',
+          '[&::-webkit-scrollbar-thumb]:rounded-full',
+          '[&::-webkit-scrollbar-thumb]:[background-color:rgba(0,0,0,0)]',
+          'transition-colors duration-300',
+          'group-hover/tabbar:[&::-webkit-scrollbar-thumb]:[background-color:rgba(156,163,175,0.6)]',
+          'hover:[&::-webkit-scrollbar-thumb]:[background-color:rgba(107,114,128,0.8)]',
         )}
         role="tablist"
         aria-label={t('tabs.label')}
@@ -199,9 +204,9 @@ function TabBar({ activeTab, onChange }: { activeTab: TabId; onChange: (t: TabId
             )}
           >
             {tab.label}
-            {isDirty && activeTab === tab.id && tab.id !== 'template' && (
+            {/* {isDirty && activeTab === tab.id && tab.id !== 'template' && (
               <span aria-hidden className="size-1.5 rounded-full bg-amber-500 shrink-0" />
-            )}
+            )} */}
           </button>
         ))}
       </div>
