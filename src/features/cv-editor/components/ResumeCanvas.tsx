@@ -1,10 +1,12 @@
 'use client';
 
+import { useRef, useState, useLayoutEffect } from 'react';
 import { TransformWrapper, TransformComponent, useControls } from 'react-zoom-pan-pinch';
 import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { ResumePreview } from './ResumePreview';
+import { A4_WIDTH, A4_HEIGHT } from './ResumePreview';
 import type { TemplateStyle, FontOption } from '../hooks/usePdfExport';
 
 function ZoomControls() {
@@ -53,24 +55,45 @@ interface ResumeCanvasProps {
   font?: FontOption;
 }
 
+const CANVAS_PADDING = 48;
+
 export function ResumeCanvas({ template, font }: ResumeCanvasProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [initialScale, setInitialScale] = useState<number | null>(null);
+
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const { width, height } = el.getBoundingClientRect();
+    const scale = Math.min(
+      (width - CANVAS_PADDING * 2) / A4_WIDTH,
+      (height - CANVAS_PADDING * 2) / A4_HEIGHT,
+    );
+    setInitialScale(Math.min(Math.max(scale, 0.3), 2));
+  }, []);
+
   return (
-    <div className="absolute inset-0">
-      <TransformWrapper
-        centerOnInit
-        limitToBounds={false}
-        minScale={0.3}
-        initialScale={0.6}
-        maxScale={6}
-        wheel={{ step: 0.001 }}
-      >
-        <TransformComponent wrapperClass="!w-full !h-full" contentStyle={{ padding: 40 }}>
-          <div className="flex flex-col gap-10">
-            <ResumePreview template={template} font={font} />
-          </div>
-        </TransformComponent>
-        <ZoomControls />
-      </TransformWrapper>
+    <div ref={containerRef} className="absolute inset-0">
+      {initialScale !== null && (
+        <TransformWrapper
+          centerOnInit
+          limitToBounds={false}
+          minScale={0.3}
+          initialScale={initialScale}
+          maxScale={6}
+          wheel={{ step: 0.001 }}
+        >
+          <TransformComponent
+            wrapperClass="!w-full !h-full"
+            contentStyle={{ padding: CANVAS_PADDING }}
+          >
+            <div className="flex flex-col gap-10">
+              <ResumePreview template={template} font={font} />
+            </div>
+          </TransformComponent>
+          <ZoomControls />
+        </TransformWrapper>
+      )}
     </div>
   );
 }

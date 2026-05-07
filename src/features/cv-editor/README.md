@@ -32,10 +32,21 @@ Each section form shows an **Options** button (gear icon) next to the page selec
 
 Settings are stored per-page in `templateSettingsStore.sectionSettings` and threaded through the full PDF pipeline.
 
+## Collapse / expand controls
+
+All section forms that support collapsible entries (Experience, Education, Skills, Certifications, Languages) expose two controls in their toolbar:
+
+- **Toggle-all button** (chevron icon, left of Options) — collapses or expands all entries on the current page in one click; state resets automatically when switching to a different page
+- **Per-entry collapse** — each entry has its own collapse/expand button; the collapsed header shows a summary (title, institution name, etc.) so the list remains scannable
+
+### Drag & drop with collapse state
+
+The DragOverlay ghost (the floating copy shown while dragging) mirrors the collapsed/expanded state of the item at the moment it was picked up. This is implemented via `forwardRef` + `useImperativeHandle` on each entry form, exposing `{ isCollapsed, setCollapsed }`. The parent captures `isCollapsed` on `onDragStart` and passes it as `initialCollapsed` to the overlay component.
+
 ## Editor UX
 
 - **Live preview** — A4 canvas updates in real time as you type
-- **Overflow warning** — if a page's content exceeds A4 height (1123 px at 96 dpi), an amber banner appears directly below that page: *"Page content is too large, which may result in incorrect PDF export."* Detected via `ResizeObserver`; per-page, so only the overflowing page is flagged
+- **Overflow warning** — if a page's content exceeds A4 height (1123 px at 96 dpi), an amber banner appears directly below that page: _"Page content is too large, which may result in incorrect PDF export."_ Detected via `ResizeObserver`; per-page, so only the overflowing page is flagged
 - **Drag & drop** reordering within each section list
 - **Collapse / expand** individual entries to reduce visual noise
 - **Undo / Redo** — full edit history (up to 100 steps) via zundo
@@ -48,7 +59,10 @@ Settings are stored per-page in `templateSettingsStore.sectionSettings` and thre
 - Two templates: `ATS Clean` and `ATS Modern`
 - Two fonts: `Roboto` (sans-serif, ATS-friendly) and `PT Serif` (serif, classic look), both supporting Latin and Cyrillic
 - Multi-page PDFs respect per-page entry assignment and section order
-- **Localized PDF output** — section headings and proficiency level labels are translated into the active locale (e.g. Ukrainian UI produces a Ukrainian-labelled PDF); falls back to English defaults
+
+## Canvas / preview scaling
+
+The live preview canvas (`ResumeCanvas`) automatically computes `initialScale` at mount time using `useLayoutEffect` — it fits the A4 page within the visible container (both width and height, with padding) before the first browser paint, avoiding a layout-jump flash. The user can then zoom freely with the zoom controls or mouse wheel.
 
 ## Mobile
 

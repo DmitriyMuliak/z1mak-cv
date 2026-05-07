@@ -91,6 +91,7 @@ export function usePdfExport(): UsePdfExportReturn {
         skills: t('preview.skills'),
         certifications: t('preview.certifications'),
         languages: t('preview.languages'),
+        present: t('preview.present'),
         proficiencyLevels: {
           native: t('languages.proficiencyLevels.native'),
           fluent: t('languages.proficiencyLevels.fluent'),
