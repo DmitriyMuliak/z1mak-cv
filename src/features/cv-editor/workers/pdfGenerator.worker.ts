@@ -22,6 +22,7 @@ export interface PdfLabels {
   skills: string;
   certifications: string;
   languages: string;
+  present: string;
   proficiencyLevels: Record<string, string>;
 }
 
@@ -32,6 +33,7 @@ export const DEFAULT_PDF_LABELS: PdfLabels = {
   skills: 'Skills',
   certifications: 'Certifications',
   languages: 'Languages',
+  present: 'Present',
   proficiencyLevels: {
     native: 'Native',
     fluent: 'Fluent',

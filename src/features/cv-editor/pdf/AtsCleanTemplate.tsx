@@ -149,11 +149,19 @@ function ContactLine({ header }: { header: ResumeDocument['header'] }) {
   );
 }
 
-function DateRange({ start, end }: { start: string; end?: string }) {
+function DateRange({
+  start,
+  end,
+  presentLabel,
+}: {
+  start: string;
+  end?: string;
+  presentLabel: string;
+}) {
   return (
     <Text style={styles.entryDates}>
       {start}
-      {end ? ` – ${end}` : ' – Present'}
+      {end ? ` – ${end}` : ` – ${presentLabel}`}
     </Text>
   );
 }
@@ -177,7 +185,7 @@ function ExperienceSection({
             <Text style={styles.entryTitle}>
               {e.title} — {e.company}
             </Text>
-            <DateRange start={e.startDate} end={e.endDate} />
+            <DateRange start={e.startDate} end={e.endDate} presentLabel={labels.present} />
           </View>
           {e.location ? <Text style={styles.entrySubtitle}>{e.location}</Text> : null}
           <HtmlNodes
@@ -209,7 +217,7 @@ function EducationSection({
         <View key={e.id} style={{ marginBottom: 5 }}>
           <View style={styles.entryHeader}>
             <Text style={styles.entryTitle}>{e.institution}</Text>
-            <DateRange start={e.startDate} end={e.endDate} />
+            <DateRange start={e.startDate} end={e.endDate} presentLabel={labels.present} />
           </View>
           <Text style={styles.entrySubtitle}>
             {e.degree} in {e.field}
