@@ -1,6 +1,13 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import React, {
+  useCallback,
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  createRef,
+} from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Trash2, X, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
 import {
@@ -39,18 +46,29 @@ const dragOverlayHandleProps = {
   listeners: {},
 };
 
+export interface SkillGroupHandle {
+  setCollapsed: (v: boolean) => void;
+  isCollapsed: boolean;
+}
+
 interface GroupProps {
   group: SkillGroup;
   storeIndex: number;
   onRemove: (storeIndex: number) => void;
   dragHandleProps: DragHandleProps;
+  initialCollapsed?: boolean;
 }
 
-function SkillGroupForm({ group, storeIndex, onRemove, dragHandleProps }: GroupProps) {
+const SkillGroupForm = forwardRef<SkillGroupHandle, GroupProps>(function SkillGroupForm(
+  { group, storeIndex, onRemove, dragHandleProps, initialCollapsed = false },
+  ref,
+) {
   const t = useTranslations('cvEditor');
   const updateField = useResumeEditorStore((s) => s.updateField);
   const basePath = `/skills/${storeIndex}`;
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(initialCollapsed);
+
+  useImperativeHandle(ref, () => ({ setCollapsed, isCollapsed: collapsed }), [collapsed]);
 
   const addItem = () => {
     const state = useResumeEditorStore.getState();
@@ -153,7 +171,7 @@ function SkillGroupForm({ group, storeIndex, onRemove, dragHandleProps }: GroupP
       )}
     </div>
   );
-}
+});
 
 export function SkillsForm() {
   const t = useTranslations('cvEditor');
@@ -162,10 +180,12 @@ export function SkillsForm() {
   const reorderItems = useResumeEditorStore((s) => s.reorderItems);
 
   const [selectedPage, setSelectedPage] = useState(0);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeCollapsed, setActiveCollapsed] = useState(false);
+
+  const groupRefs = useRef<Map<string, React.RefObject<SkillGroupHandle | null>>>(new Map());
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
-
-  const [activeId, setActiveId] = useState<string | null>(null);
 
   const pageGroups = skills
     .map((group, storeIndex) => ({ group, storeIndex }))
@@ -174,6 +194,19 @@ export function SkillsForm() {
   const activeGroupData = activeId
     ? pageGroups.find((p) => String(p.group.id) === activeId)
     : undefined;
+
+  function getOrCreateRef(id: string) {
+    if (!groupRefs.current.has(id)) {
+      groupRefs.current.set(id, createRef<SkillGroupHandle>());
+    }
+    return groupRefs.current.get(id)!;
+  }
+
+  const handleToggleAll = useCallback((collapsed: boolean) => {
+    for (const ref of groupRefs.current.values()) {
+      ref.current?.setCollapsed(collapsed);
+    }
+  }, []);
 
   const addGroup = useCallback(() => {
     const state = useResumeEditorStore.getState();
@@ -192,7 +225,12 @@ export function SkillsForm() {
 
   return (
     <div className="space-y-3">
-      <PageSelect selectedPage={selectedPage} onSelect={setSelectedPage} sectionKey="skills" />
+      <PageSelect
+        selectedPage={selectedPage}
+        onSelect={setSelectedPage}
+        sectionKey="skills"
+        onToggleAll={handleToggleAll}
+      />
       {pageGroups.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-6 border border-dashed border-border rounded-md">
           {t('skills.empty')}
@@ -202,7 +240,11 @@ export function SkillsForm() {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
-        onDragStart={({ active }) => setActiveId(String(active.id))}
+        onDragStart={({ active }) => {
+          const id = String(active.id);
+          setActiveId(id);
+          setActiveCollapsed(groupRefs.current.get(id)?.current?.isCollapsed ?? false);
+        }}
         onDragEnd={({ active, over }) => {
           setActiveId(null);
           if (over && active.id !== over.id) {
@@ -220,6 +262,7 @@ export function SkillsForm() {
               <SortableItem key={group.id} id={group.id}>
                 {(dragHandleProps) => (
                   <SkillGroupForm
+                    ref={getOrCreateRef(group.id)}
                     group={group}
                     storeIndex={storeIndex}
                     onRemove={removeGroup}
@@ -239,6 +282,7 @@ export function SkillsForm() {
                 storeIndex={activeGroupData.storeIndex}
                 onRemove={removeGroup}
                 dragHandleProps={dragOverlayHandleProps}
+                initialCollapsed={activeCollapsed}
               />
             </div>
           ) : null}

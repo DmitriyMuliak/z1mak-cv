@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Settings2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Settings2, ChevronsDownUp, ChevronsUpDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useTemplateSettingsStore } from '../../store/templateSettingsStore';
 import type { SectionKey } from '../../store/templateSettingsStore';
@@ -82,17 +82,31 @@ interface PageSelectProps {
   onSelect: (page: number) => void;
   /** When provided, an Options button appears that opens the section settings modal. */
   sectionKey?: SectionKey;
+  /** When provided, a toggle-all button appears that collapses/expands all items. */
+  onToggleAll?: (collapsed: boolean) => void;
 }
 
-export function PageSelect({ selectedPage, onSelect, sectionKey }: PageSelectProps) {
+export function PageSelect({ selectedPage, onSelect, sectionKey, onToggleAll }: PageSelectProps) {
   const t = useTranslations('cvEditor');
   const pageCount = useTemplateSettingsStore((s) => s.pageCount);
   const [optionsOpen, setOptionsOpen] = useState(false);
+  const [allCollapsed, setAllCollapsed] = useState(false);
+
+  useEffect(() => {
+    setAllCollapsed(false);
+  }, [selectedPage]);
 
   const showPageSelect = pageCount > 1;
   const showOptions = !!sectionKey;
+  const showToggleAll = !!onToggleAll;
 
-  if (!showPageSelect && !showOptions) return null;
+  if (!showPageSelect && !showOptions && !showToggleAll) return null;
+
+  const handleToggleAll = () => {
+    const next = !allCollapsed;
+    setAllCollapsed(next);
+    onToggleAll?.(next);
+  };
 
   return (
     <>
@@ -117,18 +131,36 @@ export function PageSelect({ selectedPage, onSelect, sectionKey }: PageSelectPro
           </>
         )}
 
-        {showOptions && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => setOptionsOpen(true)}
-            className="ml-auto gap-1.5 text-muted-foreground hover:text-foreground"
-          >
-            <Settings2 size={13} />
-            {t('sectionOptions.options')}
-          </Button>
-        )}
+        <div className="ml-auto flex items-center gap-1">
+          {showToggleAll && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              onClick={handleToggleAll}
+              title={allCollapsed ? t('sectionOptions.expandAll') : t('sectionOptions.collapseAll')}
+              aria-label={
+                allCollapsed ? t('sectionOptions.expandAll') : t('sectionOptions.collapseAll')
+              }
+              className="text-muted-foreground hover:text-foreground"
+            >
+              {allCollapsed ? <ChevronsUpDown size={14} /> : <ChevronsDownUp size={14} />}
+            </Button>
+          )}
+
+          {showOptions && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setOptionsOpen(true)}
+              className="gap-1.5 text-muted-foreground hover:text-foreground"
+            >
+              <Settings2 size={13} />
+              {t('sectionOptions.options')}
+            </Button>
+          )}
+        </div>
       </div>
 
       {showOptions && sectionKey && (

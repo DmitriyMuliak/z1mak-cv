@@ -1,8 +1,15 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import React, {
+  useCallback,
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  createRef,
+} from 'react';
 import { useTranslations } from 'next-intl';
-import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -55,17 +62,29 @@ const dragOverlayHandleProps = {
   listeners: {},
 };
 
+export interface LanguageEntryHandle {
+  setCollapsed: (v: boolean) => void;
+  isCollapsed: boolean;
+}
+
 interface EntryProps {
   entry: LanguageEntry;
   storeIndex: number;
   onRemove: (storeIndex: number) => void;
   dragHandleProps: DragHandleProps;
+  initialCollapsed?: boolean;
 }
 
-function LanguageEntryForm({ entry, storeIndex, onRemove, dragHandleProps }: EntryProps) {
+const LanguageEntryForm = forwardRef<LanguageEntryHandle, EntryProps>(function LanguageEntryForm(
+  { entry, storeIndex, onRemove, dragHandleProps, initialCollapsed = false },
+  ref,
+) {
   const t = useTranslations('cvEditor');
   const updateField = useResumeEditorStore((s) => s.updateField);
   const basePath = `/languages/${storeIndex}`;
+  const [collapsed, setCollapsed] = useState(initialCollapsed);
+
+  useImperativeHandle(ref, () => ({ setCollapsed, isCollapsed: collapsed }), [collapsed]);
 
   const { listeners, ...attrs } = dragHandleProps;
 
@@ -82,38 +101,65 @@ function LanguageEntryForm({ entry, storeIndex, onRemove, dragHandleProps }: Ent
           <GripVertical size={16} />
         </button>
 
-        <div className="flex-1 space-y-1 min-w-0">
-          <Label htmlFor={`lang-${storeIndex}-language`} className="sr-only">
-            {t('languages.language')}
-          </Label>
-          <Input
-            id={`lang-${storeIndex}-language`}
-            placeholder={t('languages.language')}
-            value={entry.language}
-            onChange={(e) => updateField(`${basePath}/language`, e.target.value)}
-          />
-        </div>
+        {collapsed ? (
+          <span className="flex-1 text-sm font-medium text-foreground min-w-0 truncate">
+            {entry.language || t('languages.language')}
+            {entry.language && (
+              <span className="text-muted-foreground font-normal">
+                {' — '}
+                {t(`languages.proficiencyLevels.${entry.proficiency}`)}
+              </span>
+            )}
+          </span>
+        ) : (
+          <>
+            <div className="flex-1 space-y-1 min-w-0">
+              <Label htmlFor={`lang-${storeIndex}-language`} className="sr-only">
+                {t('languages.language')}
+              </Label>
+              <Input
+                id={`lang-${storeIndex}-language`}
+                placeholder={t('languages.language')}
+                value={entry.language}
+                onChange={(e) => updateField(`${basePath}/language`, e.target.value)}
+              />
+            </div>
 
-        <div className="w-36 shrink-0 space-y-1">
-          <Label className="sr-only">{t('languages.proficiency')}</Label>
-          <Select
-            value={entry.proficiency}
-            onValueChange={(v) => updateField(`${basePath}/proficiency`, v as LanguageProficiency)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {PROFICIENCY_LEVELS.map((level) => (
-                  <SelectItem key={level} value={level}>
-                    {t(`languages.proficiencyLevels.${level}`)}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
+            <div className="w-36 shrink-0 space-y-1">
+              <Label className="sr-only">{t('languages.proficiency')}</Label>
+              <Select
+                value={entry.proficiency}
+                onValueChange={(v) =>
+                  updateField(`${basePath}/proficiency`, v as LanguageProficiency)
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {PROFICIENCY_LEVELS.map((level) => (
+                      <SelectItem key={level} value={level}>
+                        {t(`languages.proficiencyLevels.${level}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        )}
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          onClick={() => setCollapsed((c) => !c)}
+          aria-label={collapsed ? t('languages.expandEntry') : t('languages.collapseEntry')}
+          className="shrink-0"
+        >
+          {collapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+        </Button>
 
         <Button
           type="button"
@@ -128,7 +174,7 @@ function LanguageEntryForm({ entry, storeIndex, onRemove, dragHandleProps }: Ent
       </div>
     </div>
   );
-}
+});
 
 export function LanguagesForm() {
   const t = useTranslations('cvEditor');
@@ -137,10 +183,12 @@ export function LanguagesForm() {
   const reorderItems = useResumeEditorStore((s) => s.reorderItems);
 
   const [selectedPage, setSelectedPage] = useState(0);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeCollapsed, setActiveCollapsed] = useState(false);
+
+  const entryRefs = useRef<Map<string, React.RefObject<LanguageEntryHandle | null>>>(new Map());
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
-
-  const [activeId, setActiveId] = useState<string | null>(null);
 
   const pageEntries = languages
     .map((entry, storeIndex) => ({ entry, storeIndex }))
@@ -149,6 +197,19 @@ export function LanguagesForm() {
   const activeEntryData = activeId
     ? pageEntries.find((p) => String(p.entry.id) === activeId)
     : undefined;
+
+  function getOrCreateRef(id: string) {
+    if (!entryRefs.current.has(id)) {
+      entryRefs.current.set(id, createRef<LanguageEntryHandle>());
+    }
+    return entryRefs.current.get(id)!;
+  }
+
+  const handleToggleAll = useCallback((collapsed: boolean) => {
+    for (const ref of entryRefs.current.values()) {
+      ref.current?.setCollapsed(collapsed);
+    }
+  }, []);
 
   const addEntry = useCallback(() => {
     const state = useResumeEditorStore.getState();
@@ -167,7 +228,12 @@ export function LanguagesForm() {
 
   return (
     <div className="space-y-3">
-      <PageSelect selectedPage={selectedPage} onSelect={setSelectedPage} sectionKey="languages" />
+      <PageSelect
+        selectedPage={selectedPage}
+        onSelect={setSelectedPage}
+        sectionKey="languages"
+        onToggleAll={handleToggleAll}
+      />
       {pageEntries.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-6 border border-dashed border-border rounded-md">
           {t('languages.empty')}
@@ -177,7 +243,11 @@ export function LanguagesForm() {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
-        onDragStart={({ active }) => setActiveId(String(active.id))}
+        onDragStart={({ active }) => {
+          const id = String(active.id);
+          setActiveId(id);
+          setActiveCollapsed(entryRefs.current.get(id)?.current?.isCollapsed ?? false);
+        }}
         onDragEnd={({ active, over }) => {
           setActiveId(null);
           if (over && active.id !== over.id) {
@@ -195,6 +265,7 @@ export function LanguagesForm() {
               <SortableItem key={entry.id} id={entry.id}>
                 {(dragHandleProps) => (
                   <LanguageEntryForm
+                    ref={getOrCreateRef(entry.id)}
                     entry={entry}
                     storeIndex={storeIndex}
                     onRemove={removeEntry}
@@ -214,6 +285,7 @@ export function LanguagesForm() {
                 storeIndex={activeEntryData.storeIndex}
                 onRemove={removeEntry}
                 dragHandleProps={dragOverlayHandleProps}
+                initialCollapsed={activeCollapsed}
               />
             </div>
           ) : null}

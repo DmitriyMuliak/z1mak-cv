@@ -1,6 +1,13 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import React, {
+  useCallback,
+  useState,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  createRef,
+} from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
 import {
@@ -43,18 +50,29 @@ const dragOverlayHandleProps = {
   listeners: {},
 };
 
+export interface EducationEntryHandle {
+  setCollapsed: (v: boolean) => void;
+  isCollapsed: boolean;
+}
+
 interface EntryProps {
   entry: EducationEntry;
   storeIndex: number;
   onRemove: (storeIndex: number) => void;
   dragHandleProps: DragHandleProps;
+  initialCollapsed?: boolean;
 }
 
-function EducationEntryForm({ entry, storeIndex, onRemove, dragHandleProps }: EntryProps) {
+const EducationEntryForm = forwardRef<EducationEntryHandle, EntryProps>(function EducationEntryForm(
+  { entry, storeIndex, onRemove, dragHandleProps, initialCollapsed = false },
+  ref,
+) {
   const t = useTranslations('cvEditor');
   const updateField = useResumeEditorStore((s) => s.updateField);
   const basePath = `/education/${storeIndex}`;
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(initialCollapsed);
+
+  useImperativeHandle(ref, () => ({ setCollapsed, isCollapsed: collapsed }), [collapsed]);
 
   const handleOptional = (field: string, value: string) => {
     updateField(`${basePath}/${field}`, value || undefined);
@@ -161,7 +179,7 @@ function EducationEntryForm({ entry, storeIndex, onRemove, dragHandleProps }: En
       )}
     </div>
   );
-}
+});
 
 export function EducationForm() {
   const t = useTranslations('cvEditor');
@@ -170,10 +188,12 @@ export function EducationForm() {
   const reorderItems = useResumeEditorStore((s) => s.reorderItems);
 
   const [selectedPage, setSelectedPage] = useState(0);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeCollapsed, setActiveCollapsed] = useState(false);
+
+  const entryRefs = useRef<Map<string, React.RefObject<EducationEntryHandle | null>>>(new Map());
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
-
-  const [activeId, setActiveId] = useState<string | null>(null);
 
   const pageEntries = education
     .map((entry, storeIndex) => ({ entry, storeIndex }))
@@ -182,6 +202,19 @@ export function EducationForm() {
   const activeEntryData = activeId
     ? pageEntries.find((p) => String(p.entry.id) === activeId)
     : undefined;
+
+  function getOrCreateRef(id: string) {
+    if (!entryRefs.current.has(id)) {
+      entryRefs.current.set(id, createRef<EducationEntryHandle>());
+    }
+    return entryRefs.current.get(id)!;
+  }
+
+  const handleToggleAll = useCallback((collapsed: boolean) => {
+    for (const ref of entryRefs.current.values()) {
+      ref.current?.setCollapsed(collapsed);
+    }
+  }, []);
 
   const addEntry = useCallback(() => {
     const state = useResumeEditorStore.getState();
@@ -200,7 +233,12 @@ export function EducationForm() {
 
   return (
     <div className="space-y-3">
-      <PageSelect selectedPage={selectedPage} onSelect={setSelectedPage} sectionKey="education" />
+      <PageSelect
+        selectedPage={selectedPage}
+        onSelect={setSelectedPage}
+        sectionKey="education"
+        onToggleAll={handleToggleAll}
+      />
       {pageEntries.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-6 border border-dashed border-border rounded-md">
           {t('education.empty')}
@@ -210,8 +248,13 @@ export function EducationForm() {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
-        onDragStart={({ active }) => setActiveId(String(active.id))}
+        onDragStart={({ active }) => {
+          const id = String(active.id);
+          setActiveId(id);
+          setActiveCollapsed(entryRefs.current.get(id)?.current?.isCollapsed ?? false);
+        }}
         onDragEnd={({ active, over }) => {
+          setActiveId(null);
           if (over && active.id !== over.id) {
             reorderItems('education', String(active.id), String(over.id));
           }
@@ -227,6 +270,7 @@ export function EducationForm() {
               <SortableItem key={entry.id} id={entry.id}>
                 {(dragHandleProps) => (
                   <EducationEntryForm
+                    ref={getOrCreateRef(entry.id)}
                     entry={entry}
                     storeIndex={storeIndex}
                     onRemove={removeEntry}
@@ -246,6 +290,7 @@ export function EducationForm() {
                 storeIndex={activeEntryData.storeIndex}
                 onRemove={removeEntry}
                 dragHandleProps={dragOverlayHandleProps}
+                initialCollapsed={activeCollapsed}
               />
             </div>
           ) : null}
