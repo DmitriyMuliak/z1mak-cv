@@ -428,6 +428,8 @@
       "language": "Language*",
       "proficiency": "Proficiency",
       "removeEntry": "Remove entry",
+      "expandEntry": "Expand entry",
+      "collapseEntry": "Collapse entry",
       "dragToReorder": "Drag to reorder",
       "proficiencyLevels": {
         "native": "Native",
@@ -448,7 +450,9 @@
       "title": "Section Options",
       "hideTitle": "Hide section title",
       "page": "Page",
-      "options": "Options"
+      "options": "Options",
+      "collapseAll": "Collapse all",
+      "expandAll": "Expand all"
     },
     "pages": {
       "page": "Page",

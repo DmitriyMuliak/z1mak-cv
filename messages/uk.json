@@ -428,6 +428,8 @@
       "language": "Мова*",
       "proficiency": "Рівень",
       "removeEntry": "Видалити запис",
+      "expandEntry": "Розгорнути запис",
+      "collapseEntry": "Згорнути запис",
       "dragToReorder": "Перетягніть для переупорядкування",
       "proficiencyLevels": {
         "native": "Рідна",
@@ -448,7 +450,9 @@
       "title": "Налаштування секції",
       "hideTitle": "Приховати заголовок секції",
       "page": "Сторінка",
-      "options": "Параметри"
+      "options": "Параметри",
+      "collapseAll": "Згорнути всі",
+      "expandAll": "Розгорнути всі"
     },
     "pages": {
       "page": "Сторінка",
