@@ -30,6 +30,7 @@
   },
   "header": {
     "menu": {
+      "mainTitle": "Головна",
       "aboutTitle": "Про мене",
       "skillsTitle": "Навички",
       "contactTitle": "Контакт",
