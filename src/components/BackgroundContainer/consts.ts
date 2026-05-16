@@ -2,6 +2,7 @@ import { paths } from '@/consts/routes';
 
 export const defaultPath = 'defaultPath' as const;
 export const pathsWithCustomBackground = {
+  [paths.main]: paths.main,
   [paths.home]: paths.home,
   [paths.skills]: paths.skills,
   [paths.contact]: paths.contact,
@@ -38,6 +39,20 @@ type PathsConfig = {
 };
 
 export const pathsConfig: PathsConfig = {
+  [pathsWithCustomBackground['/main']]: {
+    light: {
+      color1: '#fafaf9;',
+      color2: '#f1f1ef',
+      color3: '#5b6cff',
+      outerColor: '#5b6cff',
+    },
+    dark: {
+      color1: '#07070a',
+      color2: '#0f0f14',
+      color3: '#5b6cff',
+      outerColor: '#5b6cff',
+    },
+  },
   [pathsWithCustomBackground['/about']]: {
     light: {
       color1: '#2a7b9b',

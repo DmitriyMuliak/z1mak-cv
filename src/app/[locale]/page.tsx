@@ -7,6 +7,8 @@ type Props = {
 
 export default async function RootPage({ params }: Props) {
   const { locale } = await params;
+  // import { redirect } from 'next/navigation';
+  // redirect('https://another-site.com');
   // If there's no locale in the URL, use the browser's language.
   // If it's not supported, fall back to 'en'.
   redirect({ href: paths.home, locale });

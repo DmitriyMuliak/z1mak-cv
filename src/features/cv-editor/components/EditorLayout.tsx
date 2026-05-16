@@ -80,7 +80,7 @@ function EditorToolbar({ onOpenPreview }: { onOpenPreview: () => void }) {
   const { exportPdf, isGenerating } = usePdfExport();
 
   return (
-    <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-background/80 backdrop-blur-sm shrink-0 flex-wrap">
+    <div className="flex items-center gap-2 px-4 py-2 border-b border-border rounded-t-3xl bg-background/80 backdrop-blur-sm shrink-0 flex-wrap">
       <Button
         type="button"
         variant="ghost"
@@ -271,7 +271,7 @@ export function EditorLayout() {
 
       <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
         {/* Left: Form pane */}
-        <div className="flex flex-col w-full lg:w-[480px] lg:shrink-0 lg:border-r border-border overflow-hidden">
+        <div className="flex flex-col w-full lg:w-[480px] lg:shrink-0 lg:border-r border-border border-l-0 bg-muted/40 overflow-hidden">
           <TabBar activeTab={activeTab} onChange={setActiveTab} />
           <div
             id={`tabpanel-${activeTab}`}
