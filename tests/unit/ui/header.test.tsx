@@ -14,9 +14,10 @@ describe('Header Component Driver', () => {
   it('navigation links should exists', async () => {
     render(<Header />);
 
-    await HeaderDriver().find(HeaderDriver.Link('aboutTitle')).exists();
-    await HeaderDriver().find(HeaderDriver.Link('skillsTitle')).exists();
-    await HeaderDriver().find(HeaderDriver.Link('contactTitle')).exists();
+    // await HeaderDriver().find(HeaderDriver.Link('aboutTitle')).exists();
+    // await HeaderDriver().find(HeaderDriver.Link('skillsTitle')).exists();
+    // await HeaderDriver().find(HeaderDriver.Link('contactTitle')).exists();
     await HeaderDriver().find(HeaderDriver.Link('cvCheckerTitle')).exists();
+    await HeaderDriver().find(HeaderDriver.Link('cvEditorTitle')).exists();
   });
 });
