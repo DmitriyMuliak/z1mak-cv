@@ -21,12 +21,12 @@ export const Header = () => {
 
   const links = [
     // clamp(52px, 7.5vw, 108px);
-    { id: 'home', href: paths.home, label: t('aboutTitle') },
-    { id: 'skills', href: paths.skills, label: t('skillsTitle') },
-    { id: 'contact', href: paths.contact, label: t('contactTitle') },
+    // { id: 'home', href: paths.home, label: t('aboutTitle') },
+    // { id: 'skills', href: paths.skills, label: t('skillsTitle') },
+    // { id: 'contact', href: paths.contact, label: t('contactTitle') },
     // { id: 'main', href: paths.main, label: t('mainTitle') },
-    // { id: 'cv-checker', href: paths.cvChecker, label: t('cvCheckerTitle') },
-    // { id: 'cv-editor', href: paths.cvEditor, label: t('cvEditorTitle') },
+    { id: 'cv-checker', href: paths.cvChecker, label: t('cvCheckerTitle') },
+    { id: 'cv-editor', href: paths.cvEditor, label: t('cvEditorTitle') },
   ];
 
   return (
