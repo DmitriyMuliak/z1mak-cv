@@ -1,4 +1,3 @@
-import { paths } from '@/consts/routes';
 import { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
@@ -15,20 +14,6 @@ const nextConfig: NextConfig = {
     // the default globalObject is 'window', which is not available inside a Worker.
     config.output.globalObject = 'self';
     return config;
-  },
-  async redirects() {
-    return [
-      {
-        source: paths.root,
-        destination: 'https://cvlens.net',
-        permanent: true, // 308 permanent redirect
-      },
-      {
-        source: paths.cvChecker,
-        destination: 'https://cvlens.net/cv-checker',
-        permanent: true, // 308 permanent redirect
-      },
-    ];
   },
 };
 
