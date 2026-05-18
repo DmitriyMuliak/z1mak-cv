@@ -1,4 +1,5 @@
 import { unstable_rethrow } from 'next/navigation';
+import type { FieldValues, Path } from 'react-hook-form';
 import * as v from 'valibot';
 import { devLogger } from '@/lib/devLogger';
 import { extractIssueKey } from '@/lib/validator/extractIssueKey';
@@ -112,6 +113,7 @@ export type ActionReturn<T> = Promise<{
   errors: FieldErrors<T>;
 } | void>;
 
-export interface CreateOnSubmitHandlerConfig<TFieldValues, T = unknown> {
+export interface CreateOnSubmitHandlerConfig<TFieldValues extends FieldValues, T = unknown> {
   getAdditionalFEData?: (data: TFieldValues) => T;
+  resetCaptchaFieldOnError?: boolean | Path<TFieldValues>;
 }

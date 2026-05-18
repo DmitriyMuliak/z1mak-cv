@@ -27,7 +27,9 @@ export function ContactForm() {
   const files = form.watch('files');
   const { isValid } = form.formState;
 
-  const handleSubmitCb = createOnSubmitHandler(sendContactAction, form);
+  const handleSubmitCb = createOnSubmitHandler(sendContactAction, form, undefined, {
+    resetCaptchaFieldOnError: true,
+  });
   const onSubmit = form.handleSubmit(handleSubmitCb);
 
   return (

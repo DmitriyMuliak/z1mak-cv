@@ -38,7 +38,7 @@ export function RecaptchaField<T extends FieldValues>({
         render={({ field }) => (
           <FormItem>
             <FormControl>
-              <RecaptchaV2 visible={visible} onVerify={field.onChange} />
+              <RecaptchaV2 visible={visible} onVerify={field.onChange} value={field.value} />
             </FormControl>
             <FormMessage className="text-red-700 dark:text-red-600" />
           </FormItem>

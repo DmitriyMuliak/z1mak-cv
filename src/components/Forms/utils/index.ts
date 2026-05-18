@@ -24,7 +24,7 @@ export const createOnSubmitHandler =
 
     const res = await actionHandler(formData, additionalFEData);
 
-    handleActionResponse(res, form, onResult);
+    handleActionResponse(res, form, onResult, config);
   };
 
 type SimpleActionHandlerType<
@@ -47,7 +47,7 @@ export const createBaseOnSubmitHandler =
 
     const res = await actionHandler(data, additionalFEData);
 
-    handleActionResponse(res, form, onResult);
+    handleActionResponse(res, form, onResult, config);
   };
 
 const createFormData = <TFieldValues extends FieldValues>(data: TFieldValues) => {
@@ -85,10 +85,15 @@ const createFormData = <TFieldValues extends FieldValues>(data: TFieldValues) =>
   return formData;
 };
 
-const handleActionResponse = <TFieldValues extends FieldValues, TData extends SuccessData | void>(
+const handleActionResponse = <
+  TFieldValues extends FieldValues,
+  TData extends SuccessData | void,
+  TFE = unknown,
+>(
   res: ResultReturn<TData>,
   form: UseFormReturn<TFieldValues>,
   onResult?: (dataFromActionHandler: ResultReturn<TData>) => void,
+  config?: CreateOnSubmitHandlerConfig<TFieldValues, TFE>,
 ) => {
   if (onResult) {
     onResult(res);
@@ -109,6 +114,13 @@ const handleActionResponse = <TFieldValues extends FieldValues, TData extends Su
 
   if (res.success) {
     form.reset();
+  }
+
+  if (!res.success && config?.resetCaptchaFieldOnError) {
+    const fieldName = (
+      config.resetCaptchaFieldOnError === true ? 'recaptchaToken' : config.resetCaptchaFieldOnError
+    ) as Path<TFieldValues>;
+    form.resetField(fieldName);
   }
 };
 
