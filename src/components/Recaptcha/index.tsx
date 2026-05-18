@@ -5,15 +5,17 @@
 // Enterprise - https://console.cloud.google.com/security/recaptcha/
 
 import { publicPrEnv } from '@/utils/processEnv/public';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
+import { useUpdateEffect } from '@/hooks/useUpdateEffect';
 import ReCAPTCHA from 'react-google-recaptcha';
 
 interface CaptchaBoxProps {
   visible: boolean;
   onVerify: (token: string | null) => void;
+  value?: string | null;
 }
 
-export function RecaptchaV2({ visible, onVerify }: CaptchaBoxProps) {
+export function RecaptchaV2({ visible, onVerify, value }: CaptchaBoxProps) {
   const captchaRef = useRef<ReCAPTCHA | null>(null);
   const [_expired, setExpired] = useState(false); // Google show it's own message
 
@@ -27,12 +29,12 @@ export function RecaptchaV2({ visible, onVerify }: CaptchaBoxProps) {
     onVerify(token);
   };
 
-  useEffect(() => {
-    if (!visible && captchaRef.current) {
+  useUpdateEffect(() => {
+    if ((!visible || value === null) && captchaRef.current) {
       captchaRef.current.reset();
       setExpired(false);
     }
-  }, [visible]);
+  }, [visible, value]);
 
   return (
     <div>
